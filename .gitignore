@@ -1,3 +1,23 @@
+#添加忽略文件
+
+# Xmake cache
+.xmake/
+build/
+
+# MacOS Cache
+.DS_Store
+
+*-NSConflict-*
+
+date/date.txt
+date/fit.txt
+draw.txt
+
+draw_pic/
+draw.py
+batch_date.txt
+
+
 # ---> C
 # Prerequisites
 *.d
