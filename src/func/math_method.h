@@ -5,7 +5,8 @@
 #include "Math_Method/find_root.h"
 #include "Math_Method/fit_date.h"
 #include "Math_Method/quadrature.h"
-#include "Math_Method/quadrature_binary.h"
+#include "Math_Method/quadrature_binary_rectangle.h"
+#include "Math_Method/quadrature_binary_func.h"
 
 
 #endif // __PBHS_MATH_METHOD__

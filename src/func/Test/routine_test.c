@@ -83,7 +83,17 @@ void routine_test(slong prec)
     
     //发散函数积分
     arb_set_str(x_a,"0",prec);
-    arb_set_str(x_b,"1",prec);
+    arb_set_str(x_b,"0.7853981634",prec);
+    arb_set_str(e,"1E-100",prec);
+    integration_binary_func(r, Func_test_quad_func_02, NULL, 0,
+                            x_a, x_b, e, 
+                            5, 16,
+                            Func_test_quad_func_02_y_a, NULL,  0,
+                            Func_test_quad_func_02_y_b, NULL,  0,
+                            e, 5, 16,
+                            prec);
+    arb_printn(r, 50, 0);printf("\n");
+    exit(0);
     //arb_neg_inf(x_a);
     //arb_pos_inf(x_b);
     arb_set_str(e,"1E-100",prec);
@@ -93,7 +103,7 @@ void routine_test(slong prec)
     arb_printn(r, 50, 0);printf("\n");
     Integration_arb(r, Func_test_10, NULL, 0, 
                     x_a, x_b,e,
-                    32,10000, prec);
+                    5,17, prec);
     arb_printn(r, 50, 0);printf("\n");
     exit(0);
     

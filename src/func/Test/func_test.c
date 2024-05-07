@@ -409,3 +409,101 @@ int Func_test_10(arb_t res, const arb_t x, void* params, const slong order, slon
     arb_clear(t);
     return 0;
 }
+
+int Func_test_quad_func_01(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    //f(x,y)=2-x-y，积分区域为直线y=x和抛物线y=x²所围成的区域
+    //先对y积分[x^2, x]，再对x积分[0, 1]
+    //精确结果为11/60
+    arb_one(s);
+    arb_mul_ui(s,s,2,prec);
+    arb_sub(s,s,x,prec);
+    arb_sub(res,s,y,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+    
+}
+
+int Func_test_quad_func_01_y_a(arb_t res, const arb_t x, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_sqr(res,x,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+int Func_test_quad_func_01_y_b(arb_t res, const arb_t x, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_set(res,x);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+
+
+int Func_test_quad_func_02(arb_t res, const arb_t theta, const arb_t r, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    //f(x,y)=1/(1+x^2+y^2)^2，积分区域$ \Omega = \{(x,y)|(x^2 + y^2)^2\leq x^2 - y^2,x\geq0) $
+    //用极坐标f(θ，r)=2r/(1+r^2)^2，选对r积分[0, sqrt(cos(2θ))], 再对θ积分[0, π/4]
+    //精确结果为π/4-1/2
+    arb_sqr(t,r,prec);
+    arb_add_ui(t,t,1,prec);
+    arb_sqr(t,t,prec);
+    arb_div(s,r,t,prec);
+    arb_mul_ui(res,s,2,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+
+int Func_test_quad_func_02_y_a(arb_t res, const arb_t theta, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_zero(res);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+
+int Func_test_quad_func_02_y_b(arb_t res, const arb_t theta, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    //sqrt(cos(2θ))
+    arb_mul_ui(t,theta,2,prec);
+    arb_cos(t,t,prec);
+    arb_sqrt(res,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+
+
+
