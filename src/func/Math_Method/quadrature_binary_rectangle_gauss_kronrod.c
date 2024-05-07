@@ -1,4 +1,4 @@
-#include "quadrature_binary_rectangle.h"
+#include "quadrature_binary_rectangle_gauss_kronrod.h"
 #include "quadrature.h"
 #include <stdlib.h>
 
@@ -133,7 +133,14 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
     arb_zero(s);
     
     int time_min;
+    int min_interval;
     time_min=0; //判断最小迭代次数
+    min_interval=0; //判断是否达到最小区间间隔
+    
+    int ret_judge=0;
+    
+    arb_t temp_t; //临时变量
+    arb_init(temp_t);
     
     while (depth >= 1)
     {
@@ -144,6 +151,8 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
             flint_printf("\n达到最大迭代深度：  %wd\n\n", step_max);
             status++;
             stopping = 1;
+            
+            ret_judge=1;
             
             /*
              *           for(slong i=0;i<=depth;i++)
@@ -182,7 +191,7 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
         {
             judge = binary_integration_gauss_kronrod_cal_y(u,f_x,func,param,order,as+top,bs+top,es+top,w,prec);
             
-            if( judge==0)
+            if( judge==0 || min_interval==1 ) // min_interval==1 用于判断是否二分到最小区间间隔
             {
                 //满足精度要求
                 arb_add(s, s, u, prec);
@@ -222,6 +231,17 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
         /* Interval [0] becomes [a, mid]. */
         arb_set(bs+top, as + depth);
         
+        //判断是否达到最小子区间间隔
+        arb_sub(temp_t,bs + depth,as + depth,prec);
+        arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+        if(arb_lt(temp_t,INT_MIN_INTERVAL)) //对于一些间断点，区间可能会无限分隔下去，需设定最小区间间隔
+        {
+            min_interval=1; //达到最小区间间隔，强制积分求和
+        }else
+        {
+            min_interval=0;
+        }
+        
         //区间误差更新
         arb_mul_2exp_si(es+top, es+top, -1); // es/2
         arb_set(es + depth , es+top); // es/2
@@ -254,7 +274,13 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
     arb_clear(u);
     arb_clear(w);
     
-    return 0;
+    if(ret_judge==0)
+    {
+        return 0;
+    }else
+    {
+        return 1;
+    }
 }
 
 
@@ -358,14 +384,14 @@ static int binary_integration_gauss_kronrod_cal_y_x(arb_t res,
 }
 
 
-//∫[∫f(x,y)dy]dx
+//二元函数对y进行积分后再对x积分 ∫[∫f(x,y)dy]dx
 static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
-                                               my_calc_func_binary func, void *param, const slong order,
-                                               const arb_t y_a, const arb_t y_b, const arb_t y_error,
-                                               slong y_step_min , slong y_step_max,
-                                               const arb_t a, const arb_t b, const arb_t error,
-                                               slong step_min , slong step_max,
-                                               slong prec)
+                                                        my_calc_func_binary func, void *param, const slong order,
+                                                        const arb_t y_a, const arb_t y_b, const arb_t y_error,
+                                                        slong y_step_min , slong y_step_max,
+                                                        const arb_t a, const arb_t b, const arb_t error,
+                                                        slong step_min , slong step_max,
+                                                        slong prec)
 {
     arb_ptr as, bs, es,gs;
     arb_t s, u, w;
@@ -399,7 +425,14 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
     arb_zero(s);
     
     int time_min;
+    int min_interval;
     time_min=0; //判断最小迭代次数
+    min_interval=0; //判断是否达到最小区间间隔
+    
+    int ret_judge=0;
+    
+    arb_t temp_t; //临时变量
+    arb_init(temp_t);
     
     while (depth >= 1)
     {
@@ -410,6 +443,8 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
             flint_printf("\n达到最大迭代深度：  %wd\n\n", step_max);
             status++;
             stopping = 1;
+            
+            ret_judge=1;
             
             /*
              *           for(slong i=0;i<=depth;i++)
@@ -452,7 +487,7 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
                                                              y_a,y_b,y_error,y_step_min,y_step_max,
                                                              as+top,bs+top,es+top,w,prec);
             
-            if( judge==0)
+            if( judge==0 || min_interval==1 ) // min_interval==1 用于判断是否二分到最小区间间隔
             {
                 //满足精度要求
                 arb_add(s, s, u, prec);
@@ -492,6 +527,17 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
         /* Interval [0] becomes [a, mid]. */
         arb_set(bs+top, as + depth);
         
+        //判断是否达到最小子区间间隔
+        arb_sub(temp_t,bs + depth,as + depth,prec);
+        arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+        if(arb_lt(temp_t,INT_MIN_INTERVAL)) //对于一些间断点，区间可能会无限分隔下去，需设定最小区间间隔
+        {
+            min_interval=1; //达到最小区间间隔，强制积分求和
+        }else
+        {
+            min_interval=0;
+        }
+        
         //区间误差更新
         arb_mul_2exp_si(es+top, es+top, -1); // es/2
         arb_set(es + depth , es+top); // es/2
@@ -524,31 +570,19 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
     arb_clear(u);
     arb_clear(w);
     
-    return 0;
+    if(ret_judge==0)
+    {
+        return 0;
+    }else
+    {
+        return 1;
+    }
 }
 
-//二元函数对y进行积分后再对x积分 ∫[∫f(x,y)dy]dx
-static void integration_binary_y_x(arb_t res, my_calc_func_binary func, void* param, const slong order,
-                            const arb_t x_a, const arb_t x_b, const arb_t x_error, 
-                            slong x_step_min , slong x_step_max,
-                            const arb_t y_a, const arb_t y_b, const arb_t y_error,
-                            slong y_step_min , slong y_step_max,
-                            slong prec)
-{
-    arb_t s;
-    arb_init(s);
-    
-    binary_integration_gauss_kronrod_iterate_y_x(s,func,param,order,
-                                                 y_a,y_b,y_error,y_step_min,y_step_max,
-                                                 x_a,x_b,x_error,x_step_min,x_step_max,
-                                                 prec);
-    arb_set(res,s);
-    arb_clear(s);
-}
 
 
 //二元积分，积分区域为矩形
-int integration_binary_rectangle(arb_t res, my_calc_func_binary func, void *param, const slong order,
+int integration_binary_rectangle_gauss_kronrod(arb_t res, my_calc_func_binary func, void *param, const slong order,
                        const arb_t x_a, const arb_t x_b, const arb_t x_error, 
                        slong x_step_min , slong x_step_max,
                        const arb_t y_a, const arb_t y_b, const arb_t y_error,
@@ -558,18 +592,21 @@ int integration_binary_rectangle(arb_t res, my_calc_func_binary func, void *para
     arb_t s;
     arb_init(s);
     
+    int i;
+    
     get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
     
     //对于二元函数 f(x,y)
     //先对y积分 ∫f(x,y)dy
     //再对x进行积分 ∫[∫f(x,y)dy]dx
     
-    integration_binary_y_x(s,func,param,order,
-                           x_a,x_b,x_error,x_step_min,x_step_max,
-                           y_a,y_b,y_error,y_step_min,y_step_max,
-                           prec);
+    i=binary_integration_gauss_kronrod_iterate_y_x(s,func,param,order,
+                                                   y_a,y_b,y_error,y_step_min,y_step_max,
+                                                   x_a,x_b,x_error,x_step_min,x_step_max,
+                                                   prec);
     
     arb_set(res,s);
     arb_clear(s);
-    return 0;
+    
+     return i;
 }

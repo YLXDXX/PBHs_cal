@@ -506,4 +506,54 @@ int Func_test_quad_func_02_y_b(arb_t res, const arb_t theta, void* params, const
 }
 
 
+int Func_test_quad_func_03(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    //f(x,y)=e^{-x^2-y^2}，积分区域为整个x-y平面
+    //先对y积分[-∞, +∞]，再对x积分[-∞, +∞]
+    //精确结果为π
+    arb_sqr(t,x,prec);
+    arb_sqr(s,y,prec);
+    arb_add(t,t,s,prec);
+    arb_neg(t,t);
+    
+    arb_exp(res,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+    
+}
+
+int Func_test_quad_func_03_y_a(arb_t res, const arb_t x, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_neg_inf(res); //-∞
+    //arb_set_str(res,"-10",prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+int Func_test_quad_func_03_y_b(arb_t res, const arb_t x, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_pos_inf(res);//+∞
+    //arb_set_str(res,"10",prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+}
+
+
 

@@ -82,28 +82,51 @@ void routine_test(slong prec)
     */
     
     //发散函数积分
-    arb_set_str(x_a,"0",prec);
-    arb_set_str(x_b,"0.7853981634",prec);
-    arb_set_str(e,"1E-100",prec);
-    integration_binary_func(r, Func_test_quad_func_02, NULL, 0,
-                            x_a, x_b, e, 
-                            5, 16,
-                            Func_test_quad_func_02_y_a, NULL,  0,
-                            Func_test_quad_func_02_y_b, NULL,  0,
-                            e, 5, 16,
-                            prec);
-    arb_printn(r, 50, 0);printf("\n");
-    exit(0);
+    arb_set_str(x_a,"60",prec);
+    arb_set_str(x_b,"0",prec);
+    arb_set_str(y_a,"10",prec);
+    arb_set_str(y_b,"-10",prec);
+    
+    //积分行为设定
+    //Integral_method=gauss_kronrod_iterate; // gauss_kronrod_iterate/double_exponential
+    
     //arb_neg_inf(x_a);
     //arb_pos_inf(x_b);
-    arb_set_str(e,"1E-100",prec);
+    //arb_zero(x_b);
+    
+    arb_set_str(e,"1E-30",prec);
+    
+    /*
+    //测试二重积分，积分区域为非矩形
+    integration_binary_func(r, Func_test_quad_func_03, NULL, 0,
+                            x_a, x_b, e, 
+                            2, 13,
+                            Func_test_quad_func_03_y_a, NULL,  0,
+                            Func_test_quad_func_03_y_b, NULL,  0,
+                            e, 2, 12,
+                            prec);
+    */
+    /*
+    //测试二重积分，积分区域为矩形
+    integration_binary_rectangle(r, Func_test_quad_func_03, NULL, 0,
+                            x_a, x_b, e, 
+                            2, 13,
+                            y_a, y_b, e, 2, 12,
+                            prec);
+    
+    arb_printn(r, 50, 0);printf("\n");
+    exit(0);
+    */
+    
+    //arb_neg_inf(x_a);
+    //arb_pos_inf(x_b);
+    arb_set_str(e,"1E-30",prec);
     //注意到，这里的结果应为无穷，其积分值受精度影响，精度越高，积分值越大
-    Double_Exponential_Quadrature(r,Func_test_10,NULL,0,
+    Double_Exponential_Quadrature(r,Func_test_8,NULL,0,
                                   x_a,x_b,e,5,16,prec);
     arb_printn(r, 50, 0);printf("\n");
-    Integration_arb(r, Func_test_10, NULL, 0, 
-                    x_a, x_b,e,
-                    5,17, prec);
+    Integration_arb(r, Func_test_8, NULL, 0, 
+                    x_a, x_b,e,5,160, prec);
     arb_printn(r, 50, 0);printf("\n");
     exit(0);
     

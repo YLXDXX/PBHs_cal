@@ -855,8 +855,8 @@ int Double_Exponential_Quadrature(arb_t res, my_calc_func func, void *param, con
                
                arb_mul(x,d,r,prec); //x=d*r
                
-               arb_add(t_s,a,x,prec);
-               if( arb_gt(t_s,a) ) //a+x > a  // if too close to a then reuse previous fp
+               arb_add(t_s,aa,x,prec);
+               if( arb_gt(t_s,aa) ) //a+x > a  // if too close to a then reuse previous fp
                {
                    func(y,t_s,param,order,prec); //y=f(a+x)
                    if( arb_is_finite(y) )
@@ -865,8 +865,8 @@ int Double_Exponential_Quadrature(arb_t res, my_calc_func func, void *param, con
                    }
                }
                
-               arb_sub(t_s,b,x,prec);
-               if( arb_lt(t_s,b) ) //b-x<b // if too close to a then reuse previous fp
+               arb_sub(t_s,bb,x,prec);
+               if( arb_lt(t_s,bb) ) //b-x<b // if too close to a then reuse previous fp
                {
                    func(y,t_s,param,order,prec); //y=f(b-x)
                    if( arb_is_finite(y) )
