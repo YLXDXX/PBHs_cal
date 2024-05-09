@@ -12,6 +12,7 @@ void Set_global_variable(slong prec)
     //宇宙学基本常数
     arb_init(Omega_DM); //暗物质所占比例
     arb_init(Omega_M); //baryons + dark matter 所占比例
+    arb_init(Omega_radiation); //辐射所占的比例
     arb_init(Hubble_constant_h); //哈勃常数 h
     arb_init(Hubble_constant_H_0); //哈勃常数 H_0
     arb_init(Scale_factor_a);// 尺度因子 a(t)，某些公式的需要
@@ -19,6 +20,8 @@ void Set_global_variable(slong prec)
     arb_init(Equation_Of_State_w); //状态方程 w
     arb_init(effective_g_star); //重新进入视界后，对应的有效自由度数目 g_*
     arb_init(effective_g_star_eq); //物质辐射相等的时刻，对应的有效自由度数目 g_{*,eq}
+    arb_init(effective_g_star_current); //当今对应的有效自由度数目
+    arb_init(effective_g_star_current_entropy); //当今对应的熵有效自由度数目
     arb_init(K_scale_eq); //在视界相等的时刻，对应的参考尺度 k_eq
     
     //各功率谱的设定

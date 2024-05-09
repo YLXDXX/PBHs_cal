@@ -73,6 +73,7 @@ extern arb_t Mass_gamma; //γ
 //宇宙学基本常数
 extern arb_t Omega_DM; //暗物质所占比例
 extern arb_t Omega_M; //baryons + dark matter 所占比例
+extern arb_t Omega_radiation; //辐射所占的比例
 extern arb_t Hubble_constant_h; //哈勃常数 h
 extern arb_t Hubble_constant_H_0; //哈勃常数 H_0
 extern arb_t Scale_factor_a; // 尺度因子 a(t)，某些公式的需要
@@ -82,7 +83,8 @@ extern arb_t K_scale_eq; //在视界相等的时刻，对应的参考尺度
 
 extern arb_t effective_g_star; //重新进入视界后，对应的有效自由度数目
 extern arb_t effective_g_star_eq; //物质辐射相等的时刻，对应的有效自由度数目
-
+extern arb_t effective_g_star_current; //当今对应的有效自由度数目
+extern arb_t effective_g_star_current_entropy; //当今对应的熵有效自由度数目
 
 //设置求值区间，如求 r_m Mu_2_th
 extern arb_t Int_r_min;
@@ -122,6 +124,20 @@ extern arb_t Power_expansion_five; //power-series expansion 五次项 five -> D
 extern arb_t Power_expansion_six; //power-series expansion 五次项 six -> E
 extern arb_t Up_step_h; //up-step 模型中用
 extern arb_t Exponential_tail_beta; //exponential_tail 模型中用
+
+
+//诱导引力波
+extern arb_t Int_GW_I_func_min; // I/I_c/I_s 积分用
+extern arb_t Int_GW_I_func_max;
+extern arb_t Int_GW_I_func_precision;
+extern ulong Int_GW_I_func_iterate_min;
+extern ulong Int_GW_I_func_iterate_max;
+extern arb_t Int_GW_power_spectra_min; // 功率谱积分用
+extern arb_t Int_GW_power_spectra_max;
+extern arb_t Int_GW_power_spectra_precision;
+extern ulong Int_GW_power_spectra_iterate_min;
+extern ulong Int_GW_power_spectra_iterate_max;
+
 
 //数学计算
 extern arb_t Pi; //常数π

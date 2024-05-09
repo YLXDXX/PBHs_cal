@@ -450,6 +450,9 @@ int Probability_C_l(arb_t res, const arb_t C_l, slong prec)
                     printf("PS_Method -> C_l_probability -> Probability_C_l->delta_type->zeta_type 有误\n");
                     exit(1);
             }
+            
+            free(Root_Y_parameter); //手动释放自定义结构体内存
+            
             break;
             
         default:

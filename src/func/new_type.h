@@ -85,6 +85,14 @@ enum Root_type
     Root_C_Max
 };
 
+//函数传递多个参数用，例如积分时传多个传数进入
+struct Func_transfer_parameter
+{
+    arb_t p_1;
+    arb_t p_2;
+    arb_t p_3;
+};
+
 
 //定义一个数据存储结构，存储读从文件中读取的数据
 //可利用 BSD 提供的单链列表，其为一个动态数据结构，可以无限增长

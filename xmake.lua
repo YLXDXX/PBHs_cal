@@ -9,6 +9,7 @@ target("./PBHs") --Name of the generated executable file
     add_files("src/func/Peak_Theory/*.c")
     add_files("src/func/PS_Method/*.c")
     add_files("src/func/Other/*.c")
+    add_files("src/func/GW_induced/*.c")
     add_files("src/func/Test/*.c")
     add_files("src/set/*.c")
 

@@ -6,16 +6,74 @@ void routine_test(slong prec)
 {
     //积分测试 1
     
-    arb_t x_a,x_b,y_a,y_b,e,r;
+    arb_t x,y,x_a,x_b,y_a,y_b,e,r,k,eta;
     
+    arb_init(x);
+    arb_init(y);
     arb_init(x_a);
     arb_init(x_b);
     arb_init(y_a);
     arb_init(y_b);
     arb_init(e);
     arb_init(r);
+    arb_init(k);
+    arb_init(eta);
+    
+    Integral_method=double_exponential; // gauss_kronrod_iterate/double_exponential
     
     
+    //诱导引力波相关参数设定
+    arb_init(Int_GW_I_func_min); // 变量初始化
+    arb_init(Int_GW_I_func_max);
+    arb_init(Int_GW_I_func_precision);
+    arb_init(Int_GW_power_spectra_min);
+    arb_init(Int_GW_power_spectra_max);
+    arb_init(Int_GW_power_spectra_precision);
+    
+    
+    //诱导引力波积分辐助函数的积分设定
+    arb_zero(Int_GW_I_func_min); //积分下限，为 1/k or 0 or 1，这里我们设为1
+    arb_pos_inf(Int_GW_I_func_max); //积分上限 +∞
+    //arb_set_str(Int_GW_I_func_max,"1E4",prec);
+    arb_set_str(Int_GW_I_func_precision,"1E-10",prec);
+    Int_GW_I_func_iterate_min=6;
+    Int_GW_I_func_iterate_max=15;
+        
+    
+    //诱导引力波功率谱的积分设定
+    arb_set_str(Int_GW_power_spectra_min,"1E-10",prec);
+    arb_set_str(Int_GW_power_spectra_max,"100",prec);
+    arb_set_str(Int_GW_power_spectra_precision,"1E-10",prec);
+    Int_GW_power_spectra_iterate_min=5;
+    Int_GW_power_spectra_iterate_max=9;
+    
+    /*
+    //诱导引力波
+    arb_set_str(x,"2",prec);
+    arb_set_str(y,"2.1",prec);
+    
+    GW_I_s_func_analyze(r,x,y,x,prec);
+    arb_printn(r,50,0);printf("\n");
+    
+    
+    GW_I_s_func(r,x,y,x,prec);
+    arb_printn(r,50,0);printf("\n");
+    
+    
+    Integral_method=gauss_kronrod_iterate;Int_GW_I_func_iterate_min=128;Int_GW_I_func_iterate_max=10000;
+    GW_I_s_func(r,x,y,x,prec);
+    arb_printn(r,50,0);printf("\n");
+    
+    exit(0);
+    */
+    
+    arb_set_str(k,"1.56E12",prec);
+    //arb_set_str(eta,"1",prec);
+    arb_inv(eta,k,prec);
+    //GW_power_spectra(r,eta,k,prec);
+    GW_current_energy_density(r,k,prec);
+    arb_printn(r,50,0);printf("\n");
+    exit(0);
     
     //验证概率守恒
     /*
@@ -162,6 +220,8 @@ void routine_test(slong prec)
     _arb_vec_clear(muil_r, root_num); //清理数组
     */
     
+    arb_clear(y);
+    arb_clear(x);
     arb_clear(x_a);
     arb_clear(x_b);
     arb_clear(y_a);

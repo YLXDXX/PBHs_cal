@@ -9,6 +9,7 @@
 #include "func/general.h"
 #include "func/peak_theory.h"
 #include "func/ps_method.h"
+#include "func/gw_induced.h"
 #include "func/other.h"
 #include "func/test.h"
 

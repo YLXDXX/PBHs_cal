@@ -82,6 +82,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Set_main_cal(argv[1], prec); //可从命令行读取参数
     
     
+    routine_test(prec); exit(0); //测试程序
     
     //变量Mu_2_th， ζ(r) 的参数 µ 的临界值 
     // Mu_2_th 与 K_3_square 有关，不过在简化的情况下，Mu_2_th 已独立出来，只需要求解一次
@@ -97,8 +98,6 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_set_str(Mu_2_th,"0.4",prec);
     //arb_printn(Mu_2_th, 60,0);printf("\n\n\n");
     //exit(0);
-    
-    
     
     
     //

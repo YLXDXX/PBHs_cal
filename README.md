@@ -172,10 +172,11 @@ xmake r
 　　使用环境示例：
 
 * 系统：Debian 12
+* FLINT： 3.1.2
 * 编译工具： Gcc 12.2.0
 * 构建工具： Xmake 2.8
 
-　　‍
+　
 
 ## To Do
 
