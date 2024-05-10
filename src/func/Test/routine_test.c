@@ -21,16 +21,6 @@ void routine_test(slong prec)
     
     Integral_method=double_exponential; // gauss_kronrod_iterate/double_exponential
     
-    
-    //诱导引力波相关参数设定
-    arb_init(Int_GW_I_func_min); // 变量初始化
-    arb_init(Int_GW_I_func_max);
-    arb_init(Int_GW_I_func_precision);
-    arb_init(Int_GW_power_spectra_min);
-    arb_init(Int_GW_power_spectra_max);
-    arb_init(Int_GW_power_spectra_precision);
-    
-    
     //诱导引力波积分辐助函数的积分设定
     arb_zero(Int_GW_I_func_min); //积分下限，为 1/k or 0 or 1，这里我们设为1
     arb_pos_inf(Int_GW_I_func_max); //积分上限 +∞

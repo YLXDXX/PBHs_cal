@@ -6,8 +6,9 @@ int C_r_prime_II(arb_t res, arb_t r, slong prec);
 //画图
 void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
 {
-    arb_t aa,bb,gap_x,gap_y,out_point,ay,by;
+    arb_t t,aa,bb,gap_x,gap_y,out_point,ay,by;
     
+    arb_init(t);
     arb_init(aa); 
     arb_init(bb);
     arb_init(gap_x); //一层点间隔
@@ -17,8 +18,8 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_init(ay); 
     arb_init(by);
     
-    arb_set_str(aa,"-1",prec); //一层循环用
-    arb_set_str(bb,"1",prec);
+    arb_set_str(aa,"25",prec); //一层循环用
+    arb_set_str(bb,"36",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -32,7 +33,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     slong out_number,number;
     
-    number=500; //输出点的个数
+    number=100; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -57,7 +58,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     //arb_set_str(Mu_2, "0.28", prec); //修改 Mu_2
     
-    /*
+    
     //一层输出
     for (long int i=1; i <= number; i++)
     {
@@ -66,7 +67,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //zeta_Gauss_profile_n(out_point, aa, 0, prec);
         //zeta_profile_n(out_point,aa,0, prec); //ζ(r)
-        C_r_profile_n(out_point, aa, 0, prec); //C(r)
+        //C_r_profile_n(out_point, aa, 0, prec); //C(r)
         
         //C_r_prime_I(out_point,aa,prec);
         //C_r_prime_II(out_point,aa,prec);
@@ -81,6 +82,11 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //考虑所有k模式，用δ谱计算连续谱
         //PS_abundance_beta_delta_k(out_point, aa, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
+        
+        //诱导引力波
+        arb_exp(t,aa,prec); //取指数后再传入
+        //GW_power_spectra(out_point,eta,k,prec); //这里传入的k值未取对数
+        GW_current_energy_density(out_point,t,prec);
         
         //arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
         //fprintf(fp, "\t");
@@ -97,9 +103,9 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //printf("%ld/%ld\n",i,number);//进度显示
         print_progress(i,number); //进度条显示
     }
-    */
     
     
+    /*
     //二层输出，例如，输出二维概率密度
     for (long int i=1; i <= number; i++)
     {
@@ -130,12 +136,13 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //printf("%ld/%ld\n",i,number);//进度显示
     }
-    
+    */
     
     
     printf("\n输出完成\n");
     fclose(fp); //关闭文件
     
+    arb_clear(t);
     arb_clear(aa);
     arb_clear(bb);
     arb_clear(gap_x);

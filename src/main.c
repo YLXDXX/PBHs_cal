@@ -82,8 +82,6 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Set_main_cal(argv[1], prec); //可从命令行读取参数
     
     
-    routine_test(prec); exit(0); //测试程序
-    
     //变量Mu_2_th， ζ(r) 的参数 µ 的临界值 
     // Mu_2_th 与 K_3_square 有关，不过在简化的情况下，Mu_2_th 已独立出来，只需要求解一次
     //变量Q_parameter_th，ζ(r)取临界值时的q参数
@@ -202,10 +200,12 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //全部设置完，后面调用各函数进行各种设算
     //
     
-    arb_t Pk,t,w; //自由使用变量
+    arb_t Pk,t,w,k,eta; //自由使用变量
     arb_init(Pk);
     arb_init(t);
     arb_init(w);
+    arb_init(k);
+    arb_init(eta);
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
@@ -258,7 +258,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //interior_probability_C_l(Pk,t,w,0,prec);
     //probability_gauss_2D(Pk,t,w,prec);
     //PS_abundance_beta_m(Pk,t,prec);
-    PS_abundance_beta_all(w,prec);
+    //PS_abundance_beta_all(w,prec);
     //PS_abundance_f_m(Pk, w, prec);
     //PS_abundance_f_all(Pk,prec);
     //Probability_C(Pk,w,prec);
@@ -272,6 +272,13 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β，传递值为ln(k)
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
+    //诱导引力波
+    arb_set_str(k,"1.56E12",prec);
+    //arb_set_str(eta,"1",prec);
+    arb_inv(eta,k,prec);
+    //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
+    //GW_current_energy_density(Pk,k,prec);
+    
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");
     
@@ -279,7 +286,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,30,0);printf("\n");
     //sleep(600);
-    exit(0);
+    //exit(0);
     
     
     //输出计算结果到文件
@@ -315,7 +322,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     
-    //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
+    draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
     
     return 0;
     

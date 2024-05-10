@@ -651,4 +651,20 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //arb_set_str(Mass_gamma,"0.36",prec); // γ ≃ 0.36
     arb_set_str(Mass_gamma,"0.357",prec); // γ ≃ 0.357
     
+    
+    //诱导引力波相关设定
+    //诱导引力波积分辐助函数的积分设定
+    arb_zero(Int_GW_I_func_min); //积分下限，为 1/k or 0 or 1，设为0可以很大程度上加快计算
+    arb_pos_inf(Int_GW_I_func_max); //积分上限 +∞
+    //arb_set_str(Int_GW_I_func_max,"1E4",prec);
+    arb_set_str(Int_GW_I_func_precision,"1E-10",prec);
+    Int_GW_I_func_iterate_min=6;
+    Int_GW_I_func_iterate_max=15;
+    
+    //诱导引力波功率谱的积分设定
+    arb_set_str(Int_GW_power_spectra_min,"1E-10",prec); //为f(x,y)二元积分，这里设定的是x积分的范围，x的下界为0
+    arb_set_str(Int_GW_power_spectra_max,"100",prec); //上界理论上为 +∞ 
+    arb_set_str(Int_GW_power_spectra_precision,"1E-10",prec);
+    Int_GW_power_spectra_iterate_min=5;
+    Int_GW_power_spectra_iterate_max=10;
 }

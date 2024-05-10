@@ -128,7 +128,7 @@ int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec)
     //这里，对于结构体 Func_transfer_parameter 需手动分配内存
     struct Func_transfer_parameter *func_eta_k = (struct Func_transfer_parameter *)calloc(1,sizeof(struct Func_transfer_parameter));
     
-    arb_init(func_eta_k->p_1);//使用arb_t变量前初始化
+    arb_init(func_eta_k->p_1); //使用arb_t变量前初始化
     arb_init(func_eta_k->p_2);
     
     arb_set(func_eta_k->p_1,eta); //设定传递参数

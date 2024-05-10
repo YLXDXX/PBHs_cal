@@ -153,5 +153,11 @@ void Set_global_variable(slong prec)
     arb_init(Func_output_x_min);//函数数据的输入输出，及拟合
     arb_init(Func_output_x_max);
     
-    
+    //诱导引力波相关参数设定
+    arb_init(Int_GW_I_func_min); // 变量初始化
+    arb_init(Int_GW_I_func_max);
+    arb_init(Int_GW_I_func_precision);
+    arb_init(Int_GW_power_spectra_min);
+    arb_init(Int_GW_power_spectra_max);
+    arb_init(Int_GW_power_spectra_precision);
 }
