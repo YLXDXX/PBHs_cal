@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,30,0);printf("\n");
     //sleep(600);
-    //exit(0);
+    exit(0);
     
     
     //输出计算结果到文件
@@ -322,7 +322,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     
-    draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
+    //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
     
     return 0;
     
