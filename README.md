@@ -2,14 +2,14 @@
 
 ## 简介
 
-　　这是一个原初黑洞（PBHs）丰度计算程序，为保证计算准确性，采用了任意精度计算模块 `arb`​，为保证计算速度，采用 C 语言实现
+　　这是一个原初黑洞（PBHs）丰度及标量诱导引力波计算程序，为保证计算准确性，采用了任意精度计算模块 `arb`，为保证计算速度，采用 C 语言实现
 
 　　有两种方法来计算PBHs的丰度：
 
 1. 基于 compaction function 的 Press–Schechter 方法
 2. 基于 Peak Theory的方法
 
-　　‍
+　　‍而计算标量诱导引力波也有两种方法
 
 ### 框架
 
@@ -20,18 +20,27 @@
 1. General
 
     包含一些基础通用的计算和设定，供后面 PS 和 PK 调用
+    
 2. PS_Method
 
     PS 方法的计算相关
+    
 3. Peak_Theory
 
     Peak Theory 计算相关
+    
+4. GW_induced
+
+    标量诱导引力波计算相关
+
 4. Math_Method
 
     用 `arb`​​ 实现所需的各种数学算法，供前面各计算调用
+    
 5. Other
 
     用于一些程序中与计算和数学无关功能的实现
+    
 6. Test
 
     包含一些测试相关的内容，用于验证各计算模块是否正确
@@ -42,7 +51,7 @@
 
 　　​`phy_constant.c`​​ 和 `phy_constant.h`​​ 定义了 PBHs 计算所需的各种变量，这里的量都是作为全局变量的形式存在，一个全局变量需要在这两个文件中都进行设定。
 
-> 注意，五个大模块中各小模块的顺序是按该模块的实际计算顺序排列
+> 注意，六个大模块中各小模块的顺序是按该模块的实际计算顺序排列
 >
 > 而 `src/set` ​中各模块的设定顺序，也是按照实计算顺序需要排列
 
@@ -66,7 +75,7 @@
 
 　　‍
 
-### Peak_Theory
+### Peak Theory
 
 　　具体包含：
 
@@ -94,7 +103,17 @@
 
 　　​`ps_abundance_all_k.h`​ 计算 PBHs 丰度，主要针对连续谱，考虑了连续谱中所有 $k$ 模式的影响
 
-　　‍
+　　
+
+### GW_induced
+
+具体包含如下：
+
+`**_help_func.h` 计算诱导引力波辅助函数
+
+`**_power_spectra.h`  计算诱导引力波的功率谱和能量密度谱
+
+`gw_induced.h`  通用计算诱导引力波的功率谱和能量密度谱函数
 
 ### Math Method
 
@@ -106,9 +125,9 @@
 
 　　​`fit_date.h`​ 数据拟合相关，用于化简 PK 相关计算
 
-　　​`quadrature.h`​ 一元积分算法，包括：自适应 Simpson 积分、自适应 Gauss–Kronrod 积分、Double Exponential 积分，其中 Gauss–Kronrod 积分有迭代和递归两个版本
+　　​`quadrature.h`​ 一元积分算法，可采用：自适应 Simpson 积分、自适应 Gauss–Kronrod 积分、Double Exponential 积分，其中 Gauss–Kronrod 积分有迭代和递归两个版本
 
-　　​`quadrature_binary.h`​ 二元定积分算法，适用于矩形边界条件，采用 Gauss–Kronrod 积分
+　　`quadrature_binary.h ` 二元定积分算法，包括矩形边界条件和由函数描述的边界条件，可采用 Gauss–Kronrod 积分或Double Exponential 积分。
 
 　　‍
 
@@ -143,7 +162,7 @@
 
 　　​`04_zeta_r_cal.c`​ 利用 mean profile 计算 $\zeta(r)$
 
-　　​`05_main_cal.c`​ 本计算程序的主要计算参数设定，包括：非高斯性参数，各种功率谱和各种非高斯性情况下 $r_m$，$\mu_{th}$，$\beta$，$f$ 等计算参数，临界坍缩等
+　　​`05_main_cal.c`​ 本计算程序的主要计算参数设定，包括：非高斯性参数，各种功率谱和各种非高斯性情况下 $r_m$，$\mu_{th}$，$\beta$，$f$ 等计算参数，临界坍缩、诱导引力波计算等
 
 　　​`06_draw_pic.c`​ 结果输出，用于画图
 
@@ -181,10 +200,9 @@ xmake r
 ## To Do
 
 * Peak Theory 相关计算「完成了一部分」
-* 标量诱导引力波计算「计划中」
 
 　　‍
 
-　　注：`wxMaxima`​文件夹内的东西，是在编写程序时借助 wxMaxima 所做的一些运算
+　　注：`wxMaxima`​文件夹内的东西，是在编写程序时借助 wxMaxima 所做的一些数学运算
 
 　　‍
