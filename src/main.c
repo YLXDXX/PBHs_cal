@@ -277,7 +277,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
-    //GW_current_energy_density(Pk,k,prec);
+    GW_current_energy_density(Pk,k,prec);
     
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");

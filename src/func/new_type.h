@@ -21,6 +21,12 @@ enum INTEGRAL_ENUM_TYPE
     double_exponential
 };
 
+//诱导引力波方法定义
+enum GW_INDUCED_ENUM_TYPE
+{
+    Kohri_02,
+    Espinosa_01
+};
 
 //用来进行计算的函数，如积分、找根等
 typedef int (*my_calc_func)(arb_t out, const arb_t inp, void* param, const slong order, slong prec);

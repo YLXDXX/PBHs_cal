@@ -132,12 +132,14 @@ extern arb_t Int_GW_I_func_max;
 extern arb_t Int_GW_I_func_precision;
 extern ulong Int_GW_I_func_iterate_min;
 extern ulong Int_GW_I_func_iterate_max;
+
 extern arb_t Int_GW_power_spectra_min; // 功率谱积分用
 extern arb_t Int_GW_power_spectra_max;
 extern arb_t Int_GW_power_spectra_precision;
 extern ulong Int_GW_power_spectra_iterate_min;
 extern ulong Int_GW_power_spectra_iterate_max;
 
+extern enum GW_INDUCED_ENUM_TYPE GW_induced_method; //诱导引力波计算方法
 
 //数学计算
 extern arb_t Pi; //常数π

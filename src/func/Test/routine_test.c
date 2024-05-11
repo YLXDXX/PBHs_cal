@@ -31,11 +31,11 @@ void routine_test(slong prec)
         
     
     //诱导引力波功率谱的积分设定
-    arb_set_str(Int_GW_power_spectra_min,"1E-10",prec);
-    arb_set_str(Int_GW_power_spectra_max,"100",prec);
-    arb_set_str(Int_GW_power_spectra_precision,"1E-10",prec);
-    Int_GW_power_spectra_iterate_min=5;
-    Int_GW_power_spectra_iterate_max=9;
+    arb_set_str(Int_GW_power_spectra_min,"1E-15",prec);
+    arb_set_str(Int_GW_power_spectra_max,"1E3",prec);
+    arb_set_str(Int_GW_power_spectra_precision,"1E-15",prec);
+    Int_GW_power_spectra_iterate_min=6;
+    Int_GW_power_spectra_iterate_max=13;
     
     /*
     //诱导引力波
@@ -61,7 +61,11 @@ void routine_test(slong prec)
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(r,eta,k,prec);
-    GW_current_energy_density(r,k,prec);
+    GW_current_energy_density_01(r,k,prec);
+    arb_printn(r,50,0);printf("\n");
+    //GW_power_spectra_2(x,eta,k,prec);
+    GW_current_energy_density_02(x,k,prec);
+    arb_div(r,x,r,prec);
     arb_printn(r,50,0);printf("\n");
     exit(0);
     

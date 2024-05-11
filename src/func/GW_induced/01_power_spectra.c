@@ -1,8 +1,8 @@
-#include "power_spectra.h"
+#include "01_power_spectra.h"
 #include <stdlib.h> 
 
 //功率谱积分下界函数
-static int Int_GW_power_spectra_x_y_a(arb_t res, const arb_t x, void* param, const slong order, slong prec)
+static int Int_GW_power_spectra_01_x_y_a(arb_t res, const arb_t x, void* param, const slong order, slong prec)
 {
     arb_t t;
     arb_init(t);
@@ -23,14 +23,14 @@ static int Int_GW_power_spectra_x_y_a(arb_t res, const arb_t x, void* param, con
 
 
 //功率谱积分上界函数
-static int Int_GW_power_spectra_x_y_b(arb_t res, const arb_t x, void* param, const slong order, slong prec)
+static int Int_GW_power_spectra_01_x_y_b(arb_t res, const arb_t x, void* param, const slong order, slong prec)
 {
     arb_add_ui(res,x,1,prec); //y=x+1
     return 0;
 }
 
 //功率谱积分函数f(x,y)
-int interior_GW_power_spectra_x_y(arb_t res, const arb_t x, const arb_t y, void* param, const slong order, slong prec)
+static int interior_GW_power_spectra_01_x_y(arb_t res, const arb_t x, const arb_t y, void* param, const slong order, slong prec)
 {
     arb_t s,t,w,q,k_x,k_y,k_eta,x_2,y_2,I_c,I_s;
     arb_init(s);
@@ -117,7 +117,7 @@ int interior_GW_power_spectra_x_y(arb_t res, const arb_t x, const arb_t y, void*
 }
 
 //诱导引力波的功率谱
-int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec)
+int GW_power_spectra_01(arb_t res, const arb_t eta, const arb_t k, slong prec)
 {
     arb_t s,t,w;
     arb_init(s);
@@ -143,11 +143,11 @@ int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec)
     arb_mul_ui(t,t,4,prec);
     
     //二元积分
-    integration_binary_func(w, interior_GW_power_spectra_x_y, func_eta_k, 0,
+    integration_binary_func(w, interior_GW_power_spectra_01_x_y, func_eta_k, 0,
                             Int_GW_power_spectra_min, Int_GW_power_spectra_max, Int_GW_power_spectra_precision, 
-                            Int_GW_power_spectra_iterate_min , Int_GW_power_spectra_iterate_max,
-                            Int_GW_power_spectra_x_y_a, NULL, 0,
-                            Int_GW_power_spectra_x_y_b, NULL, 0,
+                            Int_GW_power_spectra_iterate_min, Int_GW_power_spectra_iterate_max,
+                            Int_GW_power_spectra_01_x_y_a, NULL, 0,
+                            Int_GW_power_spectra_01_x_y_b, NULL, 0,
                             Int_GW_power_spectra_precision,
                             Int_GW_power_spectra_iterate_min, Int_GW_power_spectra_iterate_max,
                             prec);
@@ -164,7 +164,7 @@ int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec)
 
 
 //当前引力波能量密度积分函数
-int interior_GW_current_energy_density(arb_t res, const arb_t x, const arb_t y, void* param, const slong order, slong prec)
+static int interior_GW_current_energy_density_01(arb_t res, const arb_t x, const arb_t y, void* param, const slong order, slong prec)
 {
     arb_t s,t,w,q,k_x,k_y,x_2,y_2,I_c,I_s;
     arb_init(s);
@@ -237,7 +237,7 @@ int interior_GW_current_energy_density(arb_t res, const arb_t x, const arb_t y, 
 }
 
 //当前的引力波能量密度
-int GW_current_energy_density(arb_t res, const arb_t k, slong prec)
+int GW_current_energy_density_01(arb_t res, const arb_t k, slong prec)
 {
     arb_t s,t,w,c_g;
     arb_init(s);
@@ -254,23 +254,23 @@ int GW_current_energy_density(arb_t res, const arb_t k, slong prec)
     arb_set(func_k->p_1,k); //设定传递参数
     
     
-    //积分前面的系数
-    arb_div(s,effective_g_star,effective_g_star_current,prec);
+    //积分前面的系数 c_g * Ω_{r,0} / 972
+    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
     arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
     arb_one(w);
     arb_mul_ui(w,w,4,prec);
     arb_div_ui(w,w,3,prec);
     arb_pow(t,t,w,prec);
-    arb_mul(s,s,t,prec);
-    arb_mul(s,s,Omega_radiation,prec);
+    arb_mul(c_g,s,t,prec);
+    arb_mul(s,c_g,Omega_radiation,prec);
     arb_div_ui(s,s,972,prec);
     
     //二元积分
-    integration_binary_func(w, interior_GW_current_energy_density, func_k, 0,
+    integration_binary_func(w, interior_GW_current_energy_density_01, func_k, 0,
                             Int_GW_power_spectra_min, Int_GW_power_spectra_max, Int_GW_power_spectra_precision, 
-                            Int_GW_power_spectra_iterate_min , Int_GW_power_spectra_iterate_max,
-                            Int_GW_power_spectra_x_y_a, NULL, 0,
-                            Int_GW_power_spectra_x_y_b, NULL, 0,
+                            Int_GW_power_spectra_iterate_min, Int_GW_power_spectra_iterate_max,
+                            Int_GW_power_spectra_01_x_y_a, NULL, 0,
+                            Int_GW_power_spectra_01_x_y_b, NULL, 0,
                             Int_GW_power_spectra_precision,
                             Int_GW_power_spectra_iterate_min, Int_GW_power_spectra_iterate_max,
                             prec);

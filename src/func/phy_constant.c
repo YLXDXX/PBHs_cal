@@ -146,6 +146,8 @@ arb_t Int_GW_power_spectra_precision;
 ulong Int_GW_power_spectra_iterate_min;
 ulong Int_GW_power_spectra_iterate_max;
 
+enum GW_INDUCED_ENUM_TYPE GW_induced_method; //诱导引力波计算方法
+
 
 //数学计算
 arb_t Pi; //常数π

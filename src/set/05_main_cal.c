@@ -653,18 +653,24 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     
     
     //诱导引力波相关设定
+    
+    //诱导引力波相关计算方法设定
+    // 单就计算速度而言， 功率谱（两种结果不一样） Espinosa_01，能量密度谱(两种结果相同) Kohri_02
+    GW_induced_method=Kohri_02; // Kohri_02, Espinosa_01
+    
+    
     //诱导引力波积分辐助函数的积分设定
-    arb_zero(Int_GW_I_func_min); //积分下限，为 1/k or 0 or 1，设为0可以很大程度上加快计算
+    arb_zero(Int_GW_I_func_min); //积分下限，为 1/k or 0 or 1，设为0可以在很大程度上加快计算
     arb_pos_inf(Int_GW_I_func_max); //积分上限 +∞
     //arb_set_str(Int_GW_I_func_max,"1E4",prec);
-    arb_set_str(Int_GW_I_func_precision,"1E-10",prec);
-    Int_GW_I_func_iterate_min=6;
+    arb_set_str(Int_GW_I_func_precision,"1E-15",prec);
+    Int_GW_I_func_iterate_min=7;
     Int_GW_I_func_iterate_max=15;
     
     //诱导引力波功率谱的积分设定
-    arb_set_str(Int_GW_power_spectra_min,"1E-10",prec); //为f(x,y)二元积分，这里设定的是x积分的范围，x的下界为0
-    arb_set_str(Int_GW_power_spectra_max,"100",prec); //上界理论上为 +∞ 
-    arb_set_str(Int_GW_power_spectra_precision,"1E-10",prec);
-    Int_GW_power_spectra_iterate_min=5;
-    Int_GW_power_spectra_iterate_max=10;
+    arb_set_str(Int_GW_power_spectra_min,"1E-15",prec); //为f(x,y)二元积分，这里设定的是x积分的范围，x的下界为0
+    arb_set_str(Int_GW_power_spectra_max,"6E3",prec); //上界理论上为 +∞ 
+    arb_set_str(Int_GW_power_spectra_precision,"1E-15",prec);
+    Int_GW_power_spectra_iterate_min=8;
+    Int_GW_power_spectra_iterate_max=13;
 }
