@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    //routine_test(prec); exit(0); //测试程序
+    routine_test(prec); exit(0); //测试程序
     
     
     Set_physical_parameter(prec); //宇宙学基本参数设定

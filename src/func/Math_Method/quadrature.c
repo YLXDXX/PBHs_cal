@@ -154,6 +154,10 @@ int integration_gauss_kronrod_cal(arb_t res, my_calc_func func, void *param, con
     arb_init(sum_1);
     arb_init(sum_2);
     
+    //初始求和为零
+    arb_zero(sum_1);
+    arb_zero(sum_2);
+    
     //积分区间[a,b]转到[-1,1]
     //I=(b-a)/2 * w_i*func[(b-a)/2*x_i+(b+a)/2]
     arb_sub(aa,b,a,prec);
@@ -497,6 +501,7 @@ int integration_gauss_kronrod_iterate(arb_t res, my_calc_func func, void *param,
     arb_clear(s);
     arb_clear(u);
     arb_clear(w);
+    arb_clear(temp_t);
     
     if(ret_judge==0)
     {

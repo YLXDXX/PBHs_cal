@@ -405,10 +405,37 @@ int Func_test_10(arb_t res, const arb_t x, void* params, const slong order, slon
     arb_add_ui(t,t,1,prec);
     arb_inv(res,t,prec);
     
+    
     arb_clear(s);
     arb_clear(t);
     return 0;
 }
+
+
+int Func_test_quad_rectangle_01(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec)
+{
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
+    
+    arb_sqr(s,x,prec);
+    arb_sqr(t,y,prec);
+    arb_add(s,s,t,prec);
+    arb_add(s,s,x,prec);
+    arb_add(s,s,y,prec);
+    arb_neg(s,s);
+    arb_exp(s,s,prec);
+    
+    arb_sqr(t,x,prec);
+    arb_mul(s,s,t,prec);
+    arb_add(res,s,y,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    return 0;
+    
+}
+
 
 int Func_test_quad_func_01(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec)
 {

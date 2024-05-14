@@ -22,6 +22,10 @@ static int binary_integration_gauss_kronrod_cal_y(arb_t res, const arb_t f_x,
     arb_init(sum_1);
     arb_init(sum_2);
     
+    //初始求和为零
+    arb_zero(sum_1);
+    arb_zero(sum_2);
+    
     //积分区间[a,b]转到[-1,1]
     //I=(b-a)/2 * w_i*func[(b-a)/2*x_i+(b+a)/2]
     arb_sub(aa,b,a,prec);
@@ -273,6 +277,7 @@ static int binary_integration_gauss_kronrod_iterate_y(arb_t res, const arb_t f_x
     arb_clear(s);
     arb_clear(u);
     arb_clear(w);
+    arb_clear(temp_t);
     
     if(ret_judge==0)
     {
@@ -310,6 +315,10 @@ static int binary_integration_gauss_kronrod_cal_y_x(arb_t res,
     arb_init(bb);
     arb_init(sum_1);
     arb_init(sum_2);
+    
+    //初始求和为零
+    arb_zero(sum_1);
+    arb_zero(sum_2);
     
     //积分区间[a,b]转到[-1,1]
     //I=(b-a)/2 * w_i*func[(b-a)/2*x_i+(b+a)/2]
@@ -587,6 +596,7 @@ static int binary_integration_gauss_kronrod_iterate_y_x(arb_t res,
     arb_clear(s);
     arb_clear(u);
     arb_clear(w);
+    arb_clear(temp_t);
     
     if(ret_judge==0)
     {

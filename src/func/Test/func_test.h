@@ -31,6 +31,8 @@ int Func_test_9(arb_t res, const arb_t x, void* params, const slong order, slong
 
 int Func_test_10(arb_t res, const arb_t x, void* params, const slong order, slong prec);
 
+int Func_test_quad_rectangle_01(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec);
+
 int Func_test_quad_func_01(arb_t res, const arb_t x, const arb_t y, void* params, const slong order, slong prec);
 int Func_test_quad_func_01_y_a(arb_t res, const arb_t x, void* params, const slong order, slong prec);
 int Func_test_quad_func_01_y_b(arb_t res, const arb_t x, void* params, const slong order, slong prec);
