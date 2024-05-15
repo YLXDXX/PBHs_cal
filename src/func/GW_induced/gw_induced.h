@@ -9,6 +9,7 @@
 
 #include "01_power_spectra.h"
 #include "02_power_spectra.h"
+#include "03_power_spectra.h"
 
 
 int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec); //诱导引力波的功率谱

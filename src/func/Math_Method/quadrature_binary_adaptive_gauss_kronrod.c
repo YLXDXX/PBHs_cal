@@ -250,33 +250,32 @@ static int binary_integration_gauss_kronrod_cal_y_x(arb_t res,
     arb_div_ui(y_geterro_sum,y_geterro_sum,65,prec); //y误差求平均
     arb_add(geterro,s,y_geterro_sum,prec); //x误差加y误差
     
-    if( arb_le(s,error) && arb_le(y_geterro_sum,y_error) )
+    int res_lable;
+    if( arb_le(s,error) && arb_le(y_geterro_sum,y_error) ) //x和y均满足
     {
-        arb_clear(s);
-        arb_clear(t);
-        arb_clear(x);
-        arb_clear(aa);
-        arb_clear(bb);
-        arb_clear(sum_1);
-        arb_clear(sum_2);
-        arb_clear(y_geterro);
-        arb_clear(y_geterro_sum);
-        
-        return 0;
-    }else{
-        
-        arb_clear(s);
-        arb_clear(t);
-        arb_clear(x);
-        arb_clear(aa);
-        arb_clear(bb);
-        arb_clear(sum_1);
-        arb_clear(sum_2);
-        arb_clear(y_geterro);
-        arb_clear(y_geterro_sum);
-        
-        return 1;
+        res_lable=00;
+    }else if ( arb_le(s,error) ) //x满足
+    {
+        res_lable=01;
+    } else if ( arb_le(y_geterro_sum,y_error) ) //y满足
+    {
+        res_lable=10;
+    } else //x和y均不满足
+    {
+        res_lable=11;
     }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(x);
+    arb_clear(aa);
+    arb_clear(bb);
+    arb_clear(sum_1);
+    arb_clear(sum_2);
+    arb_clear(y_geterro);
+    arb_clear(y_geterro_sum);
+    
+    return res_lable;
 }
 
 
@@ -300,6 +299,7 @@ int integration_binary_rectangle_adaptive_gauss_kronrod(arb_t res, my_calc_func_
     step_min=x_step_min*y_step_min;
     step_max=x_step_max*y_step_max;
     
+    judge=11; //默认x和y均分割
     depth=1;
     stopping = 0;
     status=0;
@@ -393,7 +393,7 @@ int integration_binary_rectangle_adaptive_gauss_kronrod(arb_t res, my_calc_func_
                                                              y_as+top,y_bs+top,y_es+top,
                                                              x_as+top,x_bs+top,x_es+top,w,prec);
             
-            if( judge==0 || min_interval==1 ) // min_interval==1 用于判断是否二分到最小区间间隔
+            if( judge==00 || min_interval==1 ) // min_interval==1 用于判断是否二分到最小区间间隔
             {
                 //满足精度要求
                 arb_add(s, s, u, prec);
@@ -430,38 +430,132 @@ int integration_binary_rectangle_adaptive_gauss_kronrod(arb_t res, my_calc_func_
             alloc *= 2;
         }
         
-        //给定一个矩形，按中点分成四个矩形
-        //二分区间 [x_a,x_mid],[x_mid,x_b],[y_a,y_mid],[y_mid,y_b]
-        //有四个积分区域：[x_a,x_mid,y_a,y_mid], [x_a,x_mid,y_mid,y_b],[x_mid,x_b,y_a,y_mid],[x_mid,x_b,y_mid,y_b]
-        //x_as --> x_a,  x_a,  x_mid,x_mid
-        //x_bs --> x_mid,x_mid,x_b,  x_b
-        //y_as --> y_a,  y_mid,y_a,  y_mid
-        //y_bs --> y_mid,y_b,  y_mid,y_b
         
-        arb_set(x_as + top+1, x_as+top);
-        arb_set(x_bs + top+2, x_bs+top);
-        arb_set(x_bs + top+3, x_bs+top);
+        //根据 judge=00/11/10/01 判断分割区间
+        if ( judge==11 ) //x和y都需要分割
+        {
+            //给定一个矩形，按中点分成四个矩形
+            //二分区间 [x_a,x_mid],[x_mid,x_b],[y_a,y_mid],[y_mid,y_b]
+            //有四个积分区域：[x_a,x_mid,y_a,y_mid], [x_a,x_mid,y_mid,y_b],[x_mid,x_b,y_a,y_mid],[x_mid,x_b,y_mid,y_b]
+            //x_as --> x_a,  x_a,  x_mid,x_mid
+            //x_bs --> x_mid,x_mid,x_b,  x_b
+            //y_as --> y_a,  y_mid,y_a,  y_mid
+            //y_bs --> y_mid,y_b,  y_mid,y_b
+            
+            arb_set(x_as + top+1, x_as+top);
+            arb_set(x_bs + top+2, x_bs+top);
+            arb_set(x_bs + top+3, x_bs+top);
+            
+            arb_set(y_as + top+2, y_as+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            arb_set(y_bs + top+3, y_bs+top);
+            
+            arb_add(x_as + top+2, x_as+top, x_bs+top, prec);
+            arb_mul_2exp_si(x_as + top+2, x_as + top+2, -1);
+            arb_set(x_as + top+3,x_as + top+2);
+            arb_set(x_bs + top,x_as + top+2);
+            arb_set(x_bs + top+1,x_as + top+2);
+            
+            arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
+            arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
+            arb_set(y_as + top+3,y_as + top+1);
+            arb_set(y_bs + top,y_as + top+1);
+            arb_set(y_bs + top+2,y_as + top+1);
+            
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -2); // es/4
+            arb_set(x_es + depth , x_es+top); // es/4
+            arb_set(x_es + top+2 , x_es+top);
+            arb_set(x_es + top+3 , x_es+top);
+            
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -2); // es/4
+            arb_set(y_es + depth , y_es+top); // es/4
+            arb_set(y_es + top+2 , y_es+top);
+            arb_set(y_es + top+3 , y_es+top);
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -2); //暴力处理，将原区间计算误差除以4        
+            arb_set(gs+top, gs+depth);
+            arb_set(gs+depth+1, gs+depth);
+            arb_set(gs+depth+2, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,x_bs + depth+2,x_as + depth+2,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+3; //每种情况不同
+            
+        } else if ( judge==10 ) //x需要分割，y不需要
+        {
+            //两个积分区域 [x_a,x_mid,y_a,y_b] [x_mid,x_b,y_a,y_b]
+            //x_as --> x_a,  x_mid
+            //x_bs --> x_mid,x_b
+            //y_as --> y_a,  y_a
+            //y_bs --> y_b,  y_b
+            
+            arb_set(x_bs + top+1, x_bs+top);
+            arb_set(y_as + top+1, y_as+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            
+            arb_add(x_as + top+1, x_as+top, x_bs+top, prec);
+            arb_mul_2exp_si(x_as + top+1, x_as + top+1, -1);
+            arb_set(x_bs+top, x_as + top+1);
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -1); // es/2
+            arb_set(x_es + depth , x_es+top); // es/2
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -1); // es/2
+            arb_set(y_es + depth , y_es+top); // es/2
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -1); //暴力处理，将原区间计算误差除以2        
+            arb_set(gs+top, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,x_bs + depth,x_as + depth,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+1; //每种情况不同
+            
+        }else //judge==01 //y需要分割，x不需要
+        {
+            //两个积分区域 [x_a,x_b,y_a,y_mid] [x_a,x_b,y_mid,y_b]
+            //x_as --> x_a,  x_a
+            //x_bs --> x_b,  x_b
+            //y_as --> y_a,  y_mid
+            //y_bs --> y_mid,y_b
+            
+            arb_set(x_as + top+1, x_as+top);
+            arb_set(x_bs + top+1, x_bs+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            
+            arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
+            arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
+            arb_set(y_bs+top, y_as + top+1);
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -1); // es/2
+            arb_set(x_es + depth , x_es+top); // es/2
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -1); // es/2
+            arb_set(y_es + depth , y_es+top); // es/2
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -1); //暴力处理，将原区间计算误差除以2        
+            arb_set(gs+top, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,y_bs + depth,y_as + depth,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+1; //每种情况不同
+            
+        }
         
-        arb_set(y_as + top+2, y_as+top);
-        arb_set(y_bs + top+1, y_bs+top);
-        arb_set(y_bs + top+3, y_bs+top);
-        
-        arb_add(x_as + top+2, x_as+top, x_bs+top, prec);
-        arb_mul_2exp_si(x_as + top+2, x_as + top+2, -1);
-        arb_set(x_as + top+3,x_as + top+2);
-        arb_set(x_bs + top,x_as + top+2);
-        arb_set(x_bs + top+1,x_as + top+2);
-        
-        arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
-        arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
-        arb_set(y_as + top+3,y_as + top+1);
-        arb_set(y_bs + top,y_as + top+1);
-        arb_set(y_bs + top+2,y_as + top+1);
-        
-        
-        //判断是否达到最小子区间间隔,这里只判断了x的区间
-        arb_sub(temp_t,x_bs + depth+2,x_as + depth+2,prec);
-        arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+        //判断是否达到最小子区间间隔
         if(arb_lt(temp_t,INT_MIN_INTERVAL)) //对于一些间断点，区间可能会无限分隔下去，需设定最小区间间隔
         {
             min_interval=1; //达到最小区间间隔，强制积分求和
@@ -470,32 +564,14 @@ int integration_binary_rectangle_adaptive_gauss_kronrod(arb_t res, my_calc_func_
             min_interval=0;
         }
         
-        //区间误差更新
-        arb_mul_2exp_si(x_es+top, x_es+top, -2); // es/4
-        arb_set(x_es + depth , x_es+top); // es/4
-        arb_set(x_es + top+2 , x_es+top);
-        arb_set(x_es + top+3 , x_es+top);
-        
-        
-        arb_mul_2exp_si(y_es+top, y_es+top, -2); // es/4
-        arb_set(y_es + depth , y_es+top); // es/4
-        arb_set(y_es + top+2 , y_es+top);
-        arb_set(y_es + top+3 , y_es+top);
-        
-        //计算得到的区间误差更新
-        arb_mul_2exp_si(gs+depth, w, -2); //暴力处理，将原区间计算误差除以4        
-        arb_set(gs+top, gs+depth);
-        arb_set(gs+depth+1, gs+depth);
-        arb_set(gs+depth+2, gs+depth);
         
         if(1)
         {
             //区间单隔，大的上升，小的沉底，按从小到大的顺序排列
             small2big_order_2D(x_as, x_bs, y_as, y_bs, x_es, y_es, gs, depth);
         }
-        //printf("depth: %li\n",depth);
         
-        depth=depth+3;
+        //depth=depth+3;
         //printf("deptht: %li\n",depth);
     }
     

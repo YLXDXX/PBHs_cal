@@ -19,7 +19,9 @@ void Set_physical_parameter(slong prec)
     //dark energy: Ω_Λ ≈ 0.68
     arb_set_str(Omega_DM,"0.27",prec); //暗物质所占比例
     arb_set_str(Omega_M,"0.32",prec); //baryons + dark matter 所占比例
-    arb_set_str(Omega_radiation,"2.47E-5",prec); //辐射所占比例 https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cosmological-parameters.pdf
+    arb_set_str(Omega_radiation,"8.99E-5",prec); //这里采取的是Daniel Baumann's Cosmology Table 2.1 中的结果
+                                                //辐射所占比例 https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cosmological-parameters.pdf
+                                                //https://arxiv.org/pdf/2305.19950
     arb_div(Omega_radiation,Omega_radiation,Hubble_constant_h,prec); //Ω_r=2.47*10^(−5)*h^(−2)
     arb_div(Omega_radiation,Omega_radiation,Hubble_constant_h,prec);
     

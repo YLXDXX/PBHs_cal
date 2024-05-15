@@ -136,10 +136,10 @@ void routine_test(slong prec)
     */
     
     //发散函数积分
-    arb_set_str(x_a,"1",prec);
-    arb_set_str(x_b,"3",prec);
-    arb_set_str(y_a,"1",prec);
-    arb_set_str(y_b,"3",prec);
+    arb_set_str(x_a,"-10",prec);
+    arb_set_str(x_b,"10",prec);
+    arb_set_str(y_a,"30",prec);
+    arb_set_str(y_b,"-30",prec);
     
     //积分行为设定
     //Integral_method=gauss_kronrod_iterate; // gauss_kronrod_iterate/double_exponential
@@ -148,7 +148,7 @@ void routine_test(slong prec)
     //arb_pos_inf(x_b);
     //arb_zero(x_b);
     
-    arb_set_str(e,"1E-20",prec);
+    arb_set_str(e,"1E-10",prec);
     
     /*
     //测试二重积分，积分区域为非矩形
@@ -163,32 +163,18 @@ void routine_test(slong prec)
     
     //测试二重积分，积分区域为矩形
     
-    integration_binary_rectangle(r, Func_test_quad_rectangle_01, NULL, 0,
-                                 x_a, x_b, e, 
-                                 13, 1300,
-                                 y_a, y_b, e, 13, 1300,
-                                 prec);
-    arb_printn(r, 50, 0);printf("\n");
-    //exit(0);
-    Integral_method=double_exponential;
-    integration_binary_rectangle(r, Func_test_quad_rectangle_01, NULL, 0,
-                                 x_a, x_b, e, 
-                                 8, 13,
-                                 y_a, y_b, e, 8, 13,
-                                 prec);
-    arb_printn(r, 50, 0);printf("\n");
-    exit(0);
-    integration_binary_rectangle_adaptive(r, Func_test_quad_rectangle_01, NULL, 0,
-                                                        x_a, x_b, e, 
-                                                        13, 1300,
-                                                        y_a, y_b, e, 13, 1300,
-                                                        prec);
-    arb_printn(r, 50, 0);printf("\n");
     Integral_method=double_exponential;
     integration_binary_rectangle_adaptive(r, Func_test_quad_rectangle_01, NULL, 0,
                                           x_a, x_b, e, 
-                                          8, 13,
-                                          y_a, y_b, e, 8, 13,
+                                          2, 18,
+                                          y_a, y_b, e, 2, 18,
+                                          prec);
+    arb_printn(r, 50, 0);printf("\n");
+    Integral_method=gauss_kronrod_iterate;
+    integration_binary_rectangle_adaptive(r, Func_test_quad_rectangle_01, NULL, 0,
+                                          x_a, x_b, e, 
+                                          4, 1300,
+                                          y_a, y_b, e, 4, 1300,
                                           prec);
     arb_printn(r, 50, 0);printf("\n");
     exit(0);

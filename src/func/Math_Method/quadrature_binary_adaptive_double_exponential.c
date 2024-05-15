@@ -931,7 +931,7 @@ static int binary_integration_double_exponential_y_x(arb_t res,
         arb_abs(t_t,s);
         arb_mul(t_t,tol,t_t,prec);
         
-    } while( k<=step_min || ( arb_gt(t_s,t_t) && k<=step_max) ); // k<=step_min || (fabs(v) > tol*fabs(s) && k <= step_max)
+    } while( k<=step_min || ( k<=step_max && arb_gt(t_s,t_t)) ); // k<=step_min || (fabs(v) > tol*fabs(s) && k <= step_max)
     
     // 绝对误差 |v|/|s|/10 需跟传入的误差 eps 相比较, tol=10*eps 
     arb_abs(t_t,v);
@@ -941,14 +941,21 @@ static int binary_integration_double_exponential_y_x(arb_t res,
     
     arb_div_ui(y_error_sum,y_error_sum,y_error_sum_i,prec); //对y误差求平均值
     
-    int precision_lable;
+    int res_lable;
     //获取误差
-    if( arb_lt(geterro,eps) && arb_lt(y_error_sum,y_error) )//达到精度要求  
+    
+    if( arb_lt(geterro,eps) && arb_lt(y_error_sum,y_error) ) //x和y均满足
     {
-        precision_lable=0;
-    } else //没有达到精度要求
+        res_lable=00;
+    }else if ( arb_lt(geterro,eps) ) //x满足
     {
-        precision_lable=1;
+        res_lable=01;
+    } else if ( arb_lt(y_error_sum,y_error) ) //y满足
+    {
+        res_lable=10;
+    } else //x和y均不满足
+    {
+        res_lable=11;
     }
     
     arb_add(geterro,geterro,y_error_sum,prec); //x误差与y误差相加
@@ -990,7 +997,7 @@ static int binary_integration_double_exponential_y_x(arb_t res,
     arb_clear(t_t);
     arb_clear(t_w);
     
-    return precision_lable;
+    return res_lable;
 }
 
 
@@ -1007,12 +1014,14 @@ int integration_binary_rectangle_adaptive_double_exponential(arb_t res, my_calc_
     arb_t s, u, w;
     
     slong depth,top,alloc,leaf_interval_count;
-    int judge,stopping, status;
+    int judge, stopping, status, double_exponential_i;
     slong step_max,step_min;
     
     step_min=x_step_min*y_step_min;
     step_max=x_step_max*y_step_max;
     
+    double_exponential_i=5; //用于积分内部的迭代次数
+    judge=11; //默认x和y均分割
     depth=1;
     stopping = 0;
     status=0;
@@ -1083,9 +1092,9 @@ int integration_binary_rectangle_adaptive_double_exponential(arb_t res, my_calc_
             //直接计算每个区间的值，加起来
             binary_integration_double_exponential_y_x(u, func, param, order,
                                                       y_as+top,y_bs+top,y_es+top,
-                                                      2 , 3,
+                                                      double_exponential_i , double_exponential_i,
                                                       x_as+top,x_bs+top,x_es+top,
-                                                      2 , 3,
+                                                      double_exponential_i , double_exponential_i,
                                                       w, prec);
             
             arb_add(s, s, u, prec);
@@ -1107,9 +1116,9 @@ int integration_binary_rectangle_adaptive_double_exponential(arb_t res, my_calc_
         {
             judge = binary_integration_double_exponential_y_x(u, func, param, order,
                                                       y_as+top,y_bs+top,y_es+top,
-                                                      2 , 3,
+                                                      double_exponential_i , double_exponential_i,
                                                       x_as+top,x_bs+top,x_es+top,
-                                                      2 , 3,
+                                                      double_exponential_i , double_exponential_i,
                                                       w, prec);
             if( judge==0 || min_interval==1 ) // min_interval==1 用于判断是否二分到最小区间间隔
             {
@@ -1148,38 +1157,132 @@ int integration_binary_rectangle_adaptive_double_exponential(arb_t res, my_calc_
             alloc *= 2;
         }
         
-        //给定一个矩形，按中点分成四个矩形
-        //二分区间 [x_a,x_mid],[x_mid,x_b],[y_a,y_mid],[y_mid,y_b]
-        //有四个积分区域：[x_a,x_mid,y_a,y_mid], [x_a,x_mid,y_mid,y_b],[x_mid,x_b,y_a,y_mid],[x_mid,x_b,y_mid,y_b]
-        //x_as --> x_a,  x_a,  x_mid,x_mid
-        //x_bs --> x_mid,x_mid,x_b,  x_b
-        //y_as --> y_a,  y_mid,y_a,  y_mid
-        //y_bs --> y_mid,y_b,  y_mid,y_b
         
-        arb_set(x_as + top+1, x_as+top);
-        arb_set(x_bs + top+2, x_bs+top);
-        arb_set(x_bs + top+3, x_bs+top);
+        //根据 judge=00/11/10/01 判断分割区间
+        if ( judge==11 ) //x和y都需要分割
+        {
+            //给定一个矩形，按中点分成四个矩形
+            //二分区间 [x_a,x_mid],[x_mid,x_b],[y_a,y_mid],[y_mid,y_b]
+            //有四个积分区域：[x_a,x_mid,y_a,y_mid], [x_a,x_mid,y_mid,y_b],[x_mid,x_b,y_a,y_mid],[x_mid,x_b,y_mid,y_b]
+            //x_as --> x_a,  x_a,  x_mid,x_mid
+            //x_bs --> x_mid,x_mid,x_b,  x_b
+            //y_as --> y_a,  y_mid,y_a,  y_mid
+            //y_bs --> y_mid,y_b,  y_mid,y_b
+            
+            arb_set(x_as + top+1, x_as+top);
+            arb_set(x_bs + top+2, x_bs+top);
+            arb_set(x_bs + top+3, x_bs+top);
+            
+            arb_set(y_as + top+2, y_as+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            arb_set(y_bs + top+3, y_bs+top);
+            
+            arb_add(x_as + top+2, x_as+top, x_bs+top, prec);
+            arb_mul_2exp_si(x_as + top+2, x_as + top+2, -1);
+            arb_set(x_as + top+3,x_as + top+2);
+            arb_set(x_bs + top,x_as + top+2);
+            arb_set(x_bs + top+1,x_as + top+2);
+            
+            arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
+            arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
+            arb_set(y_as + top+3,y_as + top+1);
+            arb_set(y_bs + top,y_as + top+1);
+            arb_set(y_bs + top+2,y_as + top+1);
+            
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -2); // es/4
+            arb_set(x_es + depth , x_es+top); // es/4
+            arb_set(x_es + top+2 , x_es+top);
+            arb_set(x_es + top+3 , x_es+top);
+            
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -2); // es/4
+            arb_set(y_es + depth , y_es+top); // es/4
+            arb_set(y_es + top+2 , y_es+top);
+            arb_set(y_es + top+3 , y_es+top);
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -2); //暴力处理，将原区间计算误差除以4        
+            arb_set(gs+top, gs+depth);
+            arb_set(gs+depth+1, gs+depth);
+            arb_set(gs+depth+2, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,x_bs + depth+2,x_as + depth+2,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+3; //每种情况不同
+            
+        } else if ( judge==10 ) //x需要分割，y不需要
+        {
+            //两个积分区域 [x_a,x_mid,y_a,y_b] [x_mid,x_b,y_a,y_b]
+            //x_as --> x_a,  x_mid
+            //x_bs --> x_mid,x_b
+            //y_as --> y_a,  y_a
+            //y_bs --> y_b,  y_b
+            
+            arb_set(x_bs + top+1, x_bs+top);
+            arb_set(y_as + top+1, y_as+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            
+            arb_add(x_as + top+1, x_as+top, x_bs+top, prec);
+            arb_mul_2exp_si(x_as + top+1, x_as + top+1, -1);
+            arb_set(x_bs+top, x_as + top+1);
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -1); // es/2
+            arb_set(x_es + depth , x_es+top); // es/2
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -1); // es/2
+            arb_set(y_es + depth , y_es+top); // es/2
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -1); //暴力处理，将原区间计算误差除以2        
+            arb_set(gs+top, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,x_bs + depth,x_as + depth,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+1; //每种情况不同
+            
+        }else //judge==01 //y需要分割，x不需要
+        {
+            //两个积分区域 [x_a,x_b,y_a,y_mid] [x_a,x_b,y_mid,y_b]
+            //x_as --> x_a,  x_a
+            //x_bs --> x_b,  x_b
+            //y_as --> y_a,  y_mid
+            //y_bs --> y_mid,y_b
+            
+            arb_set(x_as + top+1, x_as+top);
+            arb_set(x_bs + top+1, x_bs+top);
+            arb_set(y_bs + top+1, y_bs+top);
+            
+            arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
+            arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
+            arb_set(y_bs+top, y_as + top+1);
+            
+            //区间误差更新
+            arb_mul_2exp_si(x_es+top, x_es+top, -1); // es/2
+            arb_set(x_es + depth , x_es+top); // es/2
+            
+            arb_mul_2exp_si(y_es+top, y_es+top, -1); // es/2
+            arb_set(y_es + depth , y_es+top); // es/2
+            
+            //计算得到的区间误差更新
+            arb_mul_2exp_si(gs+depth, w, -1); //暴力处理，将原区间计算误差除以2        
+            arb_set(gs+top, gs+depth);
+            
+            //判断是否达到最小子区间间隔,这里只判断了x的区间
+            arb_sub(temp_t,y_bs + depth,y_as + depth,prec);
+            arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+            
+            depth=depth+1; //每种情况不同
+            
+        }
         
-        arb_set(y_as + top+2, y_as+top);
-        arb_set(y_bs + top+1, y_bs+top);
-        arb_set(y_bs + top+3, y_bs+top);
-        
-        arb_add(x_as + top+2, x_as+top, x_bs+top, prec);
-        arb_mul_2exp_si(x_as + top+2, x_as + top+2, -1);
-        arb_set(x_as + top+3,x_as + top+2);
-        arb_set(x_bs + top,x_as + top+2);
-        arb_set(x_bs + top+1,x_as + top+2);
-        
-        arb_add(y_as + top+1, y_as+top, y_bs+top, prec);
-        arb_mul_2exp_si(y_as + top+1, y_as + top+1, -1);
-        arb_set(y_as + top+3,y_as + top+1);
-        arb_set(y_bs + top,y_as + top+1);
-        arb_set(y_bs + top+2,y_as + top+1);
-        
-        
-        //判断是否达到最小子区间间隔,这里只判断了x的区间
-        arb_sub(temp_t,x_bs + depth+2,x_as + depth+2,prec);
-        arb_abs(temp_t,temp_t); //求绝对值，积分区间大小可能相反
+        //判断是否达到最小子区间间隔
         if(arb_lt(temp_t,INT_MIN_INTERVAL)) //对于一些间断点，区间可能会无限分隔下去，需设定最小区间间隔
         {
             min_interval=1; //达到最小区间间隔，强制积分求和
@@ -1188,32 +1291,14 @@ int integration_binary_rectangle_adaptive_double_exponential(arb_t res, my_calc_
             min_interval=0;
         }
         
-        //区间误差更新
-        arb_mul_2exp_si(x_es+top, x_es+top, -2); // es/4
-        arb_set(x_es + depth , x_es+top); // es/4
-        arb_set(x_es + top+2 , x_es+top);
-        arb_set(x_es + top+3 , x_es+top);
-        
-        
-        arb_mul_2exp_si(y_es+top, y_es+top, -2); // es/4
-        arb_set(y_es + depth , y_es+top); // es/4
-        arb_set(y_es + top+2 , y_es+top);
-        arb_set(y_es + top+3 , y_es+top);
-        
-        //计算得到的区间误差更新
-        arb_mul_2exp_si(gs+depth, w, -2); //暴力处理，将原区间计算误差除以4        
-        arb_set(gs+top, gs+depth);
-        arb_set(gs+depth+1, gs+depth);
-        arb_set(gs+depth+2, gs+depth);
         
         if(1)
         {
             //区间单隔，大的上升，小的沉底，按从小到大的顺序排列
             small2big_order_2D(x_as, x_bs, y_as, y_bs, x_es, y_es, gs, depth);
         }
-        //printf("depth: %li\n",depth);
         
-        depth=depth+3;
+        //depth=depth+3;
         //printf("deptht: %li\n",depth);
     }
     
