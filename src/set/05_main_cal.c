@@ -651,12 +651,12 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //arb_set_str(Mass_gamma,"0.36",prec); // γ ≃ 0.36
     arb_set_str(Mass_gamma,"0.357",prec); // γ ≃ 0.357
     
-    
+    //
     //诱导引力波相关设定
-    
+    //
     //诱导引力波相关计算方法设定
     // 单就计算速度而言， 功率谱（两种结果不一样） Espinosa_01，能量密度谱(两种结果相同) Kohri_02
-    GW_induced_method=Kohri_02; // Kohri_02, Espinosa_01
+    GW_induced_method=Li_gauss; // Li_gauss, Kohri_02, Espinosa_01
     
     
     //诱导引力波积分辐助函数的积分设定
@@ -673,4 +673,39 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     arb_set_str(Int_GW_power_spectra_precision,"1E-15",prec);
     Int_GW_power_spectra_iterate_min=8;
     Int_GW_power_spectra_iterate_max=13;
+    
+    //前面诱导引力波的参数设定为是Kohri_02, Espinosa_01两种方法准备的
+    //现建议采用 Li_gauss 的方法，其为矩形积分，速度有很大提高，且方便算非高斯性
+    //虽然不采用 adaptive 且用 double_exponential 的积分方式，对于一些点而言，速度非常快
+    //但考虑到这种情况，对于某些点（如log-normal峰值处的点）非常难算，综合考虑
+    //采用 adaptive 方式且此时的积分采用 gauss_kronrod_iterate 
+    //且在计算时，不管前面的积分方式是什么，需要临时采用 gauss_kronrod_iterate
+    
+    // 功率谱积矩形分用
+    arb_set_str(Int_GW_power_spectra_x_min,"0",prec); //对x积分 [0, +∞]
+    arb_set_str(Int_GW_power_spectra_x_max,"3E3",prec);
+    arb_set_str(Int_GW_power_spectra_x_precision,"1E-15",prec);
+    
+    arb_set_str(Int_GW_power_spectra_y_min,"-1",prec); //对y积分 [-1, 1]
+    arb_set_str(Int_GW_power_spectra_y_max,"1",prec);
+    arb_set_str(Int_GW_power_spectra_y_precision,"1E-15",prec);
+    
+    Int_GW_power_spectra_rectangle_adaptive=true;
+    
+    if( Int_GW_power_spectra_rectangle_adaptive )
+    {
+        Int_GW_power_spectra_iterate_x_min=6; //x精度
+        Int_GW_power_spectra_iterate_x_max=90;
+        
+        Int_GW_power_spectra_iterate_y_min=4; //y精度
+        Int_GW_power_spectra_iterate_y_max=90;
+    }else
+    {
+        Int_GW_power_spectra_iterate_x_min=6; //x精度
+        Int_GW_power_spectra_iterate_x_max=14;
+        
+        Int_GW_power_spectra_iterate_y_min=5; //y精度
+        Int_GW_power_spectra_iterate_y_max=12;
+    }
+    
 }

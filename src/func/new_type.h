@@ -24,6 +24,7 @@ enum INTEGRAL_ENUM_TYPE
 //诱导引力波方法定义
 enum GW_INDUCED_ENUM_TYPE
 {
+    Li_gauss,
     Kohri_02,
     Espinosa_01
 };

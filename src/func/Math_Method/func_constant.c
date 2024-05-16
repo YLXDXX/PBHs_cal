@@ -4,6 +4,7 @@
 
 
 enum INTEGRAL_ENUM_TYPE Integral_method; //积分方法
+enum INTEGRAL_ENUM_TYPE Integral_method_temp; //积分方法,临时用
 
 arb_ptr INT_GUSS_KRONROD_COFFI; // gauss_kronrod 积分系数
 

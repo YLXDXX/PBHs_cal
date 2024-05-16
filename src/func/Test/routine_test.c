@@ -35,7 +35,20 @@ void routine_test(slong prec)
     arb_set_str(Int_GW_power_spectra_max,"1E3",prec);
     arb_set_str(Int_GW_power_spectra_precision,"1E-15",prec);
     Int_GW_power_spectra_iterate_min=6;
-    Int_GW_power_spectra_iterate_max=13;
+    Int_GW_power_spectra_iterate_max=15;
+    
+    // 功率谱积矩形分用
+    arb_set_str(Int_GW_power_spectra_x_min,"0",prec); //对x积分
+    arb_set_str(Int_GW_power_spectra_x_max,"1E3",prec);
+    arb_set_str(Int_GW_power_spectra_x_precision,"1E-15",prec);
+    Int_GW_power_spectra_iterate_x_min=4;
+    Int_GW_power_spectra_iterate_x_max=15;
+    
+    arb_set_str(Int_GW_power_spectra_y_min,"-1",prec); //对y积分
+    arb_set_str(Int_GW_power_spectra_y_max,"1",prec);
+    arb_set_str(Int_GW_power_spectra_y_precision,"1E-15",prec);
+    Int_GW_power_spectra_iterate_y_min=6;
+    Int_GW_power_spectra_iterate_y_max=100;
     
     /*
     //诱导引力波
@@ -57,19 +70,22 @@ void routine_test(slong prec)
     exit(0);
     */
     
-    /*
+    
     arb_set_str(k,"1.56E12",prec);
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(r,eta,k,prec);
-    GW_current_energy_density_01(r,k,prec);
+    //GW_current_energy_density_01(r,k,prec);
+    //GW_current_energy_density_Omega_G(r,k,prec);
+    GW_current_energy_density(r,k,prec);
     arb_printn(r,50,0);printf("\n");
+    exit(0);
     //GW_power_spectra_2(x,eta,k,prec);
     GW_current_energy_density_02(x,k,prec);
     arb_div(r,x,r,prec);
     arb_printn(r,50,0);printf("\n");
     exit(0);
-    */
+    
     
     //验证概率守恒
     /*

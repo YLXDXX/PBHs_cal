@@ -11,8 +11,7 @@
 
 
 //方法三 2305.19950
-int GW_power_spectra_03(arb_t res, const arb_t eta, const arb_t k, slong prec); //诱导引力波的功率谱
-int GW_current_energy_density_03(arb_t res, const arb_t k, slong prec); //当前的引力波能量密度
+int GW_current_energy_density_Omega_G(arb_t res, const arb_t k, slong prec); //当前的引力波能量密度
 
 
 #endif // __PBHS_GW_INDUCED_THIRD_POWER_SPECTRA__  

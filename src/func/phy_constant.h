@@ -139,6 +139,18 @@ extern arb_t Int_GW_power_spectra_precision;
 extern ulong Int_GW_power_spectra_iterate_min;
 extern ulong Int_GW_power_spectra_iterate_max;
 
+extern arb_t Int_GW_power_spectra_x_min; // 功率谱积矩形分用
+extern arb_t Int_GW_power_spectra_x_max;
+extern arb_t Int_GW_power_spectra_x_precision;
+extern ulong Int_GW_power_spectra_iterate_x_min;
+extern ulong Int_GW_power_spectra_iterate_x_max;
+extern arb_t Int_GW_power_spectra_y_min;
+extern arb_t Int_GW_power_spectra_y_max;
+extern arb_t Int_GW_power_spectra_y_precision;
+extern ulong Int_GW_power_spectra_iterate_y_min;
+extern ulong Int_GW_power_spectra_iterate_y_max;
+
+extern bool Int_GW_power_spectra_rectangle_adaptive; //矩形二维积分是否采用自适应
 extern enum GW_INDUCED_ENUM_TYPE GW_induced_method; //诱导引力波计算方法
 
 //数学计算

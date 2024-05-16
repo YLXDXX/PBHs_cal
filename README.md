@@ -127,7 +127,9 @@
 
 　　​`quadrature.h`​ 一元积分算法，可采用：自适应 Simpson 积分、自适应 Gauss–Kronrod 积分、Double Exponential 积分，其中 Gauss–Kronrod 积分有迭代和递归两个版本
 
-　　`quadrature_binary.h ` 二元定积分算法，包括矩形边界条件和由函数描述的边界条件，可采用 Gauss–Kronrod 积分或Double Exponential 积分。
+　　`quadrature_binary.h ` 二元定积分算法，包括矩形边界条件和由函数描述的边界条件，可采用 Gauss–Kronrod 积分或Double Exponential 积分。对于二维矩形积分区域，有自适应和非自适应两个版本，对于 Gauss–Kronrod 积分而言，自适应比非自适应快，对于 Double Exponential 而言，非自适应远快于自适应，为提高精度，可对非自适应提高迭代次数。
+
+
 
 　　‍
 

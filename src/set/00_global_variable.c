@@ -160,4 +160,12 @@ void Set_global_variable(slong prec)
     arb_init(Int_GW_power_spectra_min);
     arb_init(Int_GW_power_spectra_max);
     arb_init(Int_GW_power_spectra_precision);
+    
+    arb_init(Int_GW_power_spectra_x_min); // 功率谱积矩形分用
+    arb_init(Int_GW_power_spectra_x_max);
+    arb_init(Int_GW_power_spectra_x_precision);
+    arb_init(Int_GW_power_spectra_y_min);
+    arb_init(Int_GW_power_spectra_y_max);
+    arb_init(Int_GW_power_spectra_y_precision);
+    
 }

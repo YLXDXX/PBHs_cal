@@ -5,6 +5,7 @@
 #include "../new_type.h"
 
 extern enum INTEGRAL_ENUM_TYPE Integral_method; //积分方法
+extern enum INTEGRAL_ENUM_TYPE Integral_method_temp; //积分方法,临时用
 
 extern arb_ptr INT_GUSS_KRONROD_COFFI; // gauss_kronrod 积分系数
 

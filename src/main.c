@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    routine_test(prec); exit(0); //测试程序
+    //routine_test(prec); exit(0); //测试程序
     
     
     Set_physical_parameter(prec); //宇宙学基本参数设定
@@ -273,7 +273,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
     //诱导引力波
-    arb_set_str(k,"1.56E12",prec);
+    arb_set_str(k,"1.56E13",prec);
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数

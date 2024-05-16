@@ -19,7 +19,7 @@ int GW_power_spectra(arb_t res, const arb_t eta, const arb_t k, slong prec)
             GW_power_spectra_02(s, eta, k, prec);
             break;
         default :
-            GW_power_spectra_02(s, eta, k, prec);
+            GW_power_spectra_01(s, eta, k, prec);
     }
     
     arb_set(res,s);
@@ -36,6 +36,22 @@ int GW_current_energy_density(arb_t res, const arb_t k, slong prec)
     
     switch(GW_induced_method)
     {
+        case Li_gauss :
+            if( Int_GW_power_spectra_rectangle_adaptive )
+            {
+                //采用gauss_kronrod_iterate积分方法
+                Integral_method_temp=Integral_method; //积分方法备份
+                Integral_method=gauss_kronrod_iterate;
+                
+                GW_current_energy_density_Omega_G(s, k, prec);
+                Integral_method=Integral_method_temp; //恢复之前的积分方法
+                
+            }else
+            {
+                GW_current_energy_density_Omega_G(s, k, prec);
+            }
+            
+            break;
         case Espinosa_01 : //1804.07732
             GW_current_energy_density_01(s, k, prec);
             break;
@@ -43,7 +59,7 @@ int GW_current_energy_density(arb_t res, const arb_t k, slong prec)
             GW_current_energy_density_02(s, k, prec);
             break;
         default :
-            GW_current_energy_density_02(s, k, prec);
+            GW_current_energy_density_Omega_G(s, k, prec);
     }
     
     arb_set(res,s);
