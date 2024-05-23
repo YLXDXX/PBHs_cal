@@ -90,6 +90,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //                average_method_simple / average_method_new
     Mu_2_TH_METHOD=q_parameter_method_new;
     
+    routine_test(prec); exit(0);
+    
     
     //寻找阈值
     Find_Mu_2_th(Mu_2_th, prec);

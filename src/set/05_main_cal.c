@@ -708,4 +708,47 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
         Int_GW_power_spectra_iterate_y_max=12;
     }
     
+    
+    //诱导引力波中的非高斯项计算
+    //没做线程限制，会自动进行多线程运算
+    GW_dim_integral_res_print=true; //积分结果打印
+    GW_dim_8_MINEVAL=250000; //最小计算次数
+    GW_dim_8_MAXEVAL=30000000; //最大计算次数
+    GW_dim_8_NSTART=10000; //每次迭代计算次数
+    GW_dim_8_NINCREASE=5000; //迭代计算增加次数
+    GW_dim_8_EPSREL=1e-3; //相对精度
+    GW_dim_8_EPSABS=1e-15; //绝对精度
+    GW_dim_8_t_upper="1.5E2"; //积分区间 t 变量上限，理论上为 +∞
+    
+    GW_dim_6_MINEVAL=99000;
+    GW_dim_6_MAXEVAL=10000000;
+    GW_dim_6_NSTART=8000;
+    GW_dim_6_NINCREASE=4000;
+    GW_dim_6_EPSREL=1e-4;
+    GW_dim_6_EPSABS=1e-15;
+    GW_dim_6_t_upper="3E2";
+    
+    GW_dim_5_MINEVAL=60000;
+    GW_dim_5_MAXEVAL=6000000;
+    GW_dim_5_NSTART=5000;
+    GW_dim_5_NINCREASE=2500;
+    GW_dim_5_EPSREL=1e-5;
+    GW_dim_5_EPSABS=1e-15;
+    GW_dim_5_t_upper="4E2";
+    
+    GW_dim_4_MINEVAL=30000;
+    GW_dim_4_MAXEVAL=4000000;
+    GW_dim_4_NSTART=2000;
+    GW_dim_4_NINCREASE=1500;
+    GW_dim_4_EPSREL=1e-6;
+    GW_dim_4_EPSABS=1e-15;
+    GW_dim_4_t_upper="1E3";
+    
+    GW_dim_2_MINEVAL=6000;
+    GW_dim_2_MAXEVAL=600000;
+    GW_dim_2_NSTART=1000;
+    GW_dim_2_NINCREASE=500;
+    GW_dim_2_EPSREL=1e-8;
+    GW_dim_2_EPSABS=1e-15;
+    GW_dim_2_t_upper="6E3";
 }

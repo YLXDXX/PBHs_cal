@@ -71,14 +71,20 @@ void routine_test(slong prec)
     */
     
     
-    arb_set_str(k,"1.56E12",prec);
+    arb_set_str(k,"1.56E11",prec);
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(r,eta,k,prec);
     //GW_current_energy_density_01(r,k,prec);
     //GW_current_energy_density_Omega_G(r,k,prec);
-    GW_current_energy_density(r,k,prec);
+    //GW_current_energy_density_Omega_dim_8(r,x,k,prec);
+    //GW_current_energy_density_Omega_dim_6(r,k,prec);
+    //GW_current_energy_density_Omega_dim_5(r,x,k,prec);
+    //GW_current_energy_density_Omega_dim_4(r,k,prec);
+    GW_current_energy_density_Omega_dim_2(r,k,prec);
+    //GW_current_energy_density(r,k,prec);
     arb_printn(r,50,0);printf("\n");
+    arb_printn(x,50,0);printf("\n");
     exit(0);
     //GW_power_spectra_2(x,eta,k,prec);
     GW_current_energy_density_02(x,k,prec);

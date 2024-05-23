@@ -12,6 +12,7 @@ target("./PBHs") --Name of the generated executable file
     add_files("src/func/GW_induced/*.c")
     add_files("src/func/Test/*.c")
     add_files("src/set/*.c")
+    
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
@@ -66,7 +67,7 @@ target("./PBHs") --Name of the generated executable file
     set_optimize("fastest")
 --
 --    -- add include search directories
-    add_includedirs("/usr/local/include/flint")
+    add_includedirs("/usr/local/include", "/usr/local/include/flint")
 --
 --    -- add link libraries and search directories
 --    add_links("tbox")
@@ -77,7 +78,7 @@ target("./PBHs") --Name of the generated executable file
 --
 --    -- add compilation and link flags
     add_cxflags("-Wall")
-    add_ldflags("-Wall", "-lflint", "-lm",{force = true})
+    add_ldflags("-Wall", "-lcubaq", "-lquadmath", "-lflint", "-lm", {force = true})
 --
 -- @endcode
 --

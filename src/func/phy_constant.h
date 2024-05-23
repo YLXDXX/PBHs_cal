@@ -153,6 +153,47 @@ extern ulong Int_GW_power_spectra_iterate_y_max;
 extern bool Int_GW_power_spectra_rectangle_adaptive; //矩形二维积分是否采用自适应
 extern enum GW_INDUCED_ENUM_TYPE GW_induced_method; //诱导引力波计算方法
 
+extern bool GW_dim_integral_res_print;
+extern long int GW_dim_8_MINEVAL; //诱导引力波非高斯性积分参数
+extern long int GW_dim_8_MAXEVAL;
+extern long int GW_dim_8_NSTART;
+extern long int GW_dim_8_NINCREASE;
+extern long double GW_dim_8_EPSREL;
+extern long double GW_dim_8_EPSABS;
+extern char* GW_dim_8_t_upper;
+
+extern long int GW_dim_6_MINEVAL;
+extern long int GW_dim_6_MAXEVAL;
+extern long int GW_dim_6_NSTART;
+extern long int GW_dim_6_NINCREASE;
+extern long double GW_dim_6_EPSREL;
+extern long double GW_dim_6_EPSABS;
+extern char* GW_dim_6_t_upper;
+
+extern long int GW_dim_5_MINEVAL;
+extern long int GW_dim_5_MAXEVAL;
+extern long int GW_dim_5_NSTART;
+extern long int GW_dim_5_NINCREASE;
+extern long double GW_dim_5_EPSREL;
+extern long double GW_dim_5_EPSABS;
+extern char* GW_dim_5_t_upper;
+
+extern long int GW_dim_4_MINEVAL;
+extern long int GW_dim_4_MAXEVAL;
+extern long int GW_dim_4_NSTART;
+extern long int GW_dim_4_NINCREASE;
+extern long double GW_dim_4_EPSREL;
+extern long double GW_dim_4_EPSABS;
+extern char* GW_dim_4_t_upper;
+
+extern long int GW_dim_2_MINEVAL;
+extern long int GW_dim_2_MAXEVAL;
+extern long int GW_dim_2_NSTART;
+extern long int GW_dim_2_NINCREASE;
+extern long double GW_dim_2_EPSREL;
+extern long double GW_dim_2_EPSABS;
+extern char* GW_dim_2_t_upper;
+
 //数学计算
 extern arb_t Pi; //常数π
 extern arb_t Pi_2; //常数2π (πx2)

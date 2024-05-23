@@ -2,7 +2,7 @@
 #include <stdlib.h> 
 
 
-static int interior_GW_current_energy_density_Omega_G(arb_t res, const arb_t t_1, const arb_t s_1, void* param, const slong order, slong prec)
+int interior_GW_current_energy_density_Omega_G(arb_t res, const arb_t t_1, const arb_t s_1, void* param, const slong order, slong prec)
 {
     arb_t s,t,w,q,u_1,v_1,u_1_v_1,k_v_1,k_u_1;
     arb_init(s);

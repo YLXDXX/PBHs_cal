@@ -223,6 +223,40 @@ void J_2_u_1_v_1_limited(arb_t res, const arb_t u_1, const arb_t v_1, slong prec
 
 void J_u_1_v_1_and_u_2_v_2_limited(arb_t res, const arb_t u_1, const arb_t v_1, const arb_t u_2, const arb_t v_2, slong prec) //取极限后，不含x
 {
+    arb_t s,t;
+    arb_init(s);
+    arb_init(t);
     
+    //此函数的具休形式见 2305.19950 (4.27)
+    
+    //前面系数部分
+    arb_add(t,v_1,u_1,prec);
+    arb_sqr(t,t,prec);
+    arb_sub_ui(t,t,1,prec);
+    arb_sub(s,v_1,u_1,prec);
+    arb_sqr(s,s,prec);
+    arb_neg(s,s);
+    arb_add_ui(s,s,1,prec);
+    arb_mul(t,t,s,prec);
+    
+    arb_add(s,v_2,u_2,prec);
+    arb_sqr(s,s,prec);
+    arb_sub_ui(s,s,1,prec);
+    arb_mul(t,t,s,prec);
+    
+    arb_sub(s,v_2,u_2,prec);
+    arb_sqr(s,s,prec);
+    arb_neg(s,s);
+    arb_add_ui(s,s,1,prec);
+    arb_mul(t,t,s,prec);
+    
+    arb_div_ui(t,t,64,prec);
+    
+    I_RD_u_1_v_1_u_2_v_2_limited(s, u_1, v_1, u_2, v_2, prec);
+    
+    arb_mul(res,t,s,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
 }
 
