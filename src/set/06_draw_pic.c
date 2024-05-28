@@ -6,7 +6,7 @@ int C_r_prime_II(arb_t res, arb_t r, slong prec);
 //画图
 void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
 {
-    arb_t t,aa,bb,gap_x,gap_y,out_point,ay,by;
+    arb_t t,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by;
     
     arb_init(t);
     arb_init(aa); 
@@ -14,12 +14,13 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_init(gap_x); //一层点间隔
     arb_init(gap_y); //二层点间隔
     arb_init(out_point);
+    arb_init(out_point_2);
     
     arb_init(ay); 
     arb_init(by);
     
-    arb_set_str(aa,"25",prec); //一层循环用
-    arb_set_str(bb,"36",prec);
+    arb_set_str(aa,"-12",prec); //一层循环用
+    arb_set_str(bb,"10",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -33,7 +34,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     slong out_number,number;
     
-    number=100; //输出点的个数
+    number=1E4; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -84,9 +85,15 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //PS_abundance_beta_delta_k(out_point, aa, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
         
         //诱导引力波
-        arb_exp(t,aa,prec); //取指数后再传入
+        //arb_exp(t,aa,prec); //取指数后再传入
         //GW_power_spectra(out_point,eta,k,prec); //这里传入的k值未取对数
-        GW_current_energy_density(out_point,t,prec);
+        //GW_current_energy_density(out_point,t,prec);
+        
+        //相对论自由度数
+        
+        arb_exp(t,aa,prec);
+        Effective_degrees_of_freedom_fit(out_point,out_point_2,t,"Gev",prec);
+        
         
         //arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
         //fprintf(fp, "\t");
@@ -96,6 +103,8 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //arb_printn(out_point, 50,0);printf("\n");
         
         arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
+        fprintf(fp, "\t");
+        arb_fprintn(fp,out_point_2,out_number,ARB_STR_NO_RADIUS); //out_point
         fprintf(fp, "\n");
         
         arb_add(aa,aa,gap_x,prec); //更新点
@@ -148,6 +157,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_clear(gap_x);
     arb_clear(gap_y);
     arb_clear(out_point);
+    arb_clear(out_point_2);
     arb_clear(ay);
     arb_clear(by);
     

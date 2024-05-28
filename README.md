@@ -2,14 +2,15 @@
 
 ## 简介
 
-　　这是一个原初黑洞（PBHs）丰度及标量诱导引力波计算程序，为保证计算准确性，采用了任意精度计算模块 `arb`，为保证计算速度，采用 C 语言实现
+　　这是一个原初黑洞（PBHs）丰度及标量诱导引力波计算程序，为保证计算准确性，采用了 FLINT 中的任意精度计算模块 `arb`，为保证计算速度，采用 C 语言实现
 
 　　有两种方法来计算PBHs的丰度：
 
 1. 基于 compaction function 的 Press–Schechter 方法
+
 2. 基于 Peak Theory的方法
 
-　　‍而计算标量诱导引力波也有两种方法
+   而计算标量诱导引力波有三种方法
 
 ### 框架
 
@@ -113,7 +114,9 @@
 
 `**_power_spectra.h`  计算诱导引力波的功率谱和能量密度谱
 
-`gw_induced.h`  通用计算诱导引力波的功率谱和能量密度谱函数
+`gw_induced.h`  通用计算诱导引力波的功率谱和能量密度谱函数（高斯情况）
+
+`03_power_spectra.h` 通用计算诱导引力波的功率谱和能量密度谱函数（非高斯情况）
 
 ### Math Method
 
@@ -130,8 +133,6 @@
 　　`quadrature_binary.h ` 二元定积分算法，包括矩形边界条件和由函数描述的边界条件，可采用 Gauss–Kronrod 积分或Double Exponential 积分。对于二维矩形积分区域，有自适应和非自适应两个版本，对于 Gauss–Kronrod 积分而言，自适应比非自适应快，对于 Double Exponential 而言，非自适应远快于自适应，为提高精度，可对非自适应提高迭代次数。
 
 
-
-　　‍
 
 ### Other
 
@@ -172,11 +173,16 @@
 
 ## 项目编译
 
-　　本项目采用 [xmake](https://xmake.io/) 进行构建，仅依赖于 [FLINT](https://flintlib.org/) 中的 `arb`​ 模块，建议安装使用 FLINT 3.x series
+　　本项目采用 [xmake](https://xmake.io/) 进行构建，依赖：
 
-> 注意，FLINT 2.x series 不包含 `arb`​ 模块，需单独编译 `arb`​ 模块
+- [FLINT](https://flintlib.org/) 中的 `arb`​ 模块，建议安装使用 FLINT 3.x series
+- [Cuba](https://feynarts.de/cuba/) 中的多维积分模块 <cubaq.h>
 
-　　‍
+> 注意，FLINT 2.x series 不包含 `arb`​ 模块
+
+> 注意，在编译 Cuba 时，需加上参 --with-real=16，这样才可以用 <cubaq.h> 模块，不然是用的 <cuba.h> 模块
+
+
 
 　　安装好 Flint 后，需修改 `xmake.lua`​ 文件，将中的 `add_includedirs`​ 选项改为自己 Flint 安装的地址。然后在 `xmake.lua`​ 所在文件夹下进行编译
 
@@ -194,6 +200,7 @@ xmake r
 
 * 系统：Debian 12
 * FLINT： 3.1.2
+* Cuba:：4.2.2
 * 编译工具： Gcc 12.2.0
 * 构建工具： Xmake 2.8
 

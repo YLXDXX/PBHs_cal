@@ -5,7 +5,6 @@
 #include "../new_type.h"
 #include "../phy_constant.h"
 
-int Heaviside_Theta_function(arb_t res,const arb_t x,slong prec);
 int get_save_path(char* res); //获得存储文件路径
 void print_progress(size_t count, size_t max); //进度条显示
 

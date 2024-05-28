@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
-    Power_spectrum_type=lognormal_type;
+    Power_spectrum_type=delta_type;
     
     
     Set_power_spectra(argv[1],prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //                average_method_simple / average_method_new
     Mu_2_TH_METHOD=q_parameter_method_new;
     
-    routine_test(prec); exit(0);
+    //routine_test(prec); exit(0);
     
     
     //寻找阈值
@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"0",prec);
+    arb_set_str(t,"8E-7",prec);
     arb_set_str(w,"1E-12",prec);
     //arb_log(w,w,prec);
     //arb_set_str(Mu_2,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 Mu_2_th
@@ -279,7 +279,11 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_set_str(eta,"1",prec);
     arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
-    GW_current_energy_density(Pk,k,prec);
+    //GW_current_energy_density(Pk,k,prec);
+    
+    //自由度数
+    arb_set_str(t,"8E-7",prec);
+    Effective_degrees_of_freedom_fit(Pk,w,t,"Mev",prec);
     
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");
@@ -287,6 +291,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_printn(t,60,0);printf("\n");
     //arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,30,0);printf("\n");
+    arb_printn(w,30,0);printf("\n");
     //sleep(600);
     exit(0);
     
@@ -324,7 +329,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     
-    //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
+    draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
     
     return 0;
     
