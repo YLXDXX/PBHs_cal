@@ -44,9 +44,6 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //routine_test(prec); exit(0); //测试程序
     
     
-    Set_physical_parameter(prec); //宇宙学基本参数设定
-    
-    
     /*
     //从命令行中读取相关参数
     arb_t input_sigma,input_k_star;
@@ -67,6 +64,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     Set_power_spectra(argv[1],prec); //功率谱相关具体参数设定，可由命令行传递参数
+    
+    Set_physical_parameter(prec); //宇宙学基本参数设定，这里设定相对论自由度数需要功率谱相关信息，需要功率谱设定之后
     
     
     //是否考虑转移函数的影响，需要求协方差矩阵之前，若在ζ(r)参数化时要考虑转移函数，则需要求(σ_n)^2等之前
@@ -282,8 +281,9 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //GW_current_energy_density(Pk,k,prec);
     
     //自由度数
-    arb_set_str(t,"8E-7",prec);
-    Effective_degrees_of_freedom_fit(Pk,w,t,"Mev",prec);
+    arb_set_str(t,"1E13",prec);
+    //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
+    Func_k_to_degrees_of_freedom(Pk,w,t,prec);
     
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");

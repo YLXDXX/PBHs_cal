@@ -78,19 +78,28 @@ arb_t Mass_gamma;
 //宇宙学基本常数
 arb_t Omega_DM; //暗物质所占比例
 arb_t Omega_M; //baryons + dark matter 所占比例
-arb_t Omega_radiation; //辐射所占的比例
+arb_t Omega_B; //普通重子物质 baryons
+arb_t Omega_Lambda; //暗能量 Ω_Λ
+arb_t Omega_radiation; //辐射所占的比例 radiation density
+arb_t Omega_gamma; //光子所占的比例 photon density
 arb_t Hubble_constant_h; //哈勃常数 h
 arb_t Hubble_constant_H_0; //哈勃常数 H_0
 arb_t Scale_factor_a; // 尺度因子 a(t)，某些公式的需要
 arb_t Scale_factor_a_0; //尺度因子 a(t_0)
 arb_t Equation_Of_State_w; //状态方程 w
-arb_t K_scale_eq; //在视界相等的时刻，对应的参考尺度
+arb_t K_scale_eq; //在物质辐射相等时刻，对应的共动波数
+arb_t Z_scale_eq; //在物质辐射相等时刻，对应的红移
+arb_t A_scale_eq; //在物质辐射相等时刻，对应的尺度因子
+arb_t T_scale_eq; //在物质辐射相等时刻，对应的温度
+arb_t A_scale_eq; //在物质辐射相等时刻，对应的尺度因子
 
-
-arb_t effective_g_star; //重新进入视界后，对应的有效自由度数目
-arb_t effective_g_star_eq; //物质辐射相等的时刻，对应的有效自由度数目
-arb_t effective_g_star_current; //当今对应的有效自由度数目
+arb_t effective_g_star_eq; //在物质辐射相等时刻，对应的相对论有效自由度数目
+arb_t effective_g_star_eq_entropy; //在物质辐射相等时刻，对应的熵有效自由度数目
+arb_t effective_g_star; //重新进入视界后，对应的相对论有效自由度数目
+arb_t effective_g_star_entropy; //重新进入视界后，对应的熵有效自由度数目
+arb_t effective_g_star_current; //当今对应的相对论有效自由度数目
 arb_t effective_g_star_current_entropy; //当今对应的熵有效自由度数目
+
 
 //设置求值区间，如求 r_m Mu_2_th
 arb_t Int_r_min;

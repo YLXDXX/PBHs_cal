@@ -513,4 +513,90 @@ void Effective_degrees_of_freedom_fit(arb_t res_r, arb_t res_s, const arb_t T, c
 }
 
 
+//求根函数
+static int interior_k_to_degrees_of_freedom(arb_t res, const arb_t T, void *k, const slong order, slong prec)
+{
+    //利用 k 与 温度 T 的关系, 详细公式见 1812.00674 (7)
+    //通过 k 找到对应的温度，再通过温度 T 求出对应的自由度数
+    //为了减小温度的求根区间，这里传入的温度是 ln(T), [-12, +12]
+    
+    arb_t T_ratio,k_ratio,g,g_s,t,s,w;
+    arb_init(T_ratio);
+    arb_init(k_ratio);
+    arb_init(g);
+    arb_init(g_s);
+    arb_init(t);
+    arb_init(s);
+    arb_init(w);
+    
+    
+    arb_exp(w,T,prec); //温度转换
+    arb_div(T_ratio,w,T_scale_eq,prec);
+    
+    arb_div(k_ratio,k,K_scale_eq,prec); //这里单位为 Mpc^-1
+    
+    arb_div(s,T_ratio,k_ratio,prec); //通过比值，避免求根中大数的产生
+    
+    Effective_degrees_of_freedom_fit(g, g_s, w,"Gev",prec);
+    
+    arb_one(t);
+    arb_div_ui(t,t,3,prec);
+    arb_div(w,effective_g_star_eq_entropy,g_s,prec);
+    arb_pow(w,w,t,prec);
+    arb_mul(s,s,w,prec);
+    
+    arb_one(t);
+    arb_div_ui(t,t,2,prec);
+    arb_div(w,g,effective_g_star_eq,prec);
+    arb_pow(w,w,t,prec);
+    arb_mul(s,s,w,prec);
+    
+    arb_one(t); //最前面的系数
+    arb_mul_ui(t,t,2,prec);
+    arb_sqrt(t,t,prec);
+    arb_sub_ui(t,t,1,prec);
+    arb_mul_ui(t,t,2,prec);
+    arb_mul(s,s,t,prec);
+    
+    arb_sub_ui(res,s,1,prec);
+    
+    arb_clear(T_ratio);
+    arb_clear(k_ratio);
+    arb_clear(g);
+    arb_clear(g_s);
+    arb_clear(t);
+    arb_clear(s);
+    arb_clear(w);
+    return 0;
+}
 
+void Func_k_to_degrees_of_freedom(arb_t res_r, arb_t res_s, const arb_t k, slong prec)
+{
+    arb_t kk,T,a,b,error;
+    arb_init(kk);
+    arb_init(T);
+    arb_init(a);
+    arb_init(b);
+    arb_init(error);
+    
+    arb_set(kk,k);
+    
+    //利用 1812.00674 (7) 通过求根的方式来算
+    
+    arb_set_str(a,"-17",prec);//求根区间，用 ln(T), 可求得 [1，1E18] 内的 k 
+    arb_set_str(b,"25",prec);
+    arb_set_str(error,"1E-10",prec);
+    
+    Find_interval_root(T, interior_k_to_degrees_of_freedom, kk, 0,
+                       a, b, error,
+                       65, Root_Normal, prec);
+    
+    arb_exp(T,T,prec); // ln(T) --> T
+    Effective_degrees_of_freedom_fit(res_r,res_s,T,"Gev",prec);
+    
+    arb_clear(kk);
+    arb_clear(T);
+    arb_clear(a);
+    arb_clear(b);
+    arb_clear(error);
+}
