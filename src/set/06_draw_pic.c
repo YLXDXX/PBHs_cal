@@ -19,8 +19,8 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_init(ay); 
     arb_init(by);
     
-    arb_set_str(aa,"-12",prec); //一层循环用
-    arb_set_str(bb,"10",prec);
+    arb_set_str(aa,"0.1",prec); //一层循环用
+    arb_set_str(bb,"100",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -34,7 +34,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     slong out_number,number;
     
-    number=1E4; //输出点的个数
+    number=1E3; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -88,11 +88,12 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //arb_exp(t,aa,prec); //取指数后再传入
         //GW_power_spectra(out_point,eta,k,prec); //这里传入的k值未取对数
         //GW_current_energy_density(out_point,t,prec);
+        Func_GW_f_to_k(t, aa, prec);//f nHz --> K Mpc^-1 
+        GW_current_energy_density_Omega_dim_2(out_point,t,prec); //这里传入的k值未取对数
         
         //相对论自由度数
-        
-        arb_exp(t,aa,prec);
-        Effective_degrees_of_freedom_fit(out_point,out_point_2,t,"Gev",prec);
+        //arb_exp(t,aa,prec);
+        //Effective_degrees_of_freedom_fit(out_point,out_point_2,t,"Gev",prec);
         
         
         //arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
@@ -102,9 +103,9 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //arb_printn(out_point, 50,0);printf("\n");
         
+        //arb_fprintn(fp,out_point_2,out_number,ARB_STR_NO_RADIUS); //out_point
+        //fprintf(fp, "\t");
         arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
-        fprintf(fp, "\t");
-        arb_fprintn(fp,out_point_2,out_number,ARB_STR_NO_RADIUS); //out_point
         fprintf(fp, "\n");
         
         arb_add(aa,aa,gap_x,prec); //更新点

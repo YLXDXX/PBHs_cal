@@ -10,11 +10,11 @@ void Set_zeta_r_cal(slong prec)
     {
         case lognormal_type :
             //以ln(k)作为积分变量，若出现负值，正常
-            arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 13, prec); //这里的范围需要大点
+            arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 15, prec); //这里的范围需要大点
             arb_sub(Int_sigma_n_min,Ln_K_star,Log_normal_mul_sigma,prec); //动态积分范围
             arb_add(Int_sigma_n_max,Ln_K_star,Log_normal_mul_sigma,prec);
             
-            arb_set_str(Int_sigma_n_precision,"1E-13",prec);
+            arb_set_str(Int_sigma_n_precision,"1E-12",prec);
             
             break;
             
@@ -49,13 +49,15 @@ void Set_zeta_r_cal(slong prec)
             
         case broken_power_law_type :
             //以ln(k)作为积分变量，若出现负值，正常
-            //这里，k的最小值可取零，对应ln(k)为-∞，取k=5E-2作截断
-            arb_set_str(Int_sigma_n_min,"5E-2",prec);
-            arb_log(Int_sigma_n_min,Int_sigma_n_min,prec);//ln(5E-2)
+            //在左侧大约以 α 斜率上升，右侧大约经 β 斜率下降，跟据 α/β 值动态取值
+            //e^(-n)*k^α=K_star^α => lnk = ln(k_star) -n/α
+            arb_ui_div(Int_sigma_n_min,28,BPL_alpha,prec); //左边，n=28
+            arb_sub(Int_sigma_n_min,Ln_K_star,Int_sigma_n_min,prec);
             
-            arb_add_ui(Int_sigma_n_max,Ln_K_star,5,prec);
+            arb_ui_div(Int_sigma_n_max,28,BPL_beta,prec); //右边，n=28
+            arb_add(Int_sigma_n_max,Ln_K_star,Int_sigma_n_max,prec);
             
-            arb_set_str(Int_sigma_n_precision,"1E-15",prec);
+            arb_set_str(Int_sigma_n_precision,"1E-12",prec);
             
             break;
         case link_cmb_type :

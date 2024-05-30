@@ -2,7 +2,8 @@
 #define __PBHS_OTHER__
 
 #include "Other/output.h"
-#include "Other/cal_func.h"
+#include "Other/fitting_DOF.h"
+#include "Other/other.h"
 
 #endif // __PBHS_OTHER__
 

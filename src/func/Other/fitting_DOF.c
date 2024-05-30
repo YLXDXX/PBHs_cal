@@ -1,42 +1,6 @@
-#include "cal_func.h" 
+#include "fitting_DOF.h" 
 #include <stdlib.h>
 #include <string.h>
-
-//Heaviside Theta function
-int Heaviside_Theta_function(arb_t res,const arb_t x,slong prec)
-{
-    arb_t s,t;
-    arb_init(s);
-    arb_init(t);
-    
-    
-    arb_zero(t);
-    
-    if ( arb_gt(x,t) ) //x>0, f(x)=1
-    {
-        arb_one(res);
-    }else if ( arb_lt(x,t) ) //x<0, f(x)=0
-    {
-         arb_zero(res);
-    }else if ( arb_eq(x,t) )  //x=0, f(x)=1/2
-    {
-        arb_one(s); //1/2
-        arb_div_ui(s,s,2,prec);
-        
-        arb_set(res,s);
-    }else
-    {
-        printf("x 取值有误\n");
-        exit(1);
-    }
-   
-   
-    arb_clear(s);
-    arb_clear(t);
-    
-    return 0;
-}
-
 
 arb_ptr Fitting_a_i,Fitting_b_i,Fitting_c_i,Fitting_d_i; //自由度数拟合系数
 arb_t Fitting_m_e,Fitting_m_mu,Fitting_m_pi_0,Fitting_m_pi_pm,
@@ -600,3 +564,6 @@ void Func_k_to_degrees_of_freedom(arb_t res_r, arb_t res_s, const arb_t k, slong
     arb_clear(b);
     arb_clear(error);
 }
+
+
+

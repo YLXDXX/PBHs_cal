@@ -1,5 +1,5 @@
-#ifndef __PBHS_OTHER_CAL_FUNC__   /* Include guard */
-#define __PBHS_OTHER_CAL_FUNC__
+#ifndef __PBHS_OTHER_FITTING_DOF__   /* Include guard */
+#define __PBHS_OTHER_FITTING_DOF__
 
 #include <arb.h> //高精度实数运算
 #include "../new_type.h"
@@ -13,10 +13,12 @@ extern arb_ptr Fitting_func_f_rho,Fitting_func_b_rho,Fitting_func_f_s,Fitting_fu
 extern arb_ptr Fitting_func_g_star_r,Fitting_func_g_star_s;
 
 
-int Heaviside_Theta_function(arb_t res,const arb_t x,slong prec); //阶梯函数
 
+//由温度 T Gev/Mev 拟合对应的自由度数
 void Effective_degrees_of_freedom_fit(arb_t res_r, arb_t res_s, const arb_t T, char * unit, slong prec);
 
+//波数 k Mpc^-1 对应的自由度数
 void Func_k_to_degrees_of_freedom(arb_t res_r, arb_t res_s, const arb_t k, slong prec);
 
-#endif // __PBHS_OTHER_CAL_FUNC__ 
+
+#endif // __PBHS_OTHER_FITTING_DOF__ 

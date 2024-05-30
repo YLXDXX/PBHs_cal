@@ -28,13 +28,13 @@ void Set_cal_math(slong prec)
             
             //2^12=4096 2^13=8192 2^15=32768 2^17=131072
             Integration_iterate_min=32; //积分最小迭代区间 interval_min = (b-a)/step_min
-            Integration_iterate_max=10000; //积分最大迭代次数
+            Integration_iterate_max=30000; //积分最大迭代次数
             
             break;
             
         case double_exponential :
             Integration_iterate_min=5; //最少迭代次数
-            Integration_iterate_max=15; //最大迭代次数
+            Integration_iterate_max=18; //最大迭代次数
             break;
             
         default :

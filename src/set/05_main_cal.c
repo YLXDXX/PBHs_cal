@@ -469,6 +469,17 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
             }
             break;
         case broken_power_law_type :
+            // PS 计算方差 XX YY XY 积分， broken_power_law_type 谱共用
+            //在左侧大约以 α 斜率上升，右侧大约经 β 斜率下降，跟据 α/β 值动态取值
+            //e^(-n)*k^α=K_star^α => lnk = ln(k_star) -n/α
+            arb_ui_div(PS_Int_variance_min,28,BPL_alpha,prec); //左边，n=28
+            arb_sub(PS_Int_variance_min,Ln_K_star,PS_Int_variance_min,prec);
+            
+            arb_ui_div(PS_Int_variance_max,28,BPL_beta,prec); //右边，n=28
+            arb_add(PS_Int_variance_max,Ln_K_star,PS_Int_variance_max,prec);
+            
+            arb_set_str(PS_Int_variance_precision,"1E-19",prec);
+            
             switch(Zeta_type)
             {
                 case gaussian_type :
@@ -501,13 +512,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
                     
-                    // PS 计算相关 
-                    //这里，k的最小值可取零，对应ln(k)为-∞，取k=5E-2作截断
-                    arb_set_str(PS_Int_variance_min,"5E-2",prec); // PS 计算方差 XX YY XY 积分
-                    arb_log(PS_Int_variance_min,PS_Int_variance_min,prec);//ln(0.1)
-                    arb_add_ui(PS_Int_variance_max,Ln_K_star,6,prec);
-                    arb_set_str(PS_Int_variance_precision,"1E-19",prec);
-                    
+                    // PS 计算相关
                     arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
@@ -711,7 +716,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     
     //诱导引力波中的非高斯项计算
     //没做线程限制，会自动进行多线程运算
-    GW_dim_integral_res_print=true; //积分结果打印
+    GW_dim_integral_res_print=false; //积分结果打印
     GW_dim_8_MINEVAL=250000; //最小计算次数
     GW_dim_8_MAXEVAL=30000000; //最大计算次数
     GW_dim_8_NSTART=10000; //每次迭代计算次数

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     prec=500; //控制计算精度， 500，精度在 140 位左右；300，在80位左右，64，在15位左右
     
     
-    Stdout_verbose=false; //命令行输出详细模式，true/false
+    Stdout_verbose=true; //命令行输出详细模式，true/false
     
     
     //输出文件配制
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
-    Power_spectrum_type=delta_type;
+    Power_spectrum_type=broken_power_law_type;
     
     
     Set_power_spectra(argv[1],prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -281,9 +281,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //GW_current_energy_density(Pk,k,prec);
     
     //自由度数
-    arb_set_str(t,"1E13",prec);
+    arb_set_str(t,"1E8",prec);
     //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
-    Func_k_to_degrees_of_freedom(Pk,w,t,prec);
+    //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
+    GW_current_energy_density_Omega_dim_2(Pk,t,prec);
     
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");
@@ -291,7 +292,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_printn(t,60,0);printf("\n");
     //arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,30,0);printf("\n");
-    arb_printn(w,30,0);printf("\n");
+    //arb_printn(w,30,0);printf("\n");
     //sleep(600);
     exit(0);
     
@@ -329,7 +330,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     
-    draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
+    //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
     
     return 0;
     

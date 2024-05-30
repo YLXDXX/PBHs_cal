@@ -91,7 +91,6 @@ arb_t K_scale_eq; //在物质辐射相等时刻，对应的共动波数
 arb_t Z_scale_eq; //在物质辐射相等时刻，对应的红移
 arb_t A_scale_eq; //在物质辐射相等时刻，对应的尺度因子
 arb_t T_scale_eq; //在物质辐射相等时刻，对应的温度
-arb_t A_scale_eq; //在物质辐射相等时刻，对应的尺度因子
 
 arb_t effective_g_star_eq; //在物质辐射相等时刻，对应的相对论有效自由度数目
 arb_t effective_g_star_eq_entropy; //在物质辐射相等时刻，对应的熵有效自由度数目

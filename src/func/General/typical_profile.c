@@ -229,7 +229,8 @@ int interior_help_psi_1_n(arb_t res, const arb_t k, void* r, const slong order, 
 //计算 ψ_1(r) 及其各阶导数
 int Help_psi_1_n(arb_t res, const arb_t r, const slong order, slong prec)
 {
-    
+    //拟合暂时不用
+    /*
     switch(order) 
     {
         //判断数据拟合的文件是否存在，存在直接读取相应数据，不计算
@@ -351,7 +352,7 @@ int Help_psi_1_n(arb_t res, const arb_t r, const slong order, slong prec)
             printf("General -> typical_profile ->  Help_psi_1_n 输入有误\n");
             exit(1);
     }
-    
+    */
     
     arb_t s,r_pra;
     
