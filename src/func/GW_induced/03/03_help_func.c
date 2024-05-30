@@ -1,4 +1,4 @@
-#include "03_help_func.h"
+#include "03_power_spectra.h"
 #include <stdlib.h>
 #include <arb_hypgeom.h>
 

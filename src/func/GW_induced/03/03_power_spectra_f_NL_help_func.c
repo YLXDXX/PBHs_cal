@@ -749,8 +749,3 @@ int interior_GW_current_energy_density_Omega_N_8(arb_t res, const arb_t t_1, con
 }
 
 
-//interior_GW_current_energy_density_Omega_H_4
-
-
-
-

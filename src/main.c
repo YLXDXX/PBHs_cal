@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     prec=500; //控制计算精度， 500，精度在 140 位左右；300，在80位左右，64，在15位左右
     
     
-    Stdout_verbose=true; //命令行输出详细模式，true/false
+    Stdout_verbose=false; //命令行输出详细模式，true/false
     
     
     //输出文件配制
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //                average_method_simple / average_method_new
     Mu_2_TH_METHOD=q_parameter_method_new;
     
-    //routine_test(prec); exit(0);
+    routine_test(prec); exit(0);
     
     
     //寻找阈值
@@ -279,12 +279,13 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
     //GW_current_energy_density(Pk,k,prec);
+    //GW_current_energy_density_cuba(Pk,k,0,prec);
     
     //自由度数
     arb_set_str(t,"1E8",prec);
     //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
     //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
-    GW_current_energy_density_Omega_dim_2(Pk,t,prec);
+    
     
     //arb_div(w,Pk,w,prec);
     //arb_printn(t,60,0);printf("\n");

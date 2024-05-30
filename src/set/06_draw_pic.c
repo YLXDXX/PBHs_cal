@@ -19,7 +19,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_init(ay); 
     arb_init(by);
     
-    arb_set_str(aa,"0.1",prec); //一层循环用
+    arb_set_str(aa,"1",prec); //一层循环用
     arb_set_str(bb,"100",prec);
     
     /*
@@ -34,7 +34,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     slong out_number,number;
     
-    number=1E3; //输出点的个数
+    number=1E2; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -89,7 +89,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //GW_power_spectra(out_point,eta,k,prec); //这里传入的k值未取对数
         //GW_current_energy_density(out_point,t,prec);
         Func_GW_f_to_k(t, aa, prec);//f nHz --> K Mpc^-1 
-        GW_current_energy_density_Omega_dim_2(out_point,t,prec); //这里传入的k值未取对数
+        GW_current_energy_density_cuba(out_point,t,0,prec); //这里传入的k值未取对数
         
         //相对论自由度数
         //arb_exp(t,aa,prec);

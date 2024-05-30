@@ -1,4 +1,5 @@
 #include "03_power_spectra.h"
+#include "../gw_func.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -409,11 +410,10 @@ int GW_current_energy_density_Omega_dim_8(arb_t O_N, arb_t O_P, const arb_t k, s
     UNUSED(NMIN);UNUSED(NNEW);UNUSED(SPIN);UNUSED(STATEFILE);UNUSED(GRIDNO);UNUSED(NBATCH);
     UNUSED(NSTART);UNUSED(NINCREASE);UNUSED(LAST);UNUSED(USERDATA);UNUSED(SEED);
     
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     struct User_Data *U;
     //分配内存
@@ -441,14 +441,7 @@ int GW_current_energy_density_Omega_dim_8(arb_t O_N, arb_t O_P, const arb_t k, s
     
     
     //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_mul_ui(t,Power_expansion_f,3,prec); //(4.21)前积分系数 1/(24*π^2) *(3*f_NL/5)^4
     arb_div_ui(t,t,5,prec);
@@ -501,7 +494,6 @@ int GW_current_energy_density_Omega_dim_8(arb_t O_N, arb_t O_P, const arb_t k, s
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     
     return 0;
 }
@@ -553,11 +545,10 @@ int GW_current_energy_density_Omega_dim_6(arb_t O_R, const arb_t k, slong prec)
     UNUSED(NMIN);UNUSED(NNEW);UNUSED(SPIN);UNUSED(STATEFILE);UNUSED(GRIDNO);UNUSED(NBATCH);
     UNUSED(NSTART);UNUSED(NINCREASE);UNUSED(LAST);UNUSED(USERDATA);UNUSED(SEED);
     
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     struct User_Data *U;
     //分配内存
@@ -584,15 +575,8 @@ int GW_current_energy_density_Omega_dim_6(arb_t O_R, const arb_t k, slong prec)
     U->order=0;
     
     
-    //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    ///积分前面的系数 c_g * Ω_{r,0}
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_mul_ui(t,Power_expansion_f,3,prec); //(4.21)前积分系数 1/12 *(3*f_NL/5)^4
     arb_div_ui(t,t,5,prec);
@@ -642,7 +626,6 @@ int GW_current_energy_density_Omega_dim_6(arb_t O_R, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     
     return 0;
 }
@@ -694,11 +677,10 @@ int GW_current_energy_density_Omega_dim_5(arb_t O_Z, arb_t O_C, const arb_t k, s
     UNUSED(NMIN);UNUSED(NNEW);UNUSED(SPIN);UNUSED(STATEFILE);UNUSED(GRIDNO);UNUSED(NBATCH);
     UNUSED(NSTART);UNUSED(NINCREASE);UNUSED(LAST);UNUSED(USERDATA);UNUSED(SEED);
     
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     struct User_Data *U;
     //分配内存
@@ -726,14 +708,7 @@ int GW_current_energy_density_Omega_dim_5(arb_t O_Z, arb_t O_C, const arb_t k, s
     
     
     //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_mul_ui(t,Power_expansion_f,3,prec); //(4.21)前积分系数 1/(3*π) *(3*f_NL/5)^2
     arb_div_ui(t,t,5,prec);
@@ -786,7 +761,6 @@ int GW_current_energy_density_Omega_dim_5(arb_t O_Z, arb_t O_C, const arb_t k, s
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     
     return 0;
 }
@@ -838,11 +812,10 @@ int GW_current_energy_density_Omega_dim_4(arb_t O_H, const arb_t k, slong prec)
     UNUSED(NMIN);UNUSED(NNEW);UNUSED(SPIN);UNUSED(STATEFILE);UNUSED(GRIDNO);UNUSED(NBATCH);
     UNUSED(NSTART);UNUSED(NINCREASE);UNUSED(LAST);UNUSED(USERDATA);UNUSED(SEED);
     
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     struct User_Data *U;
     //分配内存
@@ -870,14 +843,7 @@ int GW_current_energy_density_Omega_dim_4(arb_t O_H, const arb_t k, slong prec)
     
     
     //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_mul_ui(t,Power_expansion_f,3,prec); //(4.21)前积分系数 1/3 *(3*f_NL/5)^2
     arb_div_ui(t,t,5,prec);
@@ -926,7 +892,6 @@ int GW_current_energy_density_Omega_dim_4(arb_t O_H, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     
     return 0;
 }
@@ -979,11 +944,10 @@ int GW_current_energy_density_Omega_dim_2(arb_t O_G, const arb_t k, slong prec)
     UNUSED(NMIN);UNUSED(NNEW);UNUSED(SPIN);UNUSED(STATEFILE);UNUSED(GRIDNO);UNUSED(NBATCH);
     UNUSED(NSTART);UNUSED(NINCREASE);UNUSED(LAST);UNUSED(USERDATA);UNUSED(SEED);
     
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     struct User_Data *U;
     //分配内存
@@ -1011,14 +975,7 @@ int GW_current_energy_density_Omega_dim_2(arb_t O_G, const arb_t k, slong prec)
     
     
     //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_div_ui(s,s,3,prec);; //(4.21)前积分系数 1/3 
     
@@ -1063,7 +1020,6 @@ int GW_current_energy_density_Omega_dim_2(arb_t O_G, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     
     return 0;
 }

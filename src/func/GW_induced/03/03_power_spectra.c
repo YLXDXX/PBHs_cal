@@ -1,4 +1,5 @@
 #include "03_power_spectra.h"
+#include "../gw_func.h"
 #include <stdlib.h> 
 
 
@@ -65,11 +66,10 @@ int interior_GW_current_energy_density_Omega_G(arb_t res, const arb_t t_1, const
 
 int GW_current_energy_density_Omega_G(arb_t res, const arb_t k, slong prec)
 {
-    arb_t s,t,w,c_g;
+    arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(c_g);
     
     //其中η和k是积分函数的参数，需传入
     //这里，对于结构体 Func_transfer_parameter 需手动分配内存
@@ -81,14 +81,7 @@ int GW_current_energy_density_Omega_G(arb_t res, const arb_t k, slong prec)
     
     
     //积分前面的系数 c_g * Ω_{r,0}
-    arb_div(s,effective_g_star,effective_g_star_current,prec); //c_g= g_star/g_{star,0} * (g_{star,s,0}/g_{star,s})^{4/3}
-    arb_div(t,effective_g_star_current_entropy,effective_g_star,prec);
-    arb_one(w);
-    arb_mul_ui(w,w,4,prec);
-    arb_div_ui(w,w,3,prec);
-    arb_pow(t,t,w,prec);
-    arb_mul(c_g,s,t,prec);
-    arb_mul(s,c_g,Omega_radiation,prec);
+    GW_spectra_convert_coefficient(s,prec);
     
     arb_div_ui(s,s,3,prec); //(4.21)前积分系数
     
@@ -117,7 +110,6 @@ int GW_current_energy_density_Omega_G(arb_t res, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(c_g);
     free(func_k);
     
     return 0;

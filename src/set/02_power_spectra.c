@@ -1,12 +1,12 @@
-#include "header/03_power_spectra.h"
+#include "header/02_power_spectra.h"
 
 
 void Set_power_spectra(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
 {
     //log-normal谱
     //arb_set_str(Power_A, "4E-3", prec); //功率谱振幅
-    arb_set_str(Power_A, "0.302", prec); //PTAs对log-normal的拟合
-    //arb_set_str(Power_A, "0.211", prec); //PTAs对BPL的拟合
+    //arb_set_str(Power_A, "0.302", prec); //PTAs对log-normal的拟合
+    arb_set_str(Power_A, "0.211", prec); //PTAs对BPL的拟合
     
     //功率谱掌宽，例如 log-normal 的
     arb_set_str(Power_sigma,"0.935",prec); // P(k)=A/sqrt(2*Pi*sigma^2)*exp( -( ln(k)-ln(k_star) )^2/(2*sigma^2) )
@@ -15,8 +15,8 @@ void Set_power_spectra(char* comd_argv, slong prec) // comd_argv 为命令行传
     
     //lognormal 功率谱参考尺度，单位 Mpc^{-1}
     //arb_set_str(K_star,"1.56E13",prec); //参考值 K_star=1.56E13
-    arb_set_str(K_star,"151356124.8",prec); //10^8.18 PTAs对log-normal的拟合
-    //arb_set_str(K_star,"114815362.1",prec); //10^8.06 PTAs对BPL的拟合
+    //arb_set_str(K_star,"151356124.8",prec); //10^8.18 PTAs对log-normal的拟合
+    arb_set_str(K_star,"114815362.1",prec); //10^8.06 PTAs对BPL的拟合
     //arb_set_str(K_star,argv[1],prec);//命令行中读取
     //arb_exp(K_star,K_star,prec);
     
