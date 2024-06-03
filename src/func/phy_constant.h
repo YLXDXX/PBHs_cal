@@ -205,6 +205,8 @@ extern char* GW_dim_2_t_upper;
 //数学计算
 extern arb_t Pi; //常数π
 extern arb_t Pi_2; //常数2π (πx2)
+extern slong Multithreaded_divide_integration_interval_number; //多线程计算区间分隔数目
+extern slong Multithreaded_number; //多线程计算线程数
 
 //extern slong prec; //控制计算精度
 //extern slong N_n; //整数n，用于计算辅助

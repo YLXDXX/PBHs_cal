@@ -213,7 +213,8 @@ char* GW_dim_2_t_upper;
 //数学计算
 arb_t Pi; //常数π
 arb_t Pi_2; //常数2π (πx2)
-
+slong Multithreaded_divide_integration_interval_number; //多线程计算区间分隔数目
+slong Multithreaded_number; //多线程计算线程数
 
 //slong prec; //控制计算精度
 //slong N_n; //整数n，用于计算辅助

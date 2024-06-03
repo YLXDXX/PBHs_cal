@@ -1,6 +1,6 @@
 #include "quadrature.h" 
 #include <stdlib.h>
-
+#include <omp.h>
 
 //自适应辛普森积分
 //可以指定精度
@@ -1036,36 +1036,81 @@ int Integration_arb(arb_t res, my_calc_func func, void *param, const slong order
                                         slong step_min , slong step_max,
                                         slong prec)
 {
-    arb_t t;
+    arb_t t,gap,error_cut;
     arb_init(t);
+    arb_init(gap);
+    arb_init(error_cut);
     
     int res_judge=0;
     
-    //根据需要采用不同的积分方法
-    switch(Integral_method)
+    //当区间过大后（如功率谱过宽），在大区间上的积分很难收收敛，计算太慢
+    //将给定的区间分割为多个小区间，然后并行计算
+    //其中的并行计算采用 OpenMP 实现
+    
+    arb_sub(gap,b,a,prec);
+    arb_div_ui(gap,gap,Multithreaded_divide_integration_interval_number,prec);
+    
+    arb_div_ui(error_cut,error,Multithreaded_divide_integration_interval_number,prec);
+    
+    arb_ptr sum;
+    sum = _arb_vec_init(Multithreaded_divide_integration_interval_number);
+    
+    //Multithreaded_divide_integration_interval_number
+    //Multithreaded_number
+    #pragma omp parallel for firstprivate(Integral_method,step_min,step_max,prec) num_threads(Multithreaded_number) schedule(dynamic) //采用动态调度，可平衡各个线程的计算量
+    for(slong i=0; i < Multithreaded_divide_integration_interval_number; i++)
     {
-        case gauss_kronrod_iterate : //gauss_kronrod迭代版本
-            get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
-            res_judge=integration_gauss_kronrod_iterate(t, func, param, order, a, b, error, step_min, step_max, prec);
-            break;
-            
-        case gauss_kronrod_recursive ://gauss_kronrod递归版本
-            get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
-            res_judge=integration_gauss_kronrod_recursive(t, func, param, order, a, b, error, step_min, step_max, prec);
-            break;
-            
-        case double_exponential :
-            res_judge=Double_Exponential_Quadrature(t, func, param, order, a, b, error, step_min, step_max, prec);
-            break;
-            
-        default : //默认使用gauss_kronrod_iterate积分
-            get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
-            res_judge=integration_gauss_kronrod_iterate(t, func, param, order, a, b, error, step_min, step_max, prec);
-            
+        arb_t a_cut,b_cut;
+        arb_init(a_cut);
+        arb_init(b_cut);
+        
+        arb_mul_ui(a_cut,gap,i,prec);
+        arb_add(a_cut,a_cut,a,prec);
+        
+        arb_mul_ui(b_cut,gap,i+1,prec);
+        arb_add(b_cut,b_cut,a,prec);
+        
+        
+        //根据需要采用不同的积分方法
+        switch(Integral_method)
+        {
+            case gauss_kronrod_iterate : //gauss_kronrod迭代版本
+                get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
+                res_judge=integration_gauss_kronrod_iterate(sum+i, func, param, order, a_cut, b_cut, error_cut, step_min, step_max, prec);
+                break;
+                
+            case gauss_kronrod_recursive ://gauss_kronrod递归版本
+                get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
+                res_judge=integration_gauss_kronrod_recursive(sum+i, func, param, order, a_cut, b_cut, error_cut, step_min, step_max, prec);
+                break;
+                
+            case double_exponential :
+                res_judge=Double_Exponential_Quadrature(sum+i, func, param, order, a_cut, b_cut, error_cut, step_min, step_max, prec);
+                break;
+                
+            default : //默认使用gauss_kronrod_iterate积分
+                get_gauss_kronrod_node_weight(65,prec); //获取 gauss_kronrod 的节点位置和权重
+                res_judge=integration_gauss_kronrod_iterate(sum+i, func, param, order, a_cut, b_cut, error_cut, step_min, step_max, prec);
+                
+        }
+        
+        arb_clear(a_cut);
+        arb_clear(b_cut);
+    }
+    
+    arb_zero(t);
+    for(slong i=0; i<Multithreaded_divide_integration_interval_number; i++) //求和得到积结果
+    {
+        arb_add(t,t,sum+i,prec);
     }
     
     arb_set(res,t);
+    
     arb_clear(t);
+    arb_clear(gap);
+    arb_clear(error_cut);
+    _arb_vec_clear(sum, Multithreaded_divide_integration_interval_number);
+    
     
     if(res_judge==0)
     {
