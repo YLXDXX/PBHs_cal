@@ -1093,7 +1093,10 @@ int Integration_arb(arb_t res, my_calc_func func, void *param, const slong order
                 res_judge=integration_gauss_kronrod_iterate(sum+i, func, param, order, a_cut, b_cut, error_cut, step_min, step_max, prec);
                 
         }
-        
+        {
+        #pragma omp atomic //这里，需要判断积分是否达到精度要求，通过求和方式判定，全部为零则达到要求
+        res_judge+=res_judge;
+        }
         arb_clear(a_cut);
         arb_clear(b_cut);
     }
