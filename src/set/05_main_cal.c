@@ -11,15 +11,6 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //exponential_tail_type
     arb_set_str(Exponential_tail_beta, "-5", prec); //exponential_tail_type 中β的取值，文献中通常取为β=3
     
-    //power_expansion_type 最高可展开到 6 阶
-    arb_set_str(Power_expansion_f, "-2.5", prec); //power-series expansion 二次项 f_NL -> A
-    arb_set_str(Power_expansion_g, "-2", prec); //power-series expansion 三次项 g_NL -> B
-    arb_set_str(Power_expansion_four, "0", prec); //power-series expansion 四次项 four -> C
-    arb_set_str(Power_expansion_five, "0", prec); //power-series expansion 五次项 five -> D
-    arb_set_str(Power_expansion_six, "0", prec); //power-series expansion 六次项 six -> E
-    //A=B=C=D=E=0 回到高斯的情况
-    //printf("command intput arg 1: %s\n",argv[1]);
-    
     /*
     //对应指数尾巴的展开系数 --> (-1)^(n-1)*1/n*β^(n-1)*x^n
     arb_set(Power_expansion_f,Exponential_tail_beta);
@@ -38,8 +29,23 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     */
     
     //up_step_type
-    arb_set_str(Up_step_h, "-2.5", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set(Up_step_h,Upward_step_spectra_h);
+    //arb_set_str(Up_step_h, "-2.5", prec); //up_step_type 其中Up_step_h取值为负
+    //arb_set_str(Up_step_h, comd_argv, prec); //从命令行读取参数
     
+    
+    //power_expansion_type 最高可展开到 6 阶
+    //通过 h 得到 f=5/12 * |h|
+    arb_mul_ui(Power_expansion_f,Up_step_h,5,prec);
+    arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
+    
+    //arb_set_str(Power_expansion_f, "-2.5", prec); //power-series expansion 二次项 f_NL -> A
+    arb_set_str(Power_expansion_g, "0", prec); //power-series expansion 三次项 g_NL -> B
+    arb_set_str(Power_expansion_four, "0", prec); //power-series expansion 四次项 four -> C
+    arb_set_str(Power_expansion_five, "0", prec); //power-series expansion 五次项 five -> D
+    arb_set_str(Power_expansion_six, "0", prec); //power-series expansion 六次项 six -> E
+    //A=B=C=D=E=0 回到高斯的情况
+    //printf("command intput arg 1: %s\n",argv[1]);
     
     
     //考虑所有k模式，用δ谱求连续谱，计算∫β(k_◦)dk_◦用
@@ -520,6 +526,46 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
                     
                     break;
+                case up_step_type :
+                    
+                    //根据δ谱下r*k为定值，采用动态r_m区间
+                    arb_set_str(R_K_to_r_m,"9.1",prec);
+                    arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
+                    arb_div_ui(Int_r_min,Int_r_min,15,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,70,prec);
+                    Root_r_num=70;
+                    arb_set_str(Int_r_precision,"1E-20",prec);
+                    
+                    arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_max,"1.5",prec);
+                    Root_mu_num=60;
+                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    
+                    C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
+                    C_m_average_iterate_max=5;
+                    arb_set_str(C_m_average_precision,"1E-6",prec);
+                    
+                    // M -> μ 求根用
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_max,"0.7",prec);
+                    Root_M_to_mu_num=12;
+                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    
+                    
+                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
+                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    
+                    // PS 计算相关
+                    //注意，ζ<2/h，ζ_G<1/h 两者的取值范围不一样
+                    arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                    arb_abs(PS_Int_P_C_l_max,Up_step_h);
+                    arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); // ζ_G<1/h
+                    arb_set_str(PS_Int_P_C_l_precision,"1E-35",prec);
+                    
+                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    break;
                 default :
                     printf("main.c Power_spectrum_type->broken_power_law_type-->zeta_type 有误\n");
                     exit(1);
@@ -618,6 +664,14 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     exit(1);
             }
             break;
+        case upward_step_spectra_type :
+            //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
+            // PS 计算方差 XX YY XY 积分， upward_step_spectra_type 谱共用
+            arb_set_str(PS_Int_variance_min, "0", prec);
+            arb_set_str(PS_Int_variance_max, "0", prec);
+            arb_set_str(PS_Int_variance_precision,"0",prec);
+            
+            break;
         default :
             printf(" main.c Power_spectrum_type 有误\n");
             exit(1);
@@ -655,6 +709,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     
     //arb_set_str(Mass_gamma,"0.36",prec); // γ ≃ 0.36
     arb_set_str(Mass_gamma,"0.357",prec); // γ ≃ 0.357
+    
+    //β 到 f 的转换系数，可以采用不同方法 beta_f_general_I, beta_f_general_II, beta_f_myself
+    beta_to_f_type=beta_f_general_I;
+    
     
     //
     //诱导引力波相关设定

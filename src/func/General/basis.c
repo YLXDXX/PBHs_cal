@@ -71,6 +71,151 @@ int Linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong pr
     return 0;
 }
 
+//功率谱辅助函数
+//这里，不同k对应的势能，关系后期推导，先直接用 V_0 近似
+//Help_V_0b函数暂不使用
+static void Help_V_0(arb_t res, const arb_t k, slong prec)
+{
+    //这里传入的k没有取对数
+    
+    arb_t s,t,w,q;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(q);
+    
+    //2207.11910 (4.1)
+    //第一部分
+    arb_mul_ui(t,Upward_step_spectra_epsilon_S,2,prec);
+    arb_sqrt(t,t,prec);
+    
+    arb_sub(s,Upward_step_spectra_k_s,k,prec);
+    Heaviside_Theta_function(w,s,prec);
+    arb_mul(t,t,s,prec);
+    arb_mul(t,t,w,prec);
+    arb_add_ui(t,t,1,prec);
+    
+    arb_sub(s,Upward_step_spectra_k_c,k,prec);
+    Heaviside_Theta_function(w,s,prec);
+    arb_mul(t,t,Upward_step_spectra_V_0,prec);
+    arb_mul(t,t,w,prec);
+    
+    //第二部分
+    arb_mul_ui(s,Upward_step_spectra_epsilon_V,2,prec);
+    arb_sqrt(s,s,prec);
+    arb_sub(q,Upward_step_spectra_k_c,k,prec);
+    arb_mul(s,s,q,prec);
+    arb_add_ui(s,s,1,prec);
+    
+    arb_sqr(w,q,prec);
+    arb_mul(w,w,Upward_step_spectra_eta_V,prec);
+    arb_div_ui(w,w,2,prec);
+    arb_add(s,s,w,prec);
+    
+    arb_neg(q,q);
+    Heaviside_Theta_function(w,q,prec);
+    arb_mul(s,s,w,prec);
+    
+    arb_add(w,Upward_step_spectra_V_0,Upward_step_spectra_Delta_V,prec);
+    arb_mul(s,s,w,prec);
+    
+    arb_add(res,t,s,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(q);
+}
+
+static void Help_H_2_pi_2(arb_t res, const arb_t k, slong prec) //(H/2π)^2
+{
+    //这里传入的k没有取对数
+    
+    //[H/(2π*m_pl)]^2=(3*H^2 * m_pl^2)/(12*π^2*m_pl^4)
+    //3H^2 * m_pl^2 ≈ V_0
+    //由于在 V_0 的值中带了 m_pl^4 这个参数，可以约去
+    //所以，在后续的计算中设 m_pl=1
+    
+    arb_t s,t,V_0;
+    arb_init(s);
+    arb_init(t);
+    arb_init(V_0);
+    
+    //[H/(2π)]^2=V_0/(12*π^2)
+    if ( 0 )
+    {
+        //这里，不同k对应的势能，关系后期推导，先直接用 V_0 近似 
+        Help_V_0(V_0,k,prec);//不同的k对应于不同的势能
+    }else
+    {
+        arb_set(V_0,Upward_step_spectra_V_0);
+    }
+    
+    arb_sqr(t,Pi,prec);
+    arb_mul_ui(t,t,12,prec);
+    
+    arb_div(res,V_0,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(V_0);
+}
+
+//由于 k_s 左右，有 k^4 关系
+//通过拟合 10^-2*k_s 到 k_c 间 k^4 关系，给定 k_c 后，求 k_s
+//此处， k^4 关系处理，不够完善，后期处理
+void Upward_step_power_spectrum_k_c_to_k_s(arb_t k_s, const arb_t k_c, slong prec)
+{
+    arb_t P_kc,P_2ks,s,t,w;
+    arb_init(P_kc);
+    arb_init(P_2ks);
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //求P(10-2k_s)
+    arb_div_ui(t,k_c,1E6,prec);
+    Help_H_2_pi_2(s,t,prec); //传入未取对数的 k 
+    
+    arb_div(s,s,Upward_step_spectra_epsilon_S,prec);
+    arb_div_ui(P_2ks,s,2,prec);
+    arb_log(P_2ks,P_2ks,prec); //取对数
+    
+    //求P(k_c)
+    Help_H_2_pi_2(s,k_c,prec); //传入未取对数的 k
+    
+    arb_sqr(w,Upward_step_spectra_g,prec);
+    arb_mul(t,w,Upward_step_spectra_h,prec);
+    arb_div_ui(t,t,6,prec);
+    arb_neg(t,t);
+    arb_add_ui(t,t,1,prec);
+    arb_sqr(t,t,prec);
+    arb_mul(s,s,t,prec);
+    
+    arb_mul(t,Upward_step_spectra_epsilon_V,w,prec);
+    arb_mul_ui(t,t,2,prec);
+    
+    arb_div(P_kc,s,t,prec);
+    arb_log(P_kc,P_kc,prec); //取对数
+    
+    //k^4变化关系
+    //取对数后，为线性关系
+    
+    arb_log(t,k_c,prec);
+    
+    arb_sub(s,P_kc,P_2ks,prec);
+    arb_div_ui(s,s,4,prec);
+    
+    arb_sub(w,t,s,prec);
+    arb_exp(s,w,2*prec);
+    arb_mul_ui(k_s,s,1E2,prec);
+    
+    arb_clear(P_kc);
+    arb_clear(P_2ks);
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);    
+}
 
 
 //功率谱 
@@ -221,6 +366,80 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             {
                 //第三段 P_m(k)
                 arb_set(res,Link_CMB_P_m);
+            }
+            
+            break;
+            
+        case upward_step_spectra_type :
+            //注意，这里是以ln(k)作为自变量的，传进来的值就是ln(k)的值
+            //2207.11910 (4.13)
+            
+            arb_set_str(t,"1E-2",prec); //ln(1E-2*k_s)
+            arb_log(t,t,prec);
+            arb_add(t,t,Upward_step_spectra_ln_k_s,prec);
+            
+            if ( arb_lt(k,t) ) //原式为 k ≪ k_s，这里使用 k < 1E-2*k_s
+            {
+                arb_exp(t,k,prec);
+                Help_H_2_pi_2(s,t,prec); //传入未取对数的 k 
+                
+                arb_div(s,s,Upward_step_spectra_epsilon_S,prec);
+                arb_div_ui(res,s,2,prec);
+                
+            }else if ( arb_le(k,Upward_step_spectra_ln_k_c) ) // k < k_c
+            {
+                //在 1E-2*k_s 到 k_c 这一段，有一个 k^4 变化上升的规律
+                
+                arb_exp(t,Upward_step_spectra_ln_k_c,prec);
+                Help_H_2_pi_2(s,t,prec); //传入未取对数的 k
+                
+                arb_sqr(w,Upward_step_spectra_g,prec);
+                arb_mul(t,w,Upward_step_spectra_h,prec);
+                arb_div_ui(t,t,6,prec);
+                arb_neg(t,t);
+                arb_add_ui(t,t,1,prec);
+                arb_sqr(t,t,prec);
+                arb_mul(s,s,t,prec);
+                
+                arb_mul(t,Upward_step_spectra_epsilon_V,w,prec);
+                arb_mul_ui(t,t,2,prec);
+                
+                arb_div(s,s,t,prec); //这里求得 P(k_c)
+                arb_log(s,s,prec); //取对数
+                
+                //P(k)=P(k_c)-(ln(k_c)-ln(k))*4
+                arb_sub(t,Upward_step_spectra_ln_k_c,k,prec);
+                arb_mul_ui(t,t,4,prec);
+                arb_sub(s,s,t,prec);
+                arb_exp(res,s,prec); //对数结果，取指数还原
+                
+            }else // k > k_c
+            {
+                arb_pow_ui(w,Upward_step_spectra_g,4,prec);
+                arb_neg(t,w);
+                arb_add_ui(t,t,1,prec);
+                
+                arb_exp(s,k,prec);
+                arb_mul(s,s,Upward_step_spectra_tau_c,prec);
+                arb_mul_ui(s,s,2,prec);
+                arb_cos(s,s,prec);
+                
+                arb_mul(t,t,s,prec);
+                arb_add_ui(t,t,1,prec);
+                arb_add(t,t,w,prec);
+                
+                arb_sqr(w,Upward_step_spectra_g,prec);
+                arb_mul_ui(w,w,4,prec);
+                arb_mul(w,w,Upward_step_spectra_epsilon_V,prec);
+                
+                arb_div(w,t,w,prec);
+                
+                
+                
+                arb_exp(t,k,prec);
+                Help_H_2_pi_2(s,t,prec); //传入未取对数的 k
+                
+                arb_mul(res,w,s,prec);
             }
             
             break;

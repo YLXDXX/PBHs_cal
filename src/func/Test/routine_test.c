@@ -51,6 +51,15 @@ void routine_test(slong prec)
     Int_GW_power_spectra_iterate_y_max=100;
     
     /*
+    arb_set_str(x,"9E6",prec);
+    arb_log(x,x,prec);
+    power_spectrum(y,x,prec);
+    
+    arb_printn(y, 50,0);printf("\n");
+    exit(0);
+    */
+    
+    /*
     //诱导引力波
     arb_set_str(x,"2",prec);
     arb_set_str(y,"2.1",prec);

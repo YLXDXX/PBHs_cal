@@ -29,6 +29,14 @@ enum GW_INDUCED_ENUM_TYPE
     Espinosa_01
 };
 
+//β与f间的转换系数
+enum BETA_TO_F_ENUM_TYPE
+{
+    beta_f_general_I,
+    beta_f_general_II,
+    beta_f_myself
+};
+
 //用来进行计算的函数，如积分、找根等
 typedef int (*my_calc_func)(arb_t out, const arb_t inp, void* param, const slong order, slong prec);
 
@@ -45,7 +53,8 @@ enum POWER_ENUM_TYPE
     power_law_type,
     box_type,
     broken_power_law_type,
-    link_cmb_type
+    link_cmb_type,
+    upward_step_spectra_type
 };
 
 //求临界值的两种方法

@@ -80,8 +80,8 @@ target("./PBHs") --Name of the generated executable file
 --    add_syslinks("z", "pthread")
 --
 --    -- add compilation and link flags
-    add_cxflags("-Wall")
-    add_ldflags("-Wall", "-lcubaq", "-lquadmath", "-lflint", "-lm", {force = true})
+    add_cxflags("-Wall", "-fopenmp")
+    add_ldflags("-Wall", "-fopenmp", "-lcubaq", "-lquadmath", "-lflint", "-lm", {force = true})
 --
 -- @endcode
 --

@@ -13,6 +13,8 @@ void Set_cal_math(slong prec)
     //积分行为设定
     Integral_method=double_exponential; // gauss_kronrod_iterate/double_exponential
     
+    Multithreaded_divide_integration_interval_number=16; //多线程计算区间分隔数目
+    Multithreaded_number=11; //多线程计算线程总数
     
     
     arb_init(INT_MIN_INTERVAL); //积分最小子区间间隔，一般十进制设为 10^(-prec/4) ，主要为防止有些积分区间无限细分下去
@@ -28,13 +30,13 @@ void Set_cal_math(slong prec)
             
             //2^12=4096 2^13=8192 2^15=32768 2^17=131072
             Integration_iterate_min=32; //积分最小迭代区间 interval_min = (b-a)/step_min
-            Integration_iterate_max=30000; //积分最大迭代次数
+            Integration_iterate_max=25000; //积分最大迭代次数
             
             break;
             
         case double_exponential :
-            Integration_iterate_min=5; //最少迭代次数
-            Integration_iterate_max=18; //最大迭代次数
+            Integration_iterate_min=4; //最少迭代次数
+            Integration_iterate_max=16; //最大迭代次数
             break;
             
         default :

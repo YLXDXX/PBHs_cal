@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     */
     
     //功率谱相关设定
-    //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
+    //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type/upward_step_spectra_type
     Power_spectrum_type=broken_power_law_type;
     
     
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //                average_method_simple / average_method_new
     Mu_2_TH_METHOD=q_parameter_method_new;
     
-    routine_test(prec); exit(0);
+    //routine_test(prec); exit(0);
     
     
     //寻找阈值
@@ -259,14 +259,15 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //interior_probability_C_l(Pk,t,w,0,prec);
     //probability_gauss_2D(Pk,t,w,prec);
     //PS_abundance_beta_m(Pk,t,prec);
-    //PS_abundance_beta_all(w,prec);
+    //PS_abundance_beta_all(Pk,prec);
+    //beta_m_to_f_m_coefficient(Pk,prec);
     //PS_abundance_f_m(Pk, w, prec);
-    //PS_abundance_f_all(Pk,prec);
+    PS_abundance_f_all(Pk,prec);
     //Probability_C(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
     
-    arb_printn(w,30,0);printf("\n");
-    
+    //arb_printn(w,30,0);printf("\n");
+    arb_printn(Pk,30,0);printf("\n");
     
     //考虑所有k模式，用δ谱计算连续谱
     //PS_abundance_beta_delta_k(Pk, t, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
@@ -274,28 +275,23 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
     //诱导引力波
-    arb_set_str(k,"1.56E13",prec);
+    //arb_set_str(k,"1.56E13",prec);
     //arb_set_str(eta,"1",prec);
-    arb_inv(eta,k,prec);
+    //arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
     //GW_current_energy_density(Pk,k,prec);
     //GW_current_energy_density_cuba(Pk,k,0,prec);
     
     //自由度数
-    arb_set_str(t,"1E8",prec);
+    //arb_set_str(t,"1E8",prec);
     //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
     //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
     
     
-    //arb_div(w,Pk,w,prec);
-    //arb_printn(t,60,0);printf("\n");
-    
-    //arb_printn(t,60,0);printf("\n");
-    //arb_printn(w,60,0);printf("\n");
-    arb_printn(Pk,30,0);printf("\n");
+    //arb_printn(Pk,30,0);printf("\n");
     //arb_printn(w,30,0);printf("\n");
     //sleep(600);
-    exit(0);
+    //exit(0);
     
     
     //输出计算结果到文件

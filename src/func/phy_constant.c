@@ -36,7 +36,21 @@ arb_t Link_CMB_K_star;
 arb_t Link_CMB_P_m;
 arb_t Link_CMB_n_s;
 arb_t Link_CMB_n_b;
-
+arb_t Upward_step_spectra_epsilon_S; //upward step模型的原生功率谱, SR-USR-SR
+arb_t Upward_step_spectra_epsilon_V;
+arb_t Upward_step_spectra_eta_V;
+arb_t Upward_step_spectra_g;
+arb_t Upward_step_spectra_h;
+arb_t Upward_step_spectra_V_0;
+arb_t Upward_step_spectra_Delta_V;
+arb_t Upward_step_spectra_Delta_phi_USR;
+arb_t Upward_step_spectra_phi_s;
+arb_t Upward_step_spectra_phi_c;
+arb_t Upward_step_spectra_k_s;
+arb_t Upward_step_spectra_k_c;
+arb_t Upward_step_spectra_ln_k_s;
+arb_t Upward_step_spectra_ln_k_c;
+arb_t Upward_step_spectra_tau_c;
 
 //曲率扰动 ζ 相关
 ZETA Zeta_type; // ζ 的类型
@@ -129,6 +143,9 @@ arb_t Root_M_to_mu_precision;
 
 ulong Integration_iterate_min; //积分的最小迭代次数
 ulong Integration_iterate_max; //积分的最大迭代次数
+
+// β 与 f 间的转换系数的选择
+enum BETA_TO_F_ENUM_TYPE beta_to_f_type;
 
 
 //非高斯相关参数

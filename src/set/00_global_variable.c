@@ -53,7 +53,21 @@ void Set_global_variable(slong prec)
     arb_init(Link_CMB_P_m);
     arb_init(Link_CMB_n_s);
     arb_init(Link_CMB_n_b);
-    
+    arb_init(Upward_step_spectra_epsilon_S); //upward step模型的原生功率谱, SR-USR-SR
+    arb_init(Upward_step_spectra_epsilon_V);
+    arb_init(Upward_step_spectra_eta_V);
+    arb_init(Upward_step_spectra_g);
+    arb_init(Upward_step_spectra_h);
+    arb_init( Upward_step_spectra_V_0);
+    arb_init(Upward_step_spectra_Delta_V);
+    arb_init(Upward_step_spectra_Delta_phi_USR);
+    arb_init(Upward_step_spectra_phi_s);
+    arb_init(Upward_step_spectra_phi_c);
+    arb_init(Upward_step_spectra_k_s);
+    arb_init(Upward_step_spectra_k_c);
+    arb_init(Upward_step_spectra_ln_k_s);
+    arb_init(Upward_step_spectra_ln_k_c);
+    arb_init(Upward_step_spectra_tau_c);
     
     //为求ζ(r)所需的积分区间设定
     arb_init(Int_sigma_n_min); //sigma_n ，初始化各变量

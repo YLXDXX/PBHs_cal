@@ -6,10 +6,11 @@ int C_r_prime_II(arb_t res, arb_t r, slong prec);
 //画图
 void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
 {
-    arb_t t,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by;
+    arb_t t,s,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by;
     
     arb_init(t);
-    arb_init(aa); 
+    arb_init(s);
+    arb_init(aa);
     arb_init(bb);
     arb_init(gap_x); //一层点间隔
     arb_init(gap_y); //二层点间隔
@@ -19,8 +20,8 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     arb_init(ay); 
     arb_init(by);
     
-    arb_set_str(aa,"1",prec); //一层循环用
-    arb_set_str(bb,"100",prec);
+    arb_set_str(aa,"6E4",prec); //一层循环用
+    arb_set_str(bb,"6E9",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -34,7 +35,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     slong out_number,number;
     
-    number=1E2; //输出点的个数
+    number=1E6; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -63,8 +64,10 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     //一层输出
     for (long int i=1; i <= number; i++)
     {
-        arb_fprintn(fp,aa,out_number,ARB_STR_NO_RADIUS); // 横坐标，对应参数值
-        fprintf(fp, "\t");
+        //arb_sub_ui(t,Upward_step_spectra_k_c,1,prec);
+        arb_log(t,aa,prec);
+        power_spectrum(out_point,t,prec);
+        //arb_printn(out_point, 50,0);printf("\n");
         
         //zeta_Gauss_profile_n(out_point, aa, 0, prec);
         //zeta_profile_n(out_point,aa,0, prec); //ζ(r)
@@ -88,8 +91,16 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //arb_exp(t,aa,prec); //取指数后再传入
         //GW_power_spectra(out_point,eta,k,prec); //这里传入的k值未取对数
         //GW_current_energy_density(out_point,t,prec);
-        Func_GW_f_to_k(t, aa, prec);//f nHz --> K Mpc^-1 
-        GW_current_energy_density_cuba(out_point,t,0,prec); //这里传入的k值未取对数
+        //arb_set_str(aa,"1",prec);
+        //Func_GW_f_to_k(t, aa, prec);//f nHz --> K Mpc^-1 
+        //GW_current_energy_density_cuba(out_point,t,0,prec); //这里传入的k值未取对数
+        //GW_current_energy_density_cuba(out_point_2,t,2,prec); //这里传入的k值未取对数
+        //arb_printn(out_point, 50,0);printf("\n");
+        //arb_set_str(aa,"32",prec);
+        //Func_GW_f_to_k(t, aa, prec);//f nHz --> K Mpc^-1 
+        //GW_current_energy_density_cuba(out_point,t,2,prec); //这里传入的k值未取对数
+        //arb_printn(out_point, 50,0);printf("\n");
+        //exit(0);
         
         //相对论自由度数
         //arb_exp(t,aa,prec);
@@ -103,6 +114,9 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //arb_printn(out_point, 50,0);printf("\n");
         
+        
+        arb_fprintn(fp,aa,out_number,ARB_STR_NO_RADIUS); // 横坐标，对应参数值
+        fprintf(fp, "\t");
         //arb_fprintn(fp,out_point_2,out_number,ARB_STR_NO_RADIUS); //out_point
         //fprintf(fp, "\t");
         arb_fprintn(fp,out_point,out_number,ARB_STR_NO_RADIUS); //out_point
@@ -153,6 +167,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     fclose(fp); //关闭文件
     
     arb_clear(t);
+    arb_clear(s);
     arb_clear(aa);
     arb_clear(bb);
     arb_clear(gap_x);

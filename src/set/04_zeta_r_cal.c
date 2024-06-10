@@ -10,7 +10,7 @@ void Set_zeta_r_cal(slong prec)
     {
         case lognormal_type :
             //以ln(k)作为积分变量，若出现负值，正常
-            arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 15, prec); //这里的范围需要大点
+            arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 13, prec); //这里的范围需要大点
             arb_sub(Int_sigma_n_min,Ln_K_star,Log_normal_mul_sigma,prec); //动态积分范围
             arb_add(Int_sigma_n_max,Ln_K_star,Log_normal_mul_sigma,prec);
             
@@ -76,6 +76,14 @@ void Set_zeta_r_cal(slong prec)
             arb_set_str(Int_sigma_n_precision,"1E-15",prec);
             
             break;
+        case upward_step_spectra_type :
+            //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
+            arb_set_str(Int_sigma_n_min, "0", prec);
+            arb_set_str(Int_sigma_n_max, "1", prec);
+            arb_set_str(Int_sigma_n_precision,"1E-12",prec);
+            
+            break;
+            
         case delta_type :
             //不需要
             break;
