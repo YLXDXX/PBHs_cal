@@ -96,9 +96,13 @@ void Set_physical_parameter(slong prec)
     if( Power_spectrum_type==lognormal_type || Power_spectrum_type==delta_type || Power_spectrum_type==broken_power_law_type )
     {
         Func_k_to_degrees_of_freedom(effective_g_star, effective_g_star_entropy, K_star, prec);
-    }else
+    }else if ( Power_spectrum_type==upward_step_spectra_type )
     {
-        printf("注意，检测到功率谱类型不为 delta | log-normal | broken power law, 对应的自由度数目需手动设置\n ");
+        Func_k_to_degrees_of_freedom(effective_g_star, effective_g_star_entropy, Upward_step_spectra_k_c, prec);
+    }
+    else
+    {
+        printf("注意，检测到功率谱类型不为 delta | log-normal | broken power law | upward step, 对应的自由度数目需手动设置\n ");
         arb_set_str(effective_g_star,"106.75",prec); //重新进入视界后，对应的相对论有效自由度数目 g_*
         arb_set_str(effective_g_star_entropy,"106.75",prec); //重新进入视界后，对应的熵有效自由度数目 g_{*,s}
     }
