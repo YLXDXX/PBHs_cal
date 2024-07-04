@@ -203,7 +203,7 @@ int interior_probability_C_l_Y_root(arb_t res, const arb_t Y, void* parameter, c
 }
 
 //多个Y时，求每个Y对应的概率
-void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, slong prec )
+void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, const arb_t C_l, slong prec )
 {
     arb_t s,t,zeta_1,zeta_2;
     arb_init(s);
@@ -212,10 +212,9 @@ void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, 
     arb_init(zeta_2);
     
     //对应概率： P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
+    // or P(C_l)==P(Y)*|C_l/(Y*ζ')*(ζ''Y+ζ')|^(-1) //此式适用面更广
     
-    //求 P(C_l)
-    
-    //为求|ζ''Y+ζ'|^(-1)，针对各种不同的 ζ 类型 分开讨论， Y=ζ_G
+    //为求|C_l/(Y*ζ')*(ζ''Y+ζ')|^(-1)，针对各种不同的 ζ 类型 分开讨论， Y=ζ_G
     switch(Zeta_type) 
     {
         case exponential_tail_type :
@@ -238,7 +237,7 @@ void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, 
             exit(1);
     }
     
-    arb_mul(t,zeta_2,Y,prec); //|A|*|ζ''Y+ζ'|^(-1)
+    arb_mul(t,zeta_2,Y,prec); //|C_l/(Y*ζ')*(ζ''Y+ζ')|^(-1)
     arb_add(t,t,zeta_1,prec);
     //有一些模型，有取值范围的限制，超过取值范围后，ζ''和ζ'的取值均为零
     if(arb_is_zero(t)) //t=0
@@ -247,9 +246,12 @@ void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, 
         arb_zero(res);
     }else
     {
+        arb_mul(t,t,C_l,prec);
+        arb_div(t,t,Y,prec);
+        arb_div(t,t,zeta_1,prec);
+        
         arb_inv(t,t,prec); //取倒数
-        arb_mul(t,t,A,prec);
-        arb_abs(t,t); //取色对值
+        arb_abs(t,t); //取绝对值
         
         //P(Y)
         interior_probability_gauss(s,Y,prec);
@@ -267,210 +269,144 @@ void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, 
 //计算 C_ℓ 的概率密度分布 P(C_l)
 int Probability_C_l(arb_t res, const arb_t C_l, slong prec)
 {
-    arb_t s,t,w,x,A,Y,t_cl,sin,cos,P_each_Y;
+    arb_t s,t,w,A,Y,t_cl,P_each_Y;
     
     //初始化参数
     arb_init(s);
     arb_init(t);
     arb_init(w);
-    arb_init(x);
     arb_init(A);
     arb_init(Y);
     arb_init(t_cl);
-    arb_init(sin);
-    arb_init(cos);
     arb_init(P_each_Y);
     
     arb_set(t_cl,C_l);
     
-    switch(Power_spectrum_type)
+    if( Zeta_type==gaussian_type )
     {
-        case lognormal_type :
-            
-            //使用新的gauss_kronrod积分算法
-            Integration_arb(res, interior_probability_C_l, t_cl, 0, 
-                                      PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
-                                      Integration_iterate_min,Integration_iterate_max, prec);
-            
-            break;
-        case power_law_type :
-            //使用新的gauss_kronrod积分算法
-            Integration_arb(res, interior_probability_C_l, t_cl, 0, 
-                                      PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
-                                      Integration_iterate_min,Integration_iterate_max, prec);
-            break;
-        case broken_power_law_type :
-            //使用新的gauss_kronrod积分算法
-            Integration_arb(res, interior_probability_C_l, t_cl, 0, 
-                                      PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
-                                      Integration_iterate_min,Integration_iterate_max, prec);
-            break;
-        case box_type :
-            //使用新的gauss_kronrod积分算法
-            Integration_arb(res, interior_probability_C_l, t_cl, 0, 
-                                      PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
-                                      Integration_iterate_min,Integration_iterate_max, prec);
-            break;
-        case link_cmb_type :
-            //使用新的gauss_kronrod积分算法
-            Integration_arb(res, interior_probability_C_l, t_cl, 0, 
-                                      PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
-                                      Integration_iterate_min,Integration_iterate_max, prec);
-            break;
-        case delta_type :
-            //利用附录中对于δ情况的推导求解
-            //δ情况下，P(X,Y)中由于X和Y线性相关，退化为一元情况
-            //需要通过 C_l 反解出 Y
-            //有多个根的情况下，是将各个根对应的概率加起来
-            
-            
-            //对于给定的C_l需要求出Y，可能有多个根
-            //dζ/dζ_G*Y+3/4*C_l*[sin(x)/( xcos(x)-sin(x) )]
-            //设常数A=3/4*[sin(x)/( xcos(x)-sin(x) )]
-            //dζ/dζ_G*Y+A*C_l=0
-            //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
-            
-            arb_mul(x, K_star, R_MAX, prec); //求 x
-            
-            //求系数 A=3/4*[sin(x)/( xcos(x)-sin(x) )]
-            arb_sin(sin,x,prec);
-            arb_cos(cos,x,prec);
-            
-            arb_mul(s,x,cos,prec); //sin(x)/( xcos(x)-sin(x)
-            arb_sub(s,s,sin,prec);
-            arb_div(s,sin,s,prec);
-            
-            arb_mul_ui(s,s,3,prec);
-            arb_div_ui(A,s,4,prec);
-            
-            
-            
-            //反解Y，求根传参数
-            //这里，对于结构体 Find_root_delta_C_l_Y 需手动分配内存
-            struct Find_root_delta_C_l_Y *Root_Y_parameter = (struct Find_root_delta_C_l_Y *)calloc(1,sizeof(struct Find_root_delta_C_l_Y));
-            
-            arb_init(Root_Y_parameter->C_l);//使用arb_t变量前初始化
-            arb_init(Root_Y_parameter->A);
-            
-            arb_set(Root_Y_parameter->C_l,t_cl); //设定求根参数
-            arb_set(Root_Y_parameter->A,A);
-            
-            
-            int root_num; //根的个数
-            arb_ptr muil_r; //存储多个根
-            arb_ptr* m_r; //改变muil_r指针指向的地址，需要一个指向该指针的指针
-            m_r=&muil_r;
-            
-            
-            //arb_printn(A, 50,0);printf("\n");
-            //arb_printn(t_cl, 50,0);printf("\n");
-            
-            //概率求解为 P(C_l)=P(Y)*|A|*|d^2ζ/dζ_G^2 *Y + Y*dζ/dζ_G |^(-1)
-            
-            switch(Zeta_type)
-            {
-                case gaussian_type :
-                    //此时 P(C_l)=P(Y)*|A|  //取绝对值
-                    //而 Y+A*C_l=0 
-                    
-                    //求 Y 
-                    arb_mul(t,C_l,A,prec); //Y=-A*C_l
-                    arb_neg(Y,t);
-                    
-                    //求 P(C_l)
-                    interior_probability_gauss(s,Y,prec); //P(C_l)=P(Y)*|A|
-                    arb_abs(t,A); //取绝对值
-                    arb_mul(res,s,t,prec);
-                    
-                    break;
-                    
-                case exponential_tail_type :
-                    
-                    //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
-                    //需要反解出Y，这里用数值解法
-                    //dζ/dζ_G*Y+A*C_l=0
-                    
-                    root_num=Find_interval_multi_root(m_r,interior_probability_C_l_Y_root,Root_Y_parameter, 0,
-                                                      PS_Root_C_l_to_Y_min,PS_Root_C_l_to_Y_max,PS_Root_C_l_to_Y_precision,
-                                                      PS_Root_C_l_to_Y_num,prec);
-                    //printf("根的个数为: %i\n",root_num);
-                    //将每个根对应的根率加起来
-                    arb_zero(P_each_Y);
-                    for(int root_i=0; root_i<root_num; root_i++)
-                    {
-                        interior_probability_C_l_P_each_Y(w,muil_r+root_i,A,prec);
-                        arb_add(P_each_Y,P_each_Y,w,prec);
-                    }
-                    
-                    arb_set(res,P_each_Y);
-                    
-                    break;
-                case up_step_type :
-                    //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
-                    //需要反解出Y，这里用数值解法
-                    //dζ/dζ_G*Y+A*C_l=0
-                    
-                    root_num=Find_interval_multi_root(m_r,interior_probability_C_l_Y_root,Root_Y_parameter, 0,
-                                                      PS_Root_C_l_to_Y_min,PS_Root_C_l_to_Y_max,PS_Root_C_l_to_Y_precision,
-                                                      PS_Root_C_l_to_Y_num,prec);
-                    //printf("根的个数为: %i\n",root_num);
-                    //将每个根对应的根率加起来
-                    arb_zero(P_each_Y);
-                    for(int root_i=0; root_i<root_num; root_i++)
-                    {
-                        interior_probability_C_l_P_each_Y(w,muil_r+root_i,A,prec);
-                        arb_add(P_each_Y,P_each_Y,w,prec);
-                    }
-                    
-                    arb_set(res,P_each_Y);
-                    
-                    break;
-                case power_expansion_type :
-                    
-                    //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
-                    //需要反解出Y，这里用数值解法
-                    //dζ/dζ_G*Y+A*C_l=0
-                    
-                    root_num=Find_interval_multi_root(m_r,interior_probability_C_l_Y_root,Root_Y_parameter, 0,
-                                                      PS_Root_C_l_to_Y_min,PS_Root_C_l_to_Y_max,PS_Root_C_l_to_Y_precision,
-                                                      PS_Root_C_l_to_Y_num,prec);
-                    //printf("根的个数为: %i\n",root_num);
-                    //将每个根对应的根率加起来
-                    arb_zero(P_each_Y);
-                    for(int root_i=0; root_i<root_num; root_i++)
-                    {
-                        interior_probability_C_l_P_each_Y(w,muil_r+root_i,A,prec);
-                        arb_add(P_each_Y,P_each_Y,w,prec);
-                    }
-                    
-                    arb_set(res,P_each_Y);
-                    
-                    break;
-                default :
-                    printf("PS_Method -> C_l_probability -> Probability_C_l->delta_type->zeta_type 有误\n");
-                    exit(1);
-            }
-            
-            free(Root_Y_parameter); //手动释放自定义结构体内存
-            
-            break;
-            
-        default:
-            printf("PS_Method -> C_l_probability ->  Probability_C_l -> Power_spectrum_type 有误\n");
-            exit(1);
+        //在高斯情况下，连续谱，可以不用求积分，P(C_l)的分布是高斯分布
+        //δ谱也对应一个高斯分布，与连续谱的情况一样
+        //可直接用高斯分布求解
+        //Σ_{C_l}=(4/3)^2 * Σ_XX
+        arb_one(s);
+        arb_mul_ui(s,s,16,prec);
+        arb_div_ui(s,s,9,prec);
+        arb_mul(s,s,PS_Sigma_XX,prec);
+        
+        //高斯分布，指数部分
+        arb_sqr(t,C_l,prec);
+        arb_div_ui(t,t,2,prec);
+        arb_div(t,t,s,prec);
+        arb_neg(t,t);
+        arb_exp(t,t,prec);
+        
+        //高斯分布，系数部分
+        arb_mul(w,Pi_2,s,prec);
+        arb_sqrt(w,w,prec);
+        
+        arb_div(res,t,w,prec);
+        
+    }else
+    {
+        switch(Power_spectrum_type)
+        {
+            case lognormal_type : //此几种情况可合并，在最后加 break 即可
+            case power_law_type :
+            case broken_power_law_type :
+            case box_type :
+            case link_cmb_type :
+                //连续谱，非高斯情况，使用积分求解
+                Integration_arb(w, interior_probability_C_l, t_cl, 0, 
+                                PS_Int_P_C_l_min, PS_Int_P_C_l_max,PS_Int_P_C_l_precision,
+                                Integration_iterate_min,Integration_iterate_max, prec);
+                
+                arb_set(res,w);
+                
+                break;
+            case delta_type : 
+                //利用附录中对于δ情况的推导求解
+                //δ情况下，P(X,Y)中由于X和Y线性相关，退化为一元情况
+                //需要通过 C_l 反解出 Y
+                //有多个根的情况下，是将各个根对应的概率加起来
+                
+                //对于给定的C_l需要求出Y，可能有多个根
+                //dζ/dζ_G*Y+3/4*C_l*[sin(x)/( xcos(x)-sin(x) )]=0
+                // or dζ/dζ_G*Y+3/4*C_l*Σ_YY/Σ_XY=0 //此式适用面更广
+                //设常数A=3/4*[sin(x)/( xcos(x)-sin(x) )]
+                //dζ/dζ_G*Y+A*C_l=0
+                
+                arb_div(s,PS_Sigma_YY,PS_Sigma_XY,prec); //系数A
+                arb_mul_ui(s,s,3,prec);
+                arb_div_ui(A,s,4,prec);
+                
+                //反解Y，求根传参数
+                //这里，对于结构体 Find_root_delta_C_l_Y 需手动分配内存
+                struct Find_root_delta_C_l_Y *Root_Y_parameter = (struct Find_root_delta_C_l_Y *)calloc(1,sizeof(struct Find_root_delta_C_l_Y));
+                
+                arb_init(Root_Y_parameter->C_l);//使用arb_t变量前初始化
+                arb_init(Root_Y_parameter->A);
+                
+                arb_set(Root_Y_parameter->C_l,t_cl); //设定求根参数
+                arb_set(Root_Y_parameter->A,A);
+                
+                int root_num; //根的个数
+                arb_ptr muil_r; //存储多个根
+                arb_ptr* m_r; //改变muil_r指针指向的地址，需要一个指向该指针的指针
+                m_r=&muil_r;
+                
+                //arb_printn(A, 50,0);printf("\n");
+                //arb_printn(t_cl, 50,0);printf("\n");
+                
+                switch(Zeta_type)
+                {
+                    case exponential_tail_type : //此几种情况可合并，在最后加 break 即可
+                    case up_step_type :
+                    case power_expansion_type :
+                        
+                        //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
+                        //需要反解出Y，这里用数值解法
+                        //dζ/dζ_G*Y+A*C_l=0
+                        
+                        root_num=Find_interval_multi_root(m_r,interior_probability_C_l_Y_root,Root_Y_parameter, 0,
+                                                          PS_Root_C_l_to_Y_min,PS_Root_C_l_to_Y_max,PS_Root_C_l_to_Y_precision,
+                                                          PS_Root_C_l_to_Y_num,prec);
+                        //printf("根的个数为: %i\n",root_num);
+                        //将每个根对应的根率加起来
+                        arb_zero(P_each_Y);
+                        for(int root_i=0; root_i<root_num; root_i++)
+                        {
+                            interior_probability_C_l_P_each_Y(w,muil_r+root_i,A,C_l,prec);
+                            arb_add(P_each_Y,P_each_Y,w,prec);
+                        }
+                        
+                        arb_set(res,P_each_Y);
+                        
+                        break;
+                    default :
+                        printf("PS_Method -> C_l_probability -> Probability_C_l->delta_type->zeta_type 有误\n");
+                        exit(1);
+                }
+                
+                free(Root_Y_parameter); //手动释放自定义结构体内存
+                
+                break;
+                
+                    default:
+                        printf("PS_Method -> C_l_probability ->  Probability_C_l -> Power_spectrum_type 有误\n");
+                        exit(1);
+        }
     }
+    
+    
     
     
     //完成计算，释放
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
-    arb_clear(x);
     arb_clear(A);
     arb_clear(Y);
     arb_clear(t_cl);
-    arb_clear(sin);
-    arb_clear(cos);
     arb_clear(P_each_Y);
     
     return 0;
