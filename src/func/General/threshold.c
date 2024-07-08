@@ -746,7 +746,7 @@ int Trans_C_to_C_l(arb_t res, const arb_t x, slong prec)
     arb_mul(s,s,x,prec);
     arb_neg(s,s);
     arb_add_ui(s,s,1,prec);
-    arb_sqr(s,s,prec);
+    arb_sqrt(s,s,prec);
     
     arb_neg(s,s);
     arb_add_ui(s,s,1,prec);
