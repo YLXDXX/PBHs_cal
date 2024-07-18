@@ -18,9 +18,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     slong prec;
     prec=500; //控制计算精度， 500，精度在 140 位左右；300，在80位左右，64，在15位左右
     
-    
     Stdout_verbose=false; //命令行输出详细模式，true/false
-    
     
     //输出文件配制
     get_save_path(Path_save);
@@ -60,7 +58,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type/upward_step_spectra_type
-    Power_spectrum_type=broken_power_law_type;
+    Power_spectrum_type=lognormal_type;
     
     
     Set_power_spectra(argv[1],prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -81,21 +79,21 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Set_main_cal(argv[1], prec); //可从命令行读取参数
     
     
-    //变量Mu_2_th， ζ(r) 的参数 µ 的临界值 
-    // Mu_2_th 与 K_3_square 有关，不过在简化的情况下，Mu_2_th 已独立出来，只需要求解一次
+    //变量PT_mu_th， ζ(r) 的参数 µ 的临界值 
+    // PT_mu_th 与 PT_k_square 有关，不过在简化的情况下，PT_mu_th 已独立出来，只需要求解一次
     //变量Q_parameter_th，ζ(r)取临界值时的q参数
     
     //求临界值的四种方式 q_parameter_method_simple / q_parameter_method_new
     //                average_method_simple / average_method_new
-    Mu_2_TH_METHOD=q_parameter_method_new;
+    PT_Mu_th_METHOD=q_parameter_method_new;
     
     //routine_test(prec); exit(0);
     
     
     //寻找阈值
-    Find_Mu_2_th(Mu_2_th, prec);
-    //arb_set_str(Mu_2_th,"0.4",prec);
-    //arb_printn(Mu_2_th, 60,0);printf("\n\n\n");
+    Find_PT_Mu_th(PT_mu_th, prec);
+    //arb_set_str(PT_mu_th,"0.622",prec);
+    //arb_printn(PT_mu_th, 60,0);printf("\n\n\n");
     //exit(0);
     
     
@@ -105,9 +103,9 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //在PS计算协方差矩阵元时，需要 r_m 的位置
     //我们在这里，统一设成 μ=μ_th 时对应的位置
     
-    arb_set(Mu_2, Mu_2_th); //算 r_m 时，设 Mu_2 为其临界值
-    //arb_set_str(Mu_2,"0.615327",prec);
-    Find_r_max(R_MAX, prec); //计算 r_m，需在 Mu_2 设定后，因为 r_m 与 Mu_2 有关
+    arb_set(PT_mu, PT_mu_th); //算 r_m 时，设 PT_mu 为其临界值
+    //arb_set_str(PT_mu,"0.615327",prec);
+    Find_r_max(R_MAX, prec); //计算 r_m，需在 PT_mu 设定后，因为 r_m 与 PT_mu 有关
                              //且要在计算方差前，计算方差要用r_m
     //arb_set_str(R_MAX,"1.7e-13",prec);
     printf("r_max： ");arb_printn(R_MAX, 60,0);printf("\n");
@@ -139,15 +137,15 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     // PS 计算 C_th
-    //在计算此之前，需求出 Mu_2_th 和 R_MAX，并设 Mu_2=Mu_2_th
+    //在计算此之前，需求出 PT_mu_th 和 R_MAX，并设 PT_mu=PT_mu_th
     Q_parameter(Q_parameter_th,R_MAX,prec); 
     
     printf("q parameter_th: ");arb_printn(Q_parameter_th, 50,0);printf("\n\n");
     
-    if(Mu_2_TH_METHOD==q_parameter_method_new)
+    if(PT_Mu_th_METHOD==q_parameter_method_new)
     {
         Delta_c_q_parameter_new(PS_C_th,Q_parameter_th,prec);
-    }else if(Mu_2_TH_METHOD==q_parameter_method_simple)
+    }else if(PT_Mu_th_METHOD==q_parameter_method_simple)
     {
         Delta_c_q_parameter_simple(PS_C_th,Q_parameter_th,prec);
     }else
@@ -155,12 +153,12 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
         C_r_profile_n(PS_C_th,R_MAX,0,prec); 
     }
     //arb_set_str(PS_C_th,"0.5869",prec);
-    printf("\nFind C_th：");arb_printn(PS_C_th, 60,0);printf("\n\n\n");
+    printf("\nFind C_th：");arb_printn(PS_C_th, 60,0);printf("\n");
     //exit(0);
     
     //求线性compaction function C_l 的threshold
     Trans_C_to_C_l(PS_C_l_th,PS_C_th,prec);
-    
+    printf("Find C_l_th：");arb_printn(PS_C_l_th,60,0);printf("\n\n\n");
     
     //PS 计算 M_ratio_max 
     //M/M_H=K*[(C_l-3/8*C_l^2)-C_th]^γ  
@@ -210,25 +208,32 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"8E-7",prec);
-    arb_set_str(w,"1E-12",prec);
+    arb_set_str(t,"-0.8633379129",prec);
+    arb_set_str(w,"1.7587867E-1",prec);
     //arb_log(w,w,prec);
-    //arb_set_str(Mu_2,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 Mu_2_th
+    //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
     //arb_sub(w,Ln_K_star,w,prec);
-    arb_add(t,t,Ln_K_star,prec);
+    //arb_add(t,t,Ln_K_star,prec);
     
     //power_spectrum(Pk,t,prec);
     //Help_sigma_n_square(Pk,4,prec);
-    //Help_psi_1_n(Pk,t,3,prec);
-    //Help_psi_1_n(Pk,t,0,prec);
-    //Help_Laplacian_psi_1_n(Pk,t,0,prec);
-    //zeta_Gauss_profile_n(Pk,w,0,prec);
-    //zeta_profile_n(Pk,w,0,prec);
+    //Help_psi_n(Pk,t,3,prec);
+    //Help_psi_n(Pk,t,0,prec);
+    zeta_Gauss_profile_n(Pk,R_MAX,0,prec);
+    
+    arb_exp(Pk,Pk,prec);
+    arb_div(Pk,Pi_2,Pk,prec);
+    arb_div_ui(Pk,Pk,2,prec);
+    arb_sub(Pk,Pk,R_m_times_K,prec);
+    arb_abs(Pk,Pk);
+    arb_div(Pk,Pk,R_m_times_K,prec);
+    
+    //zeta_profile_n(Pk,R_MAX,0,prec);
     //arb_mul(Pk,w,t,prec);
     //Find_r_max(t, prec);
     //C_m_average(Pk,t,prec);
     //arb_printn(Pk,60,0);printf("\n");
-    //Find_Mu_2_th(Pk,prec);
+    //Find_PT_Mu_th(Pk,prec);
     //C_r_profile_n(Pk,t,0,prec);
     //C_r_profile_n(Pk,w,1,prec);
     
@@ -236,7 +241,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_mul(w,w,t,3*prec);
     //arb_mul_si(w,Gamma_3,1,prec);
     //N_pk_f_xi(w,t,prec);
-    //Help_psi_1_n(w,t,1,prec);
+    //Help_psi_n(w,t,1,prec);
     
     //arb_sqrt(w,Gamma_3,prec);
     //Peak_number_density(Pk,t,w,prec);
@@ -262,12 +267,13 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_all(Pk,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
     //PS_abundance_f_m(Pk, w, prec);
-    PS_abundance_f_all(Pk,prec);
+    //PS_abundance_f_all(Pk,prec);
     //Probability_C(Pk,w,prec);
+    //Probability_C_l(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
     
-    //arb_printn(w,30,0);printf("\n");
-    arb_printn(Pk,30,0);printf("\n");
+    Peak_theory_sorce_zeta_gradient=true;
+    arb_printn(Pk,60,0);printf("\n");
     
     //考虑所有k模式，用δ谱计算连续谱
     //PS_abundance_beta_delta_k(Pk, t, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
@@ -291,7 +297,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_printn(Pk,30,0);printf("\n");
     //arb_printn(w,30,0);printf("\n");
     //sleep(600);
-    //exit(0);
+    exit(0);
     
     
     //输出计算结果到文件
@@ -305,7 +311,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //先将前面的输入输出，再接β值
     fprintf(fpdate, "%s\t", argv[1]);
-    arb_fprintn(fpdate,Mu_2_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
+    arb_fprintn(fpdate,PT_mu_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,PS_C_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,PS_C_l_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,R_MAX,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
@@ -324,7 +330,6 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //arb_set_str(PS_Sigma_YY,"0.02",prec); //算P(ζ)用
-    
     
     
     //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数

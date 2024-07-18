@@ -203,7 +203,7 @@ int Find_r_max(arb_t res, slong prec)
                     //功率谱为delta函数时易解析求出
                     //C(r)取最值时满足的方程如下 x=k_star*r
                     // -k_star * (1/x^2) * ( x*cos(x) + (x^2-1)*sin(x) ) =0
-                    //可以看到极值与Mu_2无关
+                    //可以看到极值与PT_mu无关
                     
                     //基于解析的计算，最终可化为如下函数求解
                     // x*cos(x)+(pow(x,2)-1)*sin(x)=0

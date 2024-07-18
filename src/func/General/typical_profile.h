@@ -12,7 +12,7 @@ int Help_sigma_n_square(arb_t res, const slong n,slong prec); //计算 gradient 
 
 int Help_sinc_n(arb_t res, const arb_t x, const slong order, slong prec); //计算 sin(x)/x 及其各阶导数
 
-int Help_psi_1_n(arb_t res, const arb_t r, const slong order, slong prec); //计算 ψ_1(r)
+int Help_psi_n(arb_t res, const arb_t r, const slong order, slong prec); //计算 ψ_1(r)
 
 int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec); //ζ_G 及其各阶导数
 

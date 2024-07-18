@@ -54,9 +54,9 @@ arb_t Upward_step_spectra_tau_c;
 
 //曲率扰动 ζ 相关
 ZETA Zeta_type; // ζ 的类型
-arb_t Mu_2; // ζ(r) 的参数
-arb_t Mu_2_th; // ζ(r) 的参数µ的临界值
-arb_t K_3_square; // ζ(r) 的参数k
+arb_t PT_mu; // ζ(r) 的参数
+arb_t PT_mu_th; // ζ(r) 的参数µ的临界值
+arb_t PT_k_square; // ζ(r) 的参数k
 arb_t R_MAX; // ζ(r) 取最大值时的 r 值
 arb_t R_K_to_r_m; //求r_m动态区间用
 arb_t Q_parameter_th; //ζ(r)取临界值时的q参数
@@ -69,9 +69,12 @@ arb_t Sigma_1_square;
 arb_t Sigma_2_square;
 arb_t Sigma_3_square;
 arb_t Sigma_4_square;
-arb_t Gamma_3; //(γ_3)
 arb_t Gamma_1; //(γ_1)
+arb_t Gamma_3; //(γ_3)
+arb_t R_1; //(R_1)
 arb_t R_3; //(R_3)
+
+bool Peak_theory_sorce_zeta_gradient; //peak theory计算中，统计量是否取ζ的梯度
 
 
 
@@ -82,7 +85,7 @@ ulong C_m_average_iterate_max;
 arb_t C_m_average_precision; 
 
 
-enum Mu_2_TH Mu_2_TH_METHOD; ///求临界值的方法
+enum PT_MU_TH_enum PT_Mu_th_METHOD; ///求临界值的方法
 
 //在视界进入时，视界质量M_H，形成的黑洞的质量为M，两者间的关系
 //与曲率扰动 K 有关，与 γ 也有关
@@ -114,7 +117,7 @@ arb_t effective_g_star_current; //当今对应的相对论有效自由度数目
 arb_t effective_g_star_current_entropy; //当今对应的熵有效自由度数目
 
 
-//设置求值区间，如求 r_m Mu_2_th
+//设置求值区间，如求 r_m PT_mu_th
 arb_t Int_r_min;
 arb_t Int_r_max;
 slong Root_r_num;
@@ -129,9 +132,9 @@ arb_t Int_sigma_n_min; //sigma_n
 arb_t Int_sigma_n_max;
 arb_t Int_sigma_n_precision;
 
-arb_t Int_n_pk_k_3_min; // n_pk(mu_2,k_3) 中 k_3 的积分区间
-arb_t Int_n_pk_k_3_max;
-arb_t Int_n_pk_k_3_precision;
+arb_t Int_n_pk_k_min; // n_pk(mu,k) 中 k 的积分区间
+arb_t Int_n_pk_k_max;
+arb_t Int_n_pk_k_precision;
 
 
 
@@ -295,7 +298,7 @@ char* File_Laplacian_psi_1_3_fit;
 char* File_Laplacian_psi_1_4_fit;
 
 
-bool SIMPLIFY; //是否启用简化版本的计算
+bool PT_profile_simplify; //是否启用简化版本的计算
 bool Relative_Mass; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
 bool Transfer_Function; //是否加入转移函数
 bool Continuum_spectrum_cal_simplify; //连续谱计算是否采用简化

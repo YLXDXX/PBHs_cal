@@ -468,12 +468,12 @@ int C_m_average(arb_t res, const arb_t r_m, slong prec)
     //而2007.05564作了更加细致的处理[r(α), r_m]
     
     //积分下限 a
-    if(Mu_2_TH_METHOD==average_method_simple)
+    if(PT_Mu_th_METHOD==average_method_simple)
     {
         //a=0
         arb_set_str(a,"1E-100",prec); //设定值，不要设为零，里面有除以r的运算
         
-    }else if(Mu_2_TH_METHOD==average_method_new)
+    }else if(PT_Mu_th_METHOD==average_method_new)
     {
         
         
@@ -512,12 +512,12 @@ int C_m_average(arb_t res, const arb_t r_m, slong prec)
     arb_div(s,s,b,prec);
     
     //最后考虑到2007.05564的精细处理，还有个体积因子
-    if(Mu_2_TH_METHOD==average_method_simple)
+    if(PT_Mu_th_METHOD==average_method_simple)
     {
         //V=1
         arb_set(res,s);
         
-    }else if(Mu_2_TH_METHOD==average_method_new)
+    }else if(PT_Mu_th_METHOD==average_method_new)
     {
         //V(α)=α[3+(α-3)α]
         
@@ -543,8 +543,8 @@ int C_m_average(arb_t res, const arb_t r_m, slong prec)
 
 
 
-//找Mu_2的临界值用 C(r)平均值版本
-int interior_Mu_2_th_average(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
+//找PT_mu的临界值用 C(r)平均值版本
+int interior_PT_Mu_th_average(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
 {
     
     arb_t t,u,r_max,C_th_average;
@@ -555,12 +555,12 @@ int interior_Mu_2_th_average(arb_t res, const arb_t mu, void * param, const slon
     arb_init(C_th_average);
     
     
-    //需要修改 Mu_2，因为非高斯时 r_m 与 Mu_2 有关
-    arb_set(Mu_2,mu);
+    //需要修改 PT_mu，因为非高斯时 r_m 与 PT_mu 有关
+    arb_set(PT_mu,mu);
     
     if(Stdout_verbose==true)
     {
-        printf("\n当前尝试 μ_2 为： ");arb_printn(Mu_2, 15,0);printf("\n开始计算\nr_max： ");
+        printf("\n当前尝试 μ_2 为： ");arb_printn(PT_mu, 15,0);printf("\n开始计算\nr_max： ");
     }
     
     Find_r_max(r_max, prec); //获得C(r)极大值的位置 r_max
@@ -588,12 +588,12 @@ int interior_Mu_2_th_average(arb_t res, const arb_t mu, void * param, const slon
     // mean compaction function threshold
     //采用1907.13311的 对于辐射来说w=1/3，C_th_average=2/5
     //而2007.05564作了更加细致的处理 C_th_average(w)
-    if(Mu_2_TH_METHOD==average_method_simple)
+    if(PT_Mu_th_METHOD==average_method_simple)
     {
         //C_th_average=2/5
         arb_set_str(C_th_average,"0.4",prec);
         
-    }else if(Mu_2_TH_METHOD==average_method_new)
+    }else if(PT_Mu_th_METHOD==average_method_new)
     {
         //C_th_average=C_c(w)
         
@@ -624,8 +624,8 @@ int interior_Mu_2_th_average(arb_t res, const arb_t mu, void * param, const slon
 }
 
 
-//找Mu_2的临界值用 q参数版本
-int interior_Mu_2_th_q_parameter(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
+//找PT_mu的临界值用 q参数版本
+int interior_PT_Mu_th_q_parameter(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
 {
     
     arb_t s,t,r_max;
@@ -634,12 +634,12 @@ int interior_Mu_2_th_q_parameter(arb_t res, const arb_t mu, void * param, const 
     arb_init(t);
     arb_init(r_max);
     
-    //需要修改 Mu_2，因为非高斯时 r_m 与 Mu_2 有关
-    arb_set(Mu_2,mu);
+    //需要修改 PT_mu，因为非高斯时 r_m 与 PT_mu 有关
+    arb_set(PT_mu,mu);
     
     if(Stdout_verbose==true)
     {
-        printf("\n当前尝试 μ_2 为： ");arb_printn(Mu_2, 15,0);printf("\n开始计算r_max: ");
+        printf("\n当前尝试 μ_2 为： ");arb_printn(PT_mu, 15,0);printf("\n开始计算r_max: ");
     }
     
     
@@ -660,11 +660,11 @@ int interior_Mu_2_th_q_parameter(arb_t res, const arb_t mu, void * param, const 
     
     
     //这里有两种方法
-    if(Mu_2_TH_METHOD==q_parameter_method_simple)
+    if(PT_Mu_th_METHOD==q_parameter_method_simple)
     {
         Delta_c_q_parameter_simple(t,s,3*prec); // 由 q 得到 δ_c
         
-    }else if(Mu_2_TH_METHOD==q_parameter_method_new)
+    }else if(PT_Mu_th_METHOD==q_parameter_method_new)
     {
         Delta_c_q_parameter_new(t,s,3*prec); // 由 q 得到 δ_c
     }
@@ -700,30 +700,30 @@ int interior_Mu_2_th_q_parameter(arb_t res, const arb_t mu, void * param, const 
 
 
 
-//找Mu_2的临界值
-int Find_Mu_2_th(arb_t res, slong prec)
+//找PT_mu的临界值
+int Find_PT_Mu_th(arb_t res, slong prec)
 {
     //采用新的arb求根算法
     //求临界值有两种方法
     //求临界值的四种方式 q_parameter_method_simple / q_parameter_method_new
     //                average_method_simple / average_method_new
-    if ( Mu_2_TH_METHOD==q_parameter_method_simple || Mu_2_TH_METHOD==q_parameter_method_new )
+    if ( PT_Mu_th_METHOD==q_parameter_method_simple || PT_Mu_th_METHOD==q_parameter_method_new )
     {
-        Find_interval_root(res, interior_Mu_2_th_q_parameter, NULL, 0,
+        Find_interval_root(res, interior_PT_Mu_th_q_parameter, NULL, 0,
                            Int_mu_min, Int_mu_max, Int_mu_precision,
                            Root_mu_num, Root_Normal, prec);
-    }else if ( Mu_2_TH_METHOD==average_method_simple || Mu_2_TH_METHOD==average_method_new )
+    }else if ( PT_Mu_th_METHOD==average_method_simple || PT_Mu_th_METHOD==average_method_new )
     {
-        Find_interval_root(res, interior_Mu_2_th_average, NULL, 0,
+        Find_interval_root(res, interior_PT_Mu_th_average, NULL, 0,
                            Int_mu_min, Int_mu_max, Int_mu_precision,
                            Root_mu_num, Root_Normal, prec);
     }else
     {
-        printf("General -> threshold -> Find_Mu_2_th -> method 输入有误\n");
+        printf("General -> threshold -> Find_PT_Mu_th -> method 输入有误\n");
         exit(1);
     }
     
-    printf("\n\nFind Mu_2_th: ");arb_printn(res, 50,0);printf("\n\n"); //打印变量
+    printf("\n\nFind PT_mu_th: ");arb_printn(res, 50,0);printf("\n\n"); //打印变量
     
     return 0;
 }

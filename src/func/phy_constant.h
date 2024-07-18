@@ -49,9 +49,9 @@ extern arb_t Upward_step_spectra_tau_c;
 
 //曲率扰动 ζ 相关
 extern ZETA Zeta_type; // ζ 类型
-extern arb_t Mu_2; // ζ(r) 的参数µ
-extern arb_t Mu_2_th; // ζ(r) 的参数µ的临界值
-extern arb_t K_3_square; // ζ(r) 的参数k
+extern arb_t PT_mu; // ζ(r) 的参数µ
+extern arb_t PT_mu_th; // ζ(r) 的参数µ的临界值
+extern arb_t PT_k_square; // ζ(r) 的参数k
 extern arb_t R_MAX; // ζ(r) 取最大值时的 r 值
 extern arb_t R_K_to_r_m; //求r_m动态区间用
 extern arb_t Q_parameter_th; //ζ(r)取临界值时的q参数
@@ -64,10 +64,12 @@ extern arb_t Sigma_1_square;
 extern arb_t Sigma_2_square;
 extern arb_t Sigma_3_square;
 extern arb_t Sigma_4_square;
-extern arb_t Gamma_3; //(γ_3)^2
 extern arb_t Gamma_1; //(γ_1)
-extern arb_t R_3; //(R_3)^2
- 
+extern arb_t Gamma_3; //(γ_3)
+extern arb_t R_1; //(R_1)
+extern arb_t R_3; //(R_3)
+
+extern bool Peak_theory_sorce_zeta_gradient; //peak theory计算中，统计量是否取ζ的梯度
  
 // C(r) 相关
 extern ulong C_m_average_iterate_min; //求 C_m_average
@@ -75,7 +77,7 @@ extern ulong C_m_average_iterate_max;
 extern arb_t C_m_average_precision; 
 
 
-extern enum Mu_2_TH Mu_2_TH_METHOD; ///求临界值的方法
+extern enum PT_MU_TH_enum PT_Mu_th_METHOD; ///求临界值的方法
 
 
 //在视界进入时，视界质量M_H，形成的黑洞的质量为M，两者间的关系
@@ -108,7 +110,7 @@ extern arb_t effective_g_star_entropy; //重新进入视界后，对应的熵有
 extern arb_t effective_g_star_current; //当今对应的相对论有效自由度数目
 extern arb_t effective_g_star_current_entropy; //当今对应的熵有效自由度数目
 
-//设置求值区间，如求 r_m Mu_2_th
+//设置求值区间，如求 r_m PT_mu_th
 extern arb_t Int_r_min;
 extern arb_t Int_r_max;
 extern slong Root_r_num;
@@ -123,9 +125,9 @@ extern arb_t Int_sigma_n_max;
 extern arb_t Int_sigma_n_precision;
 
 
-extern arb_t Int_n_pk_k_3_min; // n_pk(mu_2,k_3) 中 k_3 的积分区间
-extern arb_t Int_n_pk_k_3_max;
-extern arb_t Int_n_pk_k_3_precision;
+extern arb_t Int_n_pk_k_min; // n_pk(mu,k) 中 k 的积分区间
+extern arb_t Int_n_pk_k_max;
+extern arb_t Int_n_pk_k_precision;
 
 
 
@@ -288,7 +290,7 @@ extern char* File_Laplacian_psi_1_4_fit;
 
 
 
-extern bool SIMPLIFY; //是否启用简化版本的计算
+extern bool PT_profile_simplify; //是否启用简化版本的计算
 extern bool Relative_Mass; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
 extern bool Transfer_Function; //是否加入转移函数
 extern bool Continuum_spectrum_cal_simplify; //连续谱计算是否采用简化

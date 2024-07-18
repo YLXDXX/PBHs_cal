@@ -49,9 +49,9 @@ int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
     arb_init(w);
     
     //
-    //修改 Mu_2，非高斯时，r_m 与 Mu_2 有关
+    //修改 PT_mu，非高斯时，r_m 与 PT_mu 有关
     //
-    arb_set(Mu_2,mu);
+    arb_set(PT_mu,mu);
     
     
     //在 M(µ) 近似的可写成如下关系式
@@ -72,7 +72,7 @@ int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
     
     //中间
     arb_mul(w,w,Mass_K,prec);
-    arb_sub(t,mu,Mu_2_th,prec);
+    arb_sub(t,mu,PT_mu_th,prec);
     arb_abs(t,t);
     arb_pow(t,t,Mass_gamma,prec);
     arb_mul(w,w,t,prec);
@@ -101,8 +101,8 @@ int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
     arb_init(r_m);
     arb_init(x);
     
-    //修改 Mu_2，非高斯时，最大值与Mu_2有关
-    arb_set(Mu_2,mu);
+    //修改 PT_mu，非高斯时，最大值与PT_mu有关
+    arb_set(PT_mu,mu);
     
     
     //M=x^2 * exp(2*zeta(mu)) * K * (mu-mu_th)^{γ} * M_H
@@ -122,7 +122,7 @@ int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
     
     
     //幂律部分
-    arb_sub(s,mu,Mu_2_th,prec);
+    arb_sub(s,mu,PT_mu_th,prec);
     
     arb_abs(s,s); //取绝对值，防止后面开幂次里面为负
     arb_pow(s,s,Mass_gamma,prec);
@@ -141,8 +141,8 @@ int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
 //在视界重进入时，形成的黑洞的质量为M(µ)的反函数µ(M)
 int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
 {
-    //修改 Mu_2，非高斯时，最大值与Mu_2有关
-    //arb_set(Mu_2,mu);
+    //修改 PT_mu，非高斯时，最大值与PT_mu有关
+    //arb_set(PT_mu,mu);
     
     //对于非高斯的情况，需要特特处理
     //  1，r_max与µ值有关
@@ -190,19 +190,19 @@ int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
     }
     
     //arb_set_str(find_min,"0.61532877",prec);
-    //由于mu的值需要大于 Mu_2_th ,故利用 Mu_2_th 来设置 mu 的最小值 find_min
+    //由于mu的值需要大于 PT_mu_th ,故利用 PT_mu_th 来设置 mu 的最小值 find_min
     //当M/M_k_*=[0.01, 10]这个区间外时，想要求出对应的mu值
     // - 对于小的 M/M_k 需要减小 find_step
     // - 对于大的 M/M_k 需要增加 find_max
     
-    // 这时 Mu_2_th 会随 k_3 变化，每次重新设定一下
-    arb_set(Root_M_to_mu_min,Mu_2_th); 
+    // 这时 PT_mu_th 会随 k 变化，每次重新设定一下
+    arb_set(Root_M_to_mu_min,PT_mu_th); 
     arb_set_str(t,"1E-25",prec);
     arb_add(Root_M_to_mu_min, Root_M_to_mu_min, t, prec); //精确相等，会导致开根错误
     
     printf("\n\nM -> μ_2 各参数\nM:       ");
-    arb_printn(find_M, 15,0);printf("\nMu_2_th: ");
-    arb_printn(Mu_2_th, 15,0);printf("\n\n");
+    arb_printn(find_M, 15,0);printf("\nPT_mu_th: ");
+    arb_printn(PT_mu_th, 15,0);printf("\n\n");
     
     Find_interval_root(res, zeo_mu_M_func, find_M, 0,
                        Root_M_to_mu_min, Root_M_to_mu_max, Root_M_to_mu_precision,
@@ -233,27 +233,27 @@ int Horizon_reentry_D_ln_M_to_mu(arb_t res, const arb_t mu, slong prec)
     {
         case lognormal_type :
             
-            if( SIMPLIFY )
+            if( PT_profile_simplify )
             {
                 //简化的情况，其中：
-                // r_m 与 k_3 无关，只与 Mu_2 有关
-                // 并且，利用 Mu_2 解出 r_m 后，且认为 r_m 是个常数，不参与求导
-                // Mu_2_th 与 k_3 无关，（与 Mu_2 无关）
+                // r_m 与 k 无关，只与 PT_mu 有关
+                // 并且，利用 PT_mu 解出 r_m 后，且认为 r_m 是个常数，不参与求导
+                // PT_mu_th 与 k 无关，（与 PT_mu 无关）
                 // 而 r_m 的值，在上一步 Horizon_reentry_mu_M 中
                 // 调用 Horizon_reentry_M_mu 或 Horizon_reentry_M_ratio 已解出
-                // K(K_3_square) 被认为等于一 K(K_3_square)=1
-                // 且在简化的情况下，前面作了如下假设 arb_set(K_3_square,Gamma_3);
-                // 此时有 ζ(r)=μ_2 * ψ_1(r) Help_psi_1_n(phi_1,r,0,prec);
-                // 并且 μ_2th 与 K_3_square 已无关系
+                // K(K_square) 被认为等于一 K(K_square)=1
+                // 且在简化的情况下，前面作了如下假设 arb_set(K_square,Gamma_3);
+                // 此时有 ζ(r)=μ_2 * ψ_1(r) Help_psi_n(phi_1,r,0,prec);
+                // 并且 μ_th 与 K_square 已无关系
                 
-                // dln(M)/dµ 与 k_3 无关
+                // dln(M)/dµ 与 k 无关
                 
                 // 2*ψ_1(r) + γ/(μ_2-μ_2th)
                 
-                Help_psi_1_n(s,R_MAX,0,prec); //前面已解出 R_MAX
+                Help_psi_n(s,R_MAX,0,prec); //前面已解出 R_MAX
                 arb_mul_si(s,s,2,prec);
                 
-                arb_sub(t,mu,Mu_2_th,prec);
+                arb_sub(t,mu,PT_mu_th,prec);
                 arb_div(t,Mass_gamma,t,prec);
                 
                 arb_add(s,s,t,prec);
@@ -274,7 +274,7 @@ int Horizon_reentry_D_ln_M_to_mu(arb_t res, const arb_t mu, slong prec)
             arb_sinc(s,s,prec);
             arb_mul_si(s,s,2,prec);
             
-            arb_sub(t,mu,Mu_2_th,prec);//后面
+            arb_sub(t,mu,PT_mu_th,prec);//后面
             arb_div(t,Mass_gamma,t,prec);
             
             arb_add(s,s,t,prec);

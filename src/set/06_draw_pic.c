@@ -6,7 +6,7 @@ int C_r_prime_II(arb_t res, arb_t r, slong prec);
 //画图
 void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
 {
-    arb_t t,s,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by;
+    arb_t t,s,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by,ay_copy;
     
     arb_init(t);
     arb_init(s);
@@ -19,9 +19,10 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     
     arb_init(ay); 
     arb_init(by);
+    arb_init(ay_copy);
     
-    arb_set_str(aa,"6E4",prec); //一层循环用
-    arb_set_str(bb,"6E9",prec);
+    arb_set_str(aa,"-1",prec); //一层循环用
+    arb_set_str(bb,"1",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -31,11 +32,12 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
     */
     
     arb_set_str(ay,"-1",prec); //二层循环用
+    arb_set(ay_copy,ay);
     arb_set_str(by,"1",prec);
     
     slong out_number,number;
     
-    number=1E6; //输出点的个数
+    number=1E2; //输出点的个数
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -58,9 +60,9 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         exit(-1);
     }
     
-    //arb_set_str(Mu_2, "0.28", prec); //修改 Mu_2
+    //arb_set_str(PT_mu, "0.28", prec); //修改 PT_mu
     
-    
+    /*
     //一层输出
     for (long int i=1; i <= number; i++)
     {
@@ -127,13 +129,13 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         //printf("%ld/%ld\n",i,number);//进度显示
         print_progress(i,number); //进度条显示
     }
+    */
     
     
-    /*
     //二层输出，例如，输出二维概率密度
     for (long int i=1; i <= number; i++)
     {
-        arb_set_str(ay,"-1",prec); //每次循环，初始化第二层的值
+        arb_set(ay,ay_copy); //每次循环，初始化第二层的值
         
         arb_div_si(gap_y,gap_y,100,prec);//得到第二层最小开始的点
         arb_add(ay,ay,gap_y,prec);
@@ -160,7 +162,7 @@ void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
         
         //printf("%ld/%ld\n",i,number);//进度显示
     }
-    */
+    
     
     
     printf("\n输出完成\n");

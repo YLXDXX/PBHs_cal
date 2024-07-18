@@ -58,7 +58,7 @@ enum POWER_ENUM_TYPE
 };
 
 //求临界值的两种方法
-enum Mu_2_TH
+enum PT_MU_TH_enum
 {
     average_method_simple,
     average_method_new,

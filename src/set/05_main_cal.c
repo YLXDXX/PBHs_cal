@@ -7,7 +7,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     Zeta_type=gaussian_type; //需要其它参数之前，如r_m的求解
     
     
-    //非高斯相关参数设定，需在求 r_max 和 Mu_2_th 之前设定，其与两都都有关
+    //非高斯相关参数设定，需在求 r_max 和 PT_mu_th 之前设定，其与两都都有关
     //exponential_tail_type
     arb_set_str(Exponential_tail_beta, "-5", prec); //exponential_tail_type 中β的取值，文献中通常取为β=3
     
@@ -29,17 +29,19 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     */
     
     //up_step_type
-    arb_set(Up_step_h,Upward_step_spectra_h);
-    //arb_set_str(Up_step_h, "-2.5", prec); //up_step_type 其中Up_step_h取值为负
+    //arb_set(Up_step_h,Upward_step_spectra_h);
+    arb_set_str(Up_step_h, "-0.1", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv, prec); //从命令行读取参数
     
     
     //power_expansion_type 最高可展开到 6 阶
     //通过 h 得到 f=5/12 * |h|
-    arb_mul_ui(Power_expansion_f,Up_step_h,5,prec);
+    arb_abs(Power_expansion_f,Up_step_h);
+    arb_mul_ui(Power_expansion_f,Power_expansion_f,5,prec);
     arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
     
-    //arb_set_str(Power_expansion_f, "-2.5", prec); //power-series expansion 二次项 f_NL -> A
+    //arb_set_str(Power_expansion_f, comd_argv, prec); //从命令行读取参数
+    arb_set_str(Power_expansion_f, "-30", prec); //power-series expansion 二次项 f_NL -> A
     arb_set_str(Power_expansion_g, "0", prec); //power-series expansion 三次项 g_NL -> B
     arb_set_str(Power_expansion_four, "0", prec); //power-series expansion 四次项 four -> C
     arb_set_str(Power_expansion_five, "0", prec); //power-series expansion 五次项 five -> D
@@ -62,7 +64,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     PS_abundance_beta_delta_k_M_Int_iterate_max=10;
     
     
-    //设置求最大值区间，如求 r_m Mu_2_th ,需在求ζ(r)参数 µ 的临界值之前设定
+    //设置求最大值区间，如求 r_m PT_mu_th ,需在求ζ(r)参数 µ 的临界值之前设定
     switch(Power_spectrum_type)
     {
         case lognormal_type :
@@ -98,15 +100,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关 
                     arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
@@ -137,15 +139,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     if( arb_is_positive(Exponential_tail_beta) ) //β>0，定义域 ζ_G<1/β
@@ -178,9 +180,9 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_r_precision,"1E-20",prec);
                     
                     
-                    arb_set_str(Int_mu_min,"0.2",prec);
-                    arb_set_str(Int_mu_max,"1.3",prec);
-                    Root_mu_num=30;
+                    arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_max,"1.5",prec);
+                    Root_mu_num=40;
                     arb_set_str(Int_mu_precision,"1E-6",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
@@ -188,15 +190,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
@@ -226,15 +228,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     //注意，ζ<2/h，ζ_G<1/h 两者的取值范围不一样
@@ -279,15 +281,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.0",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-8",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-8",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-8",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
@@ -317,15 +319,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-8",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_Root_C_l_to_Y_min,"-5",prec); //PS中δ情况，计算P(C_ℓ)需反解Y
@@ -359,15 +361,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-7",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_Root_C_l_to_Y_min,"-5",prec); //PS中δ情况，计算P(C_ℓ)需反解Y
@@ -401,15 +403,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-7",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=10;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_Root_C_l_to_Y_min,"-5",prec); //PS中δ情况，计算P(C_ℓ)需反解Y
@@ -446,15 +448,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-7",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关 
                     //arb_set_str(Power_sigma,"0.03",prec);
@@ -508,15 +510,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
@@ -529,16 +531,16 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                 case up_step_type :
                     
                     //根据δ谱下r*k为定值，采用动态r_m区间
-                    arb_set_str(R_K_to_r_m,"9.1",prec);
+                    arb_set_str(R_K_to_r_m,"5",prec);
                     arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
-                    arb_div_ui(Int_r_min,Int_r_min,15,prec);
-                    arb_mul_ui(Int_r_max,Int_r_min,70,prec);
-                    Root_r_num=70;
+                    arb_div_ui(Int_r_min,Int_r_min,20,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,90,prec);
+                    Root_r_num=120;
                     arb_set_str(Int_r_precision,"1E-20",prec);
                     
                     arb_set_str(Int_mu_min,"0.1",prec);
-                    arb_set_str(Int_mu_max,"1.5",prec);
-                    Root_mu_num=60;
+                    arb_set_str(Int_mu_max,"21",prec);
+                    Root_mu_num=200;
                     arb_set_str(Int_mu_precision,"1E-6",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
@@ -546,15 +548,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-6",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关
                     //注意，ζ<2/h，ζ_G<1/h 两者的取值范围不一样
@@ -591,15 +593,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-7",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关 
                     arb_set(PS_Int_variance_min,Int_sigma_n_min); // PS 计算方差 XX YY XY 积分
@@ -637,15 +639,15 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(C_m_average_precision,"1E-7",prec);
                     
                     // M -> μ 求根用
-                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 Mu_2_th
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_3_min,"0.05",prec); // n_pk(mu_2,k_3) 中 k_3 的积分区间
-                    arb_set_str(Int_n_pk_k_3_max,"1.6",prec);
-                    arb_set_str(Int_n_pk_k_3_precision,"1E-7",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关 
                     arb_set(PS_Int_variance_min,Int_sigma_n_min); // PS 计算方差 XX YY XY 积分
@@ -678,28 +680,25 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     }
     
     
-    //求解 Mu_2_th 相关设定
+    //求解 PT_mu_th 相关设定
     
-    //变量 Mu_2，ζ(r) 的参数 µ
-    arb_one(Mu_2); //ζ(r) 的参数 µ，默认为Mu_2=1
+    //变量 mu，ζ(r) 的参数 µ
+    arb_one(PT_mu); //ζ(r) 的参数 µ，默认为PT_mu=1
     
-    //变量 K_3_square，ζ(r) 的参数 k
-    arb_one(K_3_square); //默认为K_3_square=1
+    //变量 PT_k_square，ζ(r) 的参数 k
+    arb_one(PT_k_square); //默认为PT_k_square=1
     
-    //此设定应在计算 Mu_2_th 之前，有此设定有影响 Mu_2_th 的值
+    //此设定应在计算 PT_mu_th 之前，有此设定有影响 PT_mu_th 的值
     FIT_FUNC_IF=false; //在后需的计算中，若拟合完成，是否开启拟合 true/false
     Relative_Mass=true; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
                         //即： β(M)-->β(M/M_H) ， f(M)-->f(M/M_H)
                         // 非相对质量的计算还有点小问题
-    SIMPLIFY=true; //是否启用简化版本的计算
-    //简化启用时，K_3_square设为其平均值，此时ζ^G(r)的表达式大为化简，只剩下一个随机变量 μ_2
+    PT_profile_simplify=true; //是否启用简化版本的计算
+    //简化启用时，PT_k_square设为其平均值，此时ζ^G(r)的表达式大为化简，只剩下一个随机变量 μ
+    //对于typical profile 没取梯度，则 k_1=σ_1/σ_0, ζ(r)=μ_0 * ψ_0(r)
+    //对于typical profile 取了梯度，则 k_3=σ_3/σ_2 --> k_3=γ_3 , ζ(r)=μ_2 * ψ_1(r)
+    //并且，此时 μ_2th 也不会变动 (PT_k_square 改变会导致 μ_2th 改变)
     
-    if( SIMPLIFY )
-    {
-        arb_set(K_3_square,Gamma_3); // 设 K_3_square=Gamma_3 时，
-        //极大化简 ζ(r) 的表达式 ζ(r)=Mu_2 * ψ_1(r)
-        //并且，此时 μ_2th 也不会变动 (K_3_square 改变会导致 μ_2th 改变)
-    }
     
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式

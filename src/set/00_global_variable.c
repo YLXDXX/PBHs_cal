@@ -80,14 +80,15 @@ void Set_global_variable(slong prec)
     arb_init(Sigma_2_square);
     arb_init(Sigma_3_square);
     arb_init(Sigma_4_square);
-    arb_init(Gamma_3); //(γ_3)
     arb_init(Gamma_1); //(γ_1)
+    arb_init(Gamma_3); //(γ_3)
+    arb_init(R_1); //(R_1)
     arb_init(R_3); //(R_3)
     
     
     arb_init(R_MAX); // ζ(r) 取最大值时的 r 值
-    arb_init(Mu_2); // ζ(r) 的参数 µ
-    arb_init(K_3_square); // ζ(r) 的参数 k
+    arb_init(PT_mu); // ζ(r) 的参数 µ
+    arb_init(PT_k_square); // ζ(r) 的参数 k
     
     
     
@@ -106,9 +107,9 @@ void Set_global_variable(slong prec)
     arb_init(Root_M_to_mu_max);
     arb_init(Root_M_to_mu_precision);
     
-    arb_init(Int_n_pk_k_3_min); //peak theory： n_pk(mu_2,k_3) 中 k_3 的积分区间
-    arb_init(Int_n_pk_k_3_max);
-    arb_init(Int_n_pk_k_3_precision);
+    arb_init(Int_n_pk_k_min); //peak theory： n_pk(mu,k) 中 k 的积分区间
+    arb_init(Int_n_pk_k_max);
+    arb_init(Int_n_pk_k_precision);
     
     arb_init(PS_Int_variance_min); // PS 计算方差 XX YY XY 积分区精和精度
     arb_init(PS_Int_variance_max);
@@ -149,7 +150,7 @@ void Set_global_variable(slong prec)
     arb_init(PS_abundance_beta_delta_k_M_precision); //考虑所有k计算β(M)用
     
     
-    arb_init(Mu_2_th); // ζ(r) 的参数 µ 的临界值
+    arb_init(PT_mu_th); // ζ(r) 的参数 µ 的临界值
     arb_init(Q_parameter_th); //ζ(r)取临界值时的q参数
     
     arb_init(Mass_K); //临界坍缩相关参数

@@ -12,6 +12,7 @@ int PBH_abundance_f_to_M(arb_t res,const arb_t M, slong prec)
     arb_init(w);
     arb_init(mu);
     
+    
     //跟功率谱有关，对于delta型式的功率谱，可解析求解
     //功率谱类型判断
     switch(Power_spectrum_type) 
@@ -68,7 +69,7 @@ int PBH_abundance_f_to_M(arb_t res,const arb_t M, slong prec)
             
             arb_sqrt(s,Power_A,prec);
             arb_div(s,mu,s,prec);
-            N_pk_f_xi(t,s,prec);
+            N_pk_help_f_xi(t,s,prec);
             arb_mul(w,w,t,prec);
             
             //最后P_G

@@ -19,7 +19,7 @@ int Delta_c_q_parameter_new(arb_t res, const arb_t q, slong prec); //利用 q �
 
 int C_m_average(arb_t res, const arb_t r_m, slong prec); //求C_m的平均值
 
-int Find_Mu_2_th(arb_t res, slong prec); //找Mu_2的临界值
+int Find_PT_Mu_th(arb_t res, slong prec); //找PT_mu的临界值
 
 int Trans_C_to_C_l(arb_t res, const arb_t x, slong prec); //已知阈值C_th时，求阈值C_{l,th}
 
