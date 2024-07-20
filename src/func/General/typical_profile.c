@@ -540,7 +540,8 @@ int Help_Laplacian_psi_n(arb_t res, const arb_t r, const slong order, slong prec
 
 
 // 高斯型 ζ_G(r) 及其各阶导数
-int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec)
+//除了μ的版本
+int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order, slong prec)
 {
     //函数中所用变量
     arb_t s,t,w,x;
@@ -549,7 +550,7 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
     arb_init(t);
     arb_init(w);
     arb_init(x);
-     
+    
     arb_t phi,D_phi;//函数中所用变量
     
     arb_init(phi);
@@ -565,13 +566,14 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
             
             //对应高斯型 ζ_G 的计算
             
-            //包含两个参数 PT_mu、PT_k_square, 这里，默认 ζ_∞ = 0
+            //包含两个参数 PT_mu、PT_k, 这里，默认 ζ_∞ = 0
             //这里的求和分成两个部分：一是 ψ_1(r)，一是 ∆ψ_1(r)
             
             if( PT_profile_simplify )
             {
                 Help_psi_n(phi,r,order,prec);
-                arb_mul(res,phi,PT_mu,prec); // ζ(r) 完
+                arb_set(zeta_G_r,phi);
+                
                 break;
             }
             
@@ -582,8 +584,8 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 arb_neg(s,s);
                 arb_add_si(s,s,1,prec);
                 
-                
-                arb_mul(t,PT_k_square,Gamma_3,prec);
+                arb_sqr(t,PT_k,prec);
+                arb_mul(t,t,Gamma_3,prec);
                 arb_neg(t,t);
                 arb_add_si(t,t,1,prec);
                 
@@ -592,7 +594,8 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 arb_mul(phi,t,phi,prec);
                 
                 // ∆ψ_1(r) 部分
-                arb_div(t,PT_k_square,Gamma_3,prec);
+                arb_sqr(t,PT_k,prec);
+                arb_div(t,t,Gamma_3,prec);
                 arb_neg(t,t);
                 arb_add_si(t,t,1,prec);
                 arb_div(t,t,s,prec); //s用掉
@@ -604,10 +607,8 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 Help_Laplacian_psi_n(D_phi,r,order,prec);
                 arb_mul(D_phi,t,D_phi,prec);
                 
-                arb_add(s,phi,D_phi,prec); //右边完
+                arb_add(zeta_G_r,phi,D_phi,prec); //右边完
                 
-                
-                arb_mul(res,s,PT_mu,prec); // ζ(r) 完
             }else
             {
                 // ψ_0(r) 部分
@@ -615,8 +616,8 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 arb_neg(s,s);
                 arb_add_si(s,s,1,prec);
                 
-                
-                arb_mul(t,PT_k_square,Gamma_1,prec);
+                arb_sqr(t,PT_k,prec);
+                arb_mul(t,t,Gamma_1,prec);
                 arb_div(w,Sigma_0_square,Sigma_2_square,prec);
                 arb_sqrt(w,w,prec);
                 arb_mul(t,t,w,prec);
@@ -628,7 +629,8 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 arb_mul(phi,t,phi,prec);
                 
                 // ∆ψ_0(r) 部分
-                arb_div(t,PT_k_square,Gamma_1,prec);
+                arb_sqr(t,PT_k,prec);
+                arb_div(t,t,Gamma_1,prec);
                 arb_mul(t,t,w,prec);
                 arb_neg(t,t);
                 arb_add_si(t,t,1,prec);
@@ -641,100 +643,87 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
                 Help_Laplacian_psi_n(D_phi,r,order,prec);
                 arb_mul(D_phi,t,D_phi,prec);
                 
-                arb_add(s,phi,D_phi,prec); //右边完
+                arb_add(zeta_G_r,phi,D_phi,prec); //右边完
                 
-                
-                arb_mul(res,s,PT_mu,prec); // ζ(r) 完
             }
             
             
             
             break;
             
-        case delta_type :
-            
-            //对应高斯型 ζ_G 的计算
-            //注意到，对于δ的情况，无论是否采用梯度，得到的结果一样
-            
-            //首先计算 x
-            arb_mul(x,K_star,r,prec); //x=k_star*r
-            
-            switch(order)
-            {
-                case 0: //原函数
-                    //功率谱为delta函数时，ζ(r) 易解析求出
-                    // ζ(r)=μ*sinc(k_star*r)
-                    
-                    Help_sinc_n(s,x,0,prec);
-                    
-                    arb_mul(res,s,PT_mu,prec);
-                    
-                    break;
-                    
-                case 1: //一阶导
-                    //功率谱为delta函数时易解析求出 x=k_star*r
-                    //ζ(r)=μ*sinc(x)
-                    //ζ(r)^prime=μ * sinc'(x) * k_star
-                    
-                    Help_sinc_n(s,x,1,prec);
-                    arb_mul(s,s,K_star,prec); //一阶导掉个 k_star
-                    
-                    arb_mul(res,s,PT_mu,prec);
-                    
-                    break;
-                    
-                case 2: //二阶导
-                    //功率谱为delta函数时易解析求出 x=k_star*r
-                    //ζ(r)=μ*sinc(x)
-                    //ζ(r)^prime=μ * 1/x *[cos(x)-sinc(x)] * k_star
-                    //ζ(r)^prime^prime=μ * (-1/x^2) * [x*sin(x)+2(cos(x)-sinc(x))] * (k_star)^2
-                    
-                    Help_sinc_n(s,x,2,prec);
-                    arb_mul(s,s,K_star,prec); //二阶导掉个 (k_star)^2
-                    arb_mul(s,s,K_star,prec);
-                    
-                    arb_mul(res,s,PT_mu,prec);
-                    
-                    break;
-                    
-                case 3: //三阶导
-                    //ζ(r)=μ*sinc(x)  x=k_star*r
-                    //求 ζ'''(r)
-                    
-                    Help_sinc_n(s,x,3,prec);
-                    arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^3
-                    arb_mul(s,s,K_star,prec);
-                    arb_mul(s,s,K_star,prec);
-                    
-                    arb_mul(res,s,PT_mu,prec);
-                    
-                    break;
-                case 4: //四阶导
-                    //ζ(r)=μ*sinc(x)   x=k_star*r
-                    //求 ζ''''(r)
-                    
-                    Help_sinc_n(s,x,4,prec);
-                    arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^4
-                    arb_mul(s,s,K_star,prec);
-                    arb_mul(s,s,K_star,prec);
-                    arb_mul(s,s,K_star,prec);
-                    
-                    arb_mul(res,s,PT_mu,prec);
-                    
-                    break;
-                default:
-                    printf("General -> typical_profile -> zeta_profile_n->delta_type->gaussian_type 输入有误\n");
-                    exit(1);
-            }
-            
-            
-            break;
-            
-        default :
-            printf("General -> typical_profile -> zeta_Gauss_profile_n 中的 Power_spectrum_type 有误\n");
-            exit(1);
+            case delta_type :
+                
+                //对应高斯型 ζ_G 的计算
+                //注意到，对于δ的情况，无论是否采用梯度，得到的结果一样
+                
+                //首先计算 x
+                arb_mul(x,K_star,r,prec); //x=k_star*r
+                
+                switch(order)
+                {
+                    case 0: //原函数
+                        //功率谱为delta函数时，ζ(r) 易解析求出
+                        // ζ(r)=μ*sinc(k_star*r)
+                        
+                        Help_sinc_n(s,x,0,prec);
+                        arb_set(zeta_G_r,s);
+                        break;
+                        
+                    case 1: //一阶导
+                        //功率谱为delta函数时易解析求出 x=k_star*r
+                        //ζ(r)=μ*sinc(x)
+                        //ζ(r)^prime=μ * sinc'(x) * k_star
+                        
+                        Help_sinc_n(s,x,1,prec);
+                        arb_mul(zeta_G_r,s,K_star,prec); //一阶导掉个 k_star
+                        
+                        break;
+                        
+                    case 2: //二阶导
+                        //功率谱为delta函数时易解析求出 x=k_star*r
+                        //ζ(r)=μ*sinc(x)
+                        //ζ(r)^prime=μ * 1/x *[cos(x)-sinc(x)] * k_star
+                        //ζ(r)^prime^prime=μ * (-1/x^2) * [x*sin(x)+2(cos(x)-sinc(x))] * (k_star)^2
+                        
+                        Help_sinc_n(s,x,2,prec);
+                        arb_mul(s,s,K_star,prec); //二阶导掉个 (k_star)^2
+                        arb_mul(zeta_G_r,s,K_star,prec);
+                        
+                        break;
+                        
+                    case 3: //三阶导
+                        //ζ(r)=μ*sinc(x)  x=k_star*r
+                        //求 ζ'''(r)
+                        
+                        Help_sinc_n(s,x,3,prec);
+                        arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^3
+                        arb_mul(s,s,K_star,prec);
+                        arb_mul(zeta_G_r,s,K_star,prec);
+                        
+                        break;
+                    case 4: //四阶导
+                        //ζ(r)=μ*sinc(x)   x=k_star*r
+                        //求 ζ''''(r)
+                        
+                        Help_sinc_n(s,x,4,prec);
+                        arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^4
+                        arb_mul(s,s,K_star,prec);
+                        arb_mul(s,s,K_star,prec);
+                        arb_mul(zeta_G_r,s,K_star,prec);
+                        
+                        break;
+                    default:
+                        printf("General -> typical_profile -> zeta_profile_n->delta_type->gaussian_type 输入有误\n");
+                        exit(1);
+                }
+                
+                
+                break;
+                
+                    default :
+                        printf("General -> typical_profile -> zeta_Gauss_profile_n 中的 Power_spectrum_type 有误\n");
+                        exit(1);
     }
-    
     
     arb_clear(s);
     arb_clear(t);
@@ -743,6 +732,20 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
     
     arb_clear(phi);
     arb_clear(D_phi);
+    
+    return 0;
+}
+
+//没除μ的完整版
+int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec)
+{
+    arb_t zeta_G_r;
+    arb_init(zeta_G_r);
+    
+    zeta_Gauss_profile_n_div_mu(zeta_G_r,r,order,prec);
+    arb_mul(res,zeta_G_r,PT_mu,prec); //ζ(r) 完
+    
+    arb_clear(zeta_G_r);
     
     return 0;
 }

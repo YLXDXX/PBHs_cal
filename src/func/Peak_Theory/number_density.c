@@ -300,73 +300,151 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
 
 
 
+//对 n_pk(mu,k) 的 k 进行积分
+static int interior_PBH_number_density_M(arb_t res, const arb_t k, void * M, const slong order, slong prec)
+{
+    // M 已由参数传入
+    arb_t s,t,mu,mu_th,mu_max;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(mu);
+    arb_init(mu_th);
+    arb_init(mu_max);
+    
+    
+    //首先求 M 对应的 µ 值
+    Horizon_reentry_M_to_mu(mu, M, k, prec); //这一步会有 R_MAX 保存
+    
+    if(PT_threshold_simplify==true)
+    {
+        //此时不用再重新求μ的threshold和上限
+        arb_set(mu_th,PT_mu_th);
+        arb_set(mu_max,PT_mu_max);
+        
+    }else
+    {
+        //对每个 k 都重新求一遍
+        Find_PT_Mu_th(mu_th, k, prec); //不同的 k 对应于不同的 threshold 
+        Get_PK_mu_max(mu_max, PT_k, prec); //不同的 k 对应于不同的上限 
+    }
+    
+    
+    if( arb_lt(mu,mu_th) || arb_gt(mu,mu_max) ) //μ取值范围外，直接设为零
+    {
+        //此处，定义域无法显式写出，可以通过这种方法来积
+        //只要积分区间足够大，覆盖相应的定义域即可
+        
+        arb_zero(res);
+        
+        arb_clear(s);
+        arb_clear(t);
+        arb_clear(mu);
+        arb_clear(mu_th);
+        arb_clear(mu_max);
+        
+        return 0;
+    }else
+    {
+        Peak_number_density(s,mu,k,prec);
+        Horizon_reentry_derivative_ln_M_mu(t, mu, k, prec); //可利用上面保存的 R_MAX
+        arb_inv(t,t,prec); //取倒数
+        
+        arb_mul(res,s,t,prec);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(mu);
+    arb_clear(mu_th);
+    arb_clear(mu_max);
+    
+    return 0;
+}
+
+
 //计算质量为M的原初黑洞数密度
 int PBH_number_density_M(arb_t res,const arb_t M, slong prec)
 {
     //函数中所用变量
-    arb_t s,w,t_mu;
+    arb_t s,w,t_mu,zeta_k;
     arb_init(s);
     arb_init(w);
     arb_init(t_mu);
-    
-    // dln(M)/dµ 与k 无关
-    //首先求 M 对应的 µ 值
-    Horizon_reentry_mu_M(t_mu, M, prec); //这一步会有 R_MAX 保存
-    
-    //arb_set_str(t_mu,"0.01",prec); //测试
+    arb_init(zeta_k);
     
     
-    //跟功率谱有关，对于delta型式的功率谱，可解析求解
-    //功率谱类型判断
-    switch(Power_spectrum_type) 
+    //PT_threshold_simplify=true
+    //PT_profile_simplify==true
+    
+    if(PT_profile_simplify==true || Power_spectrum_type==delta_type) //包含 δ 谱
     {
-        case lognormal_type :
-            //不能解析求解，需要积分
+        // dln(M)/dµ 与 k 无关，此时计算较为简单
+        
+        //此时，k_3 为一常数，取其为对应的平均值
+        //而 k 的取值，又要分有没有用 ζ 的梯度
+        
+        if(Peak_theory_sorce_zeta_gradient==true)
+        {
+            //(k_3)^2=γ_3
+            arb_sqrt(zeta_k,Gamma_3,prec);
+        }else
+        {
+            //k_1=σ_1/σ_0
+            arb_div(zeta_k,Sigma_1_square,Sigma_0_square,prec);
+            arb_sqrt(zeta_k,zeta_k,prec);
+        }
+        
+        
+        //首先求 M 对应的 µ 值
+        Horizon_reentry_M_to_mu(t_mu, M, zeta_k, prec); //这一步会有 R_MAX 保存
+        
+        if( arb_lt(t_mu,PT_mu_th) || arb_gt(t_mu,PT_mu_max) ) //μ取值范围外，直接设为零
+        {
+            arb_zero(res);
             
-            //对 n_pk(mu,k) 的 k 进行积分
-            int interior_PBH_number_density_M(arb_t res, const arb_t k, void * param, const slong order, slong prec)
-            {
-                // µ_2 已由参数传入
-                arb_t mu;
-                arb_init(mu);
-                
-                arb_set(mu, param);
-                
-                Peak_number_density(res,mu,k,prec);
-                arb_clear(mu);
-                return 0;
-            }
+            arb_clear(s);
+            arb_clear(w);
+            arb_clear(t_mu);
+            arb_clear(zeta_k);
             
-            int ret_judge=0;
-            ret_judge=Integration_arb(s, interior_PBH_number_density_M, t_mu, 0,
-                                                Int_n_pk_k_min, Int_n_pk_k_max,Int_n_pk_k_precision,
-                                                Integration_iterate_min,Integration_iterate_max, prec);
-            if(ret_judge==1)
-            {
-                printf("PBH_number_density_M \t 达到最大迭代次数\n");
-            }
-            break;
+            return 0;
+        }else
+        {
+            //积分化为常量积分
+            Peak_number_density(s, t_mu, zeta_k, prec);
+            Horizon_reentry_derivative_ln_M_mu(w, t_mu, zeta_k, prec); //可利用上面保存的 R_MAX
+            arb_inv(w,w,prec); //取倒数
             
-        case delta_type :
-            //可解析求解，不需要对 k 进行积分
-            
-            Peak_number_density(s,t_mu,t_mu,prec); // 后一个mu作为k的补充参数，这里无实际作用
-            
-            break;
-        default:
-            printf("Peak_Theory -> number_density -> PBH_number_density_M -> power_spectrum_type 有误\n");
-            exit(1);
+            arb_mul(s,s,w,prec);
+            arb_sub(w,t_mu,PT_mu_th,prec);
+            arb_mul(res,s,w,prec);
+        }
+        
+    }else
+    {
+        //一般不能解析求解，计算较为复杂
+        
+        
+        arb_set(w,M);
+        
+        int ret_judge=0;
+        ret_judge=Integration_arb(s, interior_PBH_number_density_M, w, 0, //积分计算传递质量 M 
+                                  Int_n_pk_k_min, Int_n_pk_k_max,Int_n_pk_k_precision,
+                                  Integration_iterate_min,Integration_iterate_max, prec);
+        if(ret_judge==1)
+        {
+            printf("PBH_number_density_M \t 达到最大迭代次数\n");
+        }
+        
+        arb_set(res,s);
+        
     }
-    
-    
-    Horizon_reentry_D_ln_M_to_mu(w, t_mu, prec); //可利用上面保存的 R_MAX
-    arb_inv(w,w,prec); //取倒数
-    
-    arb_mul(res,s,w,prec);
     
     arb_clear(s);
     arb_clear(w);
     arb_clear(t_mu);
+    arb_clear(zeta_k);
     
     return 0;
 }

@@ -88,7 +88,7 @@ void Set_global_variable(slong prec)
     
     arb_init(R_MAX); // ζ(r) 取最大值时的 r 值
     arb_init(PT_mu); // ζ(r) 的参数 µ
-    arb_init(PT_k_square); // ζ(r) 的参数 k
+    arb_init(PT_k); // ζ(r) 的参数 k
     
     
     
@@ -151,6 +151,7 @@ void Set_global_variable(slong prec)
     
     
     arb_init(PT_mu_th); // ζ(r) 的参数 µ 的临界值
+    arb_init(PT_mu_max); // ζ(r) 的参数 µ 的临界值
     arb_init(Q_parameter_th); //ζ(r)取临界值时的q参数
     
     arb_init(Mass_K); //临界坍缩相关参数

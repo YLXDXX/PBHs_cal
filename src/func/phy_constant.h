@@ -50,8 +50,9 @@ extern arb_t Upward_step_spectra_tau_c;
 //曲率扰动 ζ 相关
 extern ZETA Zeta_type; // ζ 类型
 extern arb_t PT_mu; // ζ(r) 的参数µ
-extern arb_t PT_mu_th; // ζ(r) 的参数µ的临界值
-extern arb_t PT_k_square; // ζ(r) 的参数k
+extern arb_t PT_mu_th; // ζ(r) 的参数 µ 的临界值
+extern arb_t PT_mu_max; // ζ(r) 的参数 µ 的最大值
+extern arb_t PT_k; // ζ(r) 的参数k
 extern arb_t R_MAX; // ζ(r) 取最大值时的 r 值
 extern arb_t R_K_to_r_m; //求r_m动态区间用
 extern arb_t Q_parameter_th; //ζ(r)取临界值时的q参数
@@ -290,8 +291,9 @@ extern char* File_Laplacian_psi_1_4_fit;
 
 
 
-extern bool PT_profile_simplify; //是否启用简化版本的计算
-extern bool Relative_Mass; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
+extern bool PT_profile_simplify; //是否启用简化版本的计算，typical profile 计算
+extern bool PT_threshold_simplify;  //是否启用简化版本的计算，threshold 计算
+extern bool PT_Mass_Relative; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
 extern bool Transfer_Function; //是否加入转移函数
 extern bool Continuum_spectrum_cal_simplify; //连续谱计算是否采用简化
 extern bool Continuum_spectrum_judge_help; //连续谱功率谱判断辅助

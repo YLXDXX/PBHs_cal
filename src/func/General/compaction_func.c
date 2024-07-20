@@ -140,12 +140,12 @@ int interior_find_r_max_general(arb_t res, const arb_t r,
     arb_init(t);
     arb_init(s);
     
-    //d[C(r)]/dr=0 --> ζ’ + rζ’’=0
+    //d[C(r)]/dr=0 --> ζ' + rζ''=0
     
     //C_r_profile_n(res,r,1,prec); //采用最初的形式
     //return 0;
     
-    //采用 ζ’ + rζ’’ 模式
+    //只考虑type I，采用 ζ' + rζ'' 模式
     zeta_profile_n(t,r,1,prec);
     
     zeta_profile_n(s,r,2,prec);
@@ -173,82 +173,67 @@ int Find_r_max(arb_t res, slong prec)
     arb_t t;
     arb_init(t);
     
-    //都采用 ζ’ + rζ’’=0 求根
+    //都采用 ζ' + rζ''=0 求根
     Find_interval_root(res, interior_find_r_max_general,NULL,0,
                        Int_r_min, Int_r_max, Int_r_precision,
                        Root_r_num, Root_C_Max, prec);
     arb_clear(t);
     return 0;
     
-    //功率谱类型判断
-    switch(Power_spectrum_type) 
+    //对于δ谱，可以有解析的求根方程
+    //暂不采用，后期完善
+    if(Power_spectrum_type==delta_type)
     {
-        case lognormal_type :
+        switch(Zeta_type) 
+        {
+            //注意，这里是通过找根的方式来找r_m
+            //所给函数的概可能有很多个，需要找的是，正的且离零点最近的一个根
             
-            //d[C(r)]/dr=0 --> ζ’ + rζ’’=0
-            
-            Find_interval_root(res, interior_find_r_max_general,NULL,0,
-                               Int_r_min, Int_r_max, Int_r_precision,
-                               Root_r_num, Root_C_Max, prec);
-            
-            break;
-        case delta_type:
-            //曲率 ζ 类型判断
-            switch(Zeta_type) 
-            {
-                //注意，这里是通过找根的方式来找r_m
-                //所给函数的概可能有很多个，需要找的是，正的且离零点最近的一个根???
+            case gaussian_type :
+                //功率谱为delta函数时易解析求出
+                //C(r)取最值时满足的方程如下 x=k_star*r
+                // -k_star * (1/x^2) * ( x*cos(x) + (x^2-1)*sin(x) ) =0
+                //可以看到极值与PT_mu无关
                 
-                case gaussian_type :
-                    //功率谱为delta函数时易解析求出
-                    //C(r)取最值时满足的方程如下 x=k_star*r
-                    // -k_star * (1/x^2) * ( x*cos(x) + (x^2-1)*sin(x) ) =0
-                    //可以看到极值与PT_mu无关
-                    
-                    //基于解析的计算，最终可化为如下函数求解
-                    // x*cos(x)+(pow(x,2)-1)*sin(x)=0
-                    
-                    //利用arb直接用求根法求解
-                    Find_interval_root(res, interior_find_r_max_general, NULL, 0,
-                                       Int_r_min, Int_r_max, Int_r_precision,
-                                       Root_r_num, Root_C_Max, prec);
-                    
-                    break;
-                    
-                case power_expansion_type :
-                    //功率谱为delta函数时易解析求出
-                    //C(r)取最值时满足的方程如下 x=k_star*r
-                    //5*x*[ sin(x)-x(cos(x)+x*sinx) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
-                    
-                    //注意，这里的极值与mu_2有关
-                    
-                    //功率谱为delta函数时易解析求出
-                    //C(r)取最值时满足的方程如下 x=k_star*r
-                    //论文中的公式有问题
-                    //5*x*[ sin(x)-x(cos(x)+x*sinx) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
-                    //5*x*[ sin(x)-x*cos(x)-x^2*sin(x) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
-                    //正确公式应为：
-                    //5*x*[ sin(x)-x*cos(x)-x^2*sin(x)]+3*f_Nl*mu_2*[ x^2*(1+cos(2x)-sin(2x))-3*x*sin(2x)-2*cos(2x)+2 ]
-                    
-                    //利用arb直接用求根法求解
-                    Find_interval_root(res, interior_find_r_max_general, NULL, 0,
-                                       Int_r_min, Int_r_max, Int_r_precision,
-                                       Root_r_num, Root_C_Max, prec);
-                    
-                    //r_m_func_f_NL(t,t,prec);
-                    //arb_printn(t, 50,0);printf("\n"); //打印变量
-                    //arb_div(res,res,K_star,prec); //前面的结果是 x=k_star*r
-                    
-                    break;
-                default :
-                    printf("General -> compaction_func -> Find_r_max -> zeta_type 有误\n");
-                    exit(1);
-            }
-            
-            break;
-        default:
-            printf("General -> compaction_func -> Find_r_max-> Power_spectrum_type 输入有误\n");
-            exit(1);
+                //基于解析的计算，最终可化为如下函数求解
+                // x*cos(x)+(pow(x,2)-1)*sin(x)=0
+                
+                //利用arb直接用求根法求解
+                Find_interval_root(res, interior_find_r_max_general, NULL, 0,
+                                   Int_r_min, Int_r_max, Int_r_precision,
+                                   Root_r_num, Root_C_Max, prec);
+                
+                break;
+                
+            case power_expansion_type :
+                //功率谱为delta函数时易解析求出
+                //C(r)取最值时满足的方程如下 x=k_star*r
+                //5*x*[ sin(x)-x(cos(x)+x*sinx) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
+                
+                //注意，这里的极值与mu_2有关
+                
+                //功率谱为delta函数时易解析求出
+                //C(r)取最值时满足的方程如下 x=k_star*r
+                //论文中的公式有问题
+                //5*x*[ sin(x)-x(cos(x)+x*sinx) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
+                //5*x*[ sin(x)-x*cos(x)-x^2*sin(x) ] - mu_2 * f_NL*[ 6+6*(x^2 - 1)*cos(2*x)-9*sin(2*x) ]
+                //正确公式应为：
+                //5*x*[ sin(x)-x*cos(x)-x^2*sin(x)]+3*f_Nl*mu_2*[ x^2*(1+cos(2x)-sin(2x))-3*x*sin(2x)-2*cos(2x)+2 ]
+                
+                //利用arb直接用求根法求解
+                Find_interval_root(res, interior_find_r_max_general, NULL, 0,
+                                   Int_r_min, Int_r_max, Int_r_precision,
+                                   Root_r_num, Root_C_Max, prec);
+                
+                //r_m_func_f_NL(t,t,prec);
+                //arb_printn(t, 50,0);printf("\n"); //打印变量
+                //arb_div(res,res,K_star,prec); //前面的结果是 x=k_star*r
+                
+                break;
+            default :
+                printf("General -> compaction_func -> Find_r_max -> zeta_type 有误\n");
+                exit(1);
+        }
     }
     
     return 0;     

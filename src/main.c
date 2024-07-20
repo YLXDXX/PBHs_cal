@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //变量PT_mu_th， ζ(r) 的参数 µ 的临界值 
-    // PT_mu_th 与 PT_k_square 有关，不过在简化的情况下，PT_mu_th 已独立出来，只需要求解一次
+    // PT_mu_th 与 PT_k 有关，不过在简化的情况下，PT_mu_th 已独立出来，只需要求解一次
     //变量Q_parameter_th，ζ(r)取临界值时的q参数
     
     //求临界值的四种方式 q_parameter_method_simple / q_parameter_method_new
@@ -91,7 +91,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //寻找阈值
-    Find_PT_Mu_th(PT_mu_th, prec);
+    //注意到，当profile没有采取简化时，threshold 还与 PT_k 有关
+    Find_PT_Mu_th(PT_mu_th, PT_k, prec);//一般情况下不用管此参数
     //arb_set_str(PT_mu_th,"0.622",prec);
     //arb_printn(PT_mu_th, 60,0);printf("\n\n\n");
     //exit(0);
@@ -158,7 +159,12 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //求线性compaction function C_l 的threshold
     Trans_C_to_C_l(PS_C_l_th,PS_C_th,prec);
-    printf("Find C_l_th：");arb_printn(PS_C_l_th,60,0);printf("\n\n\n");
+    printf("Find C_l_th：");arb_printn(PS_C_l_th,60,0);printf("\n");
+    
+    //求出参数 μ 的上限，可能与参数 k 有关
+    Get_PK_mu_max(PT_mu_max, PT_k, prec);
+    printf("Find PT_mu_max：");arb_printn(PT_mu_max,60,0);printf("\n\n\n");
+    
     
     //PS 计算 M_ratio_max 
     //M/M_H=K*[(C_l-3/8*C_l^2)-C_th]^γ  

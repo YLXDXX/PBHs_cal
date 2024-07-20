@@ -14,8 +14,8 @@ int Help_sinc_n(arb_t res, const arb_t x, const slong order, slong prec); //计�
 
 int Help_psi_n(arb_t res, const arb_t r, const slong order, slong prec); //计算 ψ_1(r)
 
-int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec); //ζ_G 及其各阶导数
-
+int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order, slong prec);//ζ_G 及其各阶导数,除了μ的版本
+int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec); //ζ_G 及其各阶导数,没除μ的版本
 int zeta_profile_n(arb_t res, const arb_t r, const slong order, slong prec); // ζ(r) 及其各阶导数
 
 

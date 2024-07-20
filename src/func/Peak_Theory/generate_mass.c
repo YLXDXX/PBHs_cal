@@ -1,38 +1,50 @@
 #include "generate_mass.h"
 #include <stdlib.h>
 
+
+struct M_TO_MU {
+  arb_t zeta_k;
+  arb_t M;
+};
+
+
 //在视界重进入时，对应的视界质量 M_H(k)
-int Horizon_reentry_M_H(arb_t res,const arb_t k,slong prec)
+int Horizon_reentry_k_to_M_H(arb_t res,const arb_t k,slong prec)
 {
     //函数中所用变量
-    arb_t s,t;
+    arb_t s,t,w;
+    
     arb_init(s);
     arb_init(t);
+    arb_init(w);
     
-    //单位克
+    //注意到，单位为 g （克），2109.00791 (3.7)
     //M_H(k)=10^20 * (g_star/106.75)^(-1/6) * (k / 1.56E13)^(-2)
-    //前面系数
-    arb_set_str(s,"1E20",prec);
-    arb_set(res,s);
     
-    //中间
-    arb_set_str(s,"106.75",prec);
-    arb_div(t,effective_g_star,s,prec);
+    arb_set_str(w,"1E20",prec); //前面系数
+    
+    Func_k_to_degrees_of_freedom(t, s, k, prec); //求k对应的自由度数,第一个是自由度数，第二个是熵自由度数
+    
+    arb_set_str(s,"106.75",prec); //中间
+    arb_div(t,t,s,prec);
+    
     arb_one(s);
     arb_div_si(s,s,6,prec);
     arb_neg(s,s);
     arb_pow(t,t,s,prec);
-    arb_mul(res,res,t,prec);
+    arb_mul(w,w,t,prec);
     
-    //最后
-    arb_set_str(s,"1.56E13",prec);
+    
+    arb_set_str(s,"1.56E13",prec); //最后
     arb_div(s,k,s,prec);
     arb_sqr(s,s,prec);
     arb_inv(s,s,prec);
-    arb_mul(res,res,s,prec);
+    
+    arb_mul(res,w,s,prec);
     
     arb_clear(s);
     arb_clear(t);
+    arb_clear(w);
     
     return 0;
 }
@@ -40,7 +52,7 @@ int Horizon_reentry_M_H(arb_t res,const arb_t k,slong prec)
 
 //求质量M，两种表示，一种是相对质量 M/M_H，一种是实际质量 M(μ)
 //在视界重进入时，形成的黑洞的质量为M(µ)
-int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
+int Horizon_reentry_mu_to_M(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec)
 {
     //函数中所用变量
     arb_t s,t,w;
@@ -48,13 +60,13 @@ int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
     arb_init(t);
     arb_init(w);
     
-    //
     //修改 PT_mu，非高斯时，r_m 与 PT_mu 有关
-    //
+    //profile非简化时，r_m 还与 k 有关
+    
     arb_set(PT_mu,mu);
+    arb_set(PT_k,zeta_k);
     
-    
-    //在 M(µ) 近似的可写成如下关系式
+    //在 M(µ) 近似的可写成如下关系式 2109.00791 (3.8)
     // M(μ) = x_m^2 * exp(2*zeta(mu)) * K * (mu-mu_th)^γ * M_k(K_star)
     
     //最前面系数
@@ -78,7 +90,7 @@ int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
     arb_mul(w,w,t,prec);
     
     //最后
-    Horizon_reentry_M_H(t,K_star,prec);
+    Horizon_reentry_k_to_M_H(t,K_star,prec);
     arb_mul(res,w,t,prec);
     
     arb_clear(s);
@@ -92,7 +104,7 @@ int Horizon_reentry_M_mu(arb_t res,const arb_t mu,slong prec)
 
 //求质量的M，两种表示，一种是相对质量 M/M_H，一种是实际质量 M(μ)
 //在视界进入时，视界质量M_H，形成的黑洞的质量为M，两者之比 M/M_H
-int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
+int Horizon_reentry_mu_to_M_relative(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec)
 {
     //函数中所用变量
     arb_t s,r_m,x;
@@ -101,8 +113,11 @@ int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
     arb_init(r_m);
     arb_init(x);
     
-    //修改 PT_mu，非高斯时，最大值与PT_mu有关
+    //修改 PT_mu，非高斯时，r_m 与 PT_mu 有关
+    //profile非简化时，r_m 还与 k 有关
+    
     arb_set(PT_mu,mu);
+    arb_set(PT_k,zeta_k);
     
     
     //M=x^2 * exp(2*zeta(mu)) * K * (mu-mu_th)^{γ} * M_H
@@ -136,10 +151,40 @@ int Horizon_reentry_M_ratio(arb_t res, const arb_t mu, slong prec)
     return 0;
 }
 
-
+//通过M反解出μ
+static int interior_mu_to_M_func(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
+{
+    arb_t s;
+    arb_init(s);
+    
+    struct M_TO_MU *parameter;
+    
+    parameter=param;
+    
+    printf("\n当前 μ_2 值： ");arb_printn(mu, 15,0);
+    printf("\t M 值： ");arb_printn(parameter->M, 15,0);printf("\n计算对应的 M：");
+    
+    //通过 μ 值计算相应的 M
+    if( PT_Mass_Relative )
+    {
+        Horizon_reentry_mu_to_M_relative(s,mu,parameter->zeta_k,prec); //使用相对质量的版本
+    }else
+    {
+        Horizon_reentry_mu_to_M(s,mu,parameter->zeta_k,prec); 
+    }
+    
+    arb_printn(s, 15,0);printf("\n两都相差为：  ");
+    
+    arb_sub(res,s,parameter->M,prec);
+    
+    arb_printn(res, 15,0);printf("\n\n");
+    
+    arb_clear(s);
+    return 0;
+}
 
 //在视界重进入时，形成的黑洞的质量为M(µ)的反函数µ(M)
-int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
+int Horizon_reentry_M_to_mu(arb_t res, const arb_t M, const arb_t zeta_k, slong prec)
 {
     //修改 PT_mu，非高斯时，最大值与PT_mu有关
     //arb_set(PT_mu,mu);
@@ -150,45 +195,21 @@ int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
     //对于非高斯的情况应可用M(µ)=0的方式，通过求根求µ(M)
     
     //函数中所用变量
-    arb_t s,t,find_M;
+    arb_t s,t;
     arb_init(s);
     arb_init(t);
-    arb_init(find_M);
     
+    //通参结构体指针 将 M,k 的值传入定义函数内部
+    //这里，对于结构体 Find_root_delta_C_l_Y 需手动分配内存
+    struct M_TO_MU *parameter = (struct M_TO_MU *)calloc(1,sizeof(struct M_TO_MU));
     
+    arb_init(parameter->zeta_k);//使用arb_t变量前初始化
+    arb_init(parameter->M);
+    
+    arb_set(parameter->zeta_k,zeta_k);
+    arb_set(parameter->M,M);
     
     //这里采用求解方程零点的算法，来进行求解
-    //速度很慢
-    
-    arb_set(find_M,M);//这里，通参参数 find_M 将 M 的值传入定义函数内部
-    
-    int zeo_mu_M_func(arb_t res, const arb_t mu, void * t_M, const slong order, slong prec)
-    {
-        arb_t s;
-        arb_init(s);
-        
-        printf("\n当前 μ_2 值： ");arb_printn(mu, 15,0);
-        printf("\t M 值： ");arb_printn(t_M, 15,0);printf("\n计算对应的 M：");
-        
-        //通过 μ 值计算相应的 M
-        if( Relative_Mass )
-        {
-            Horizon_reentry_M_ratio(s,mu,prec); //使用相对质量的版本
-        }else
-        {
-            Horizon_reentry_M_mu(s,mu,prec); 
-        }
-        
-        arb_printn(s, 15,0);printf("\n两都相差为：  ");
-        
-        arb_sub(res,s,t_M,prec);
-        
-        arb_printn(res, 15,0);printf("\n\n");
-        
-        arb_clear(s);
-        return 0;
-    }
-    
     //arb_set_str(find_min,"0.61532877",prec);
     //由于mu的值需要大于 PT_mu_th ,故利用 PT_mu_th 来设置 mu 的最小值 find_min
     //当M/M_k_*=[0.01, 10]这个区间外时，想要求出对应的mu值
@@ -201,18 +222,18 @@ int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
     arb_add(Root_M_to_mu_min, Root_M_to_mu_min, t, prec); //精确相等，会导致开根错误
     
     printf("\n\nM -> μ_2 各参数\nM:       ");
-    arb_printn(find_M, 15,0);printf("\nPT_mu_th: ");
+    arb_printn(parameter->M, 15,0);printf("\nPT_mu_th: ");
     arb_printn(PT_mu_th, 15,0);printf("\n\n");
     
-    Find_interval_root(res, zeo_mu_M_func, find_M, 0,
+    Find_interval_root(s, interior_mu_to_M_func, parameter, 0,
                        Root_M_to_mu_min, Root_M_to_mu_max, Root_M_to_mu_precision,
                        Root_M_to_mu_num, Root_Normal, prec);
+    arb_set(res,s);
     
     printf("找到 M 所需的 μ_2 ： ");arb_printn(res, 15,0);printf("\n\n");
     
     arb_clear(s);
     arb_clear(t);
-    arb_clear(find_M);
     
     return 0;
 }
@@ -220,75 +241,222 @@ int Horizon_reentry_mu_M(arb_t res,const arb_t M,slong prec)
 
 
 //形成黑洞质M对mu的导数 dln(M)/dµ
-int Horizon_reentry_D_ln_M_to_mu(arb_t res, const arb_t mu, slong prec)
+int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec)
 {
     //函数中所用变量
-    arb_t s,t;
+    arb_t s,t,zeta_G_r;
     arb_init(s);
     arb_init(t);
+    arb_init(zeta_G_r);
+    
+    int label;
+    label=0;
+    
+    arb_set(PT_k,zeta_k); //导数的值可能跟 k 有关
     
     //跟功率谱有关，对于delta型式的功率谱，可解析求解
     //功率谱类型判断
     switch(Power_spectrum_type) 
     {
+        //注意到，这里进入视界用的是 k_*，对应于log-normal和BPL谱的中心尺度
+        //对于其它的谱，需要重新适配
+        
         case lognormal_type :
+        case broken_power_law_type :
+        //case power_law_type :
+        //case box_type :
+        //case link_cmb_type :
             
-            if( PT_profile_simplify )
-            {
-                //简化的情况，其中：
-                // r_m 与 k 无关，只与 PT_mu 有关
-                // 并且，利用 PT_mu 解出 r_m 后，且认为 r_m 是个常数，不参与求导
-                // PT_mu_th 与 k 无关，（与 PT_mu 无关）
-                // 而 r_m 的值，在上一步 Horizon_reentry_mu_M 中
-                // 调用 Horizon_reentry_M_mu 或 Horizon_reentry_M_ratio 已解出
-                // K(K_square) 被认为等于一 K(K_square)=1
-                // 且在简化的情况下，前面作了如下假设 arb_set(K_square,Gamma_3);
-                // 此时有 ζ(r)=μ_2 * ψ_1(r) Help_psi_n(phi_1,r,0,prec);
-                // 并且 μ_th 与 K_square 已无关系
-                
-                // dln(M)/dµ 与 k 无关
-                
-                // 2*ψ_1(r) + γ/(μ_2-μ_2th)
-                
-                Help_psi_n(s,R_MAX,0,prec); //前面已解出 R_MAX
-                arb_mul_si(s,s,2,prec);
-                
-                arb_sub(t,mu,PT_mu_th,prec);
-                arb_div(t,Mass_gamma,t,prec);
-                
-                arb_add(s,s,t,prec);
-                arb_abs(res,s);
-                
-            } else
-            {
-                printf("Peak_Theory -> generate_mass -> Horizon_reentry_D_ln_M_to_mu -> lognormal_type 中非近似形式，还未完成\n");
-                exit(1);
-            }
+            label=11;
             
             break;
+            
         case delta_type :
-            // 2*sinc(x) + γ/(μ_2-μ_2th) //x=r_m*k_star
-            //近似写为 0.282+0.36/(mu-mu_th)
+            // dζ/dμ 高斯情况，与k无关，与μ无关
+            // dζ/dμ 非高斯下，与k无关，与μ有关
             
-            arb_mul(s,R_MAX,K_star,prec);//前面
-            arb_sinc(s,s,prec);
-            arb_mul_si(s,s,2,prec);
-            
-            arb_sub(t,mu,PT_mu_th,prec);//后面
-            arb_div(t,Mass_gamma,t,prec);
-            
-            arb_add(s,s,t,prec);
-            arb_abs(res,s);
+            label=22;
             
             break;
             
         default :
-            printf("Peak_Theory -> generate_mass -> power_spectrum_type 有误\n");
+            printf("Peak_Theory -> generate_mass -> Horizon_reentry_derivative_ln_M_mu\npower_spectrum_type当前仅为 log-normal 和 broken power-law \n");
             exit(1);
+    }
+    
+    
+    //ζ_G=μ*ζ_G_r -- ζ=F(ζ_G)
+    if(label==11) //连续谱
+    {
+        if( PT_profile_simplify )
+        {
+            //简化的情况，其中：
+            // r_m 与 k 无关，只与 PT_mu 有关
+            // 并且，利用 PT_mu 解出 r_m 后，且认为 r_m 是个常数，不参与求导
+            // PT_mu_th 与 k 无关，（也与 PT_mu 无关）
+            // 而 r_m 的值，在上一步 Horizon_reentry_M_to_mu 中
+            // 调用 Horizon_reentry_mu_to_M 或 Horizon_reentry_mu_to_M_relative 已解出
+            // K(K_square) 被认为等于一 K(K_square)=1
+            // 且在简化的情况下，前面作了如下假设 arb_set(K_square,Gamma_3);
+            // 此时有 ζ(r)=μ_2 * ψ_1(r) --> dζ/dμ=ψ_1(r)
+            // 并且 μ_th 与 K_square 已无关系
+            // dln(M)/dµ 与 k 无关
+            
+            // 2*ψ_1(r) + γ/(μ_2-μ_2th)
+            
+            Help_psi_n(zeta_G_r,R_MAX,0,prec); //前面已解出 R_MAX
+            
+        } else
+        {
+            // dζ/dμ 高斯情况，与k有关，与μ无关
+            // dζ/dμ 非高斯下，与k有关，有μ有关
+            zeta_Gauss_profile_n_div_mu(zeta_G_r,R_MAX,0,prec); //前面已解出 R_MAX
+        }
+        
+    }else //δ谱: ζ_G_r=sinc(x) 而 x=r_m*r_star
+    {
+        arb_mul(s,R_MAX,K_star,prec);
+        arb_sinc(zeta_G_r,s,prec);
+    }
+    
+    
+    switch(Zeta_type) 
+    {
+        case gaussian_type :
+            //dζ/dμ=ζ_G_r
+            // 2*dζ/dμ + γ/(μ_2-μ_2th)
+            //近似写为 0.282+0.36/(mu-mu_th)
+            
+            arb_mul_si(s,zeta_G_r,2,prec);
+            arb_sub(t,mu,PT_mu_th,prec);//后面
+            arb_div(t,Mass_gamma,t,prec);
+            
+            arb_add(s,s,t,prec);
+            arb_abs(res,s);//行列式绝对值
+            
+            break;
+        case exponential_tail_type :
+            // dζ/dμ=ζ_G_r/(1-β*ζ_G_r*μ)
+            arb_mul(s,Exponential_tail_beta,zeta_G_r,prec);
+            arb_mul(s,s,mu,prec);
+            arb_neg(s,s);
+            arb_add_ui(s,s,1,prec);
+            arb_div(zeta_G_r,zeta_G_r,s,prec);
+            
+            arb_mul_si(s,zeta_G_r,2,prec);
+            arb_sub(t,mu,PT_mu_th,prec);//后面
+            arb_div(t,Mass_gamma,t,prec);
+            
+            arb_add(s,s,t,prec);
+            arb_abs(res,s);//行列式绝对值
+            
+            break;
+        case up_step_type:
+            // dζ/dμ=ζ_G_r/sqrt(1-h*ζ_G_r*μ)
+            arb_t h;
+            arb_init(h);
+            
+            arb_abs(h,Up_step_h);
+            
+            arb_mul(s,h,zeta_G_r,prec);
+            arb_mul(s,s,mu,prec);
+            arb_neg(s,s);
+            arb_add_ui(s,s,1,prec);
+            arb_sqrt(s,s,prec);
+            arb_div(zeta_G_r,zeta_G_r,s,prec);
+            
+            arb_mul_si(s,zeta_G_r,2,prec);
+            arb_sub(t,mu,PT_mu_th,prec);//后面
+            arb_div(t,Mass_gamma,t,prec);
+            
+            arb_add(s,s,t,prec);
+            arb_abs(res,s);//行列式绝对值
+            
+            arb_clear(h);
+            break;
+        case power_expansion_type:
+            // dζ/dμ=6*E*ζ_G_r^6*μ^5+5*D*ζ_G_r^5*μ^4+4*C*ζ_G_r^4*μ^3+3*B*ζ_G_r^3*μ^2+2*A*ζ_G_r^2*μ+ζ_G_r
+            arb_t w,A,B,C,D,E;
+            
+            arb_init(w);
+            arb_init(A);
+            arb_init(B);
+            arb_init(C);
+            arb_init(D);
+            arb_init(E);
+            
+            arb_one(A);
+            arb_mul_ui(A,A,3,prec);
+            arb_div_ui(A,A,5,prec);
+            arb_mul(A,A,Power_expansion_f,prec);
+            
+            arb_one(B);
+            arb_mul_ui(B,B,9,prec);
+            arb_div_ui(B,B,25,prec);
+            arb_mul(B,B,Power_expansion_g,prec);
+            
+            arb_set(C,Power_expansion_four);
+            arb_set(D,Power_expansion_five);
+            arb_set(E,Power_expansion_six);
+            
+            arb_mul_ui(s,E,6,prec);//6*E*ζ_G_r^6*μ^5
+            arb_pow_ui(t,zeta_G_r,6,prec);
+            arb_mul(s,s,t,prec);
+            arb_pow_ui(t,mu,5,prec);
+            arb_mul(w,s,t,prec);
+            
+            arb_mul_ui(s,D,5,prec);//5*D*ζ_G_r^5*μ^4
+            arb_pow_ui(t,zeta_G_r,5,prec);
+            arb_mul(s,s,t,prec);
+            arb_pow_ui(t,mu,4,prec);
+            arb_mul(s,s,t,prec);
+            arb_add(w,w,s,prec);
+            
+            arb_mul_ui(s,C,4,prec);//4*C*ζ_G_r^4*μ^3
+            arb_pow_ui(t,zeta_G_r,4,prec);
+            arb_mul(s,s,t,prec);
+            arb_pow_ui(t,mu,3,prec);
+            arb_mul(s,s,t,prec);
+            arb_add(w,w,s,prec);
+            
+            arb_mul_ui(s,B,3,prec);//3*B*ζ_G_r^3*μ^2
+            arb_pow_ui(t,zeta_G_r,3,prec);
+            arb_mul(s,s,t,prec);
+            arb_pow_ui(t,mu,2,prec);
+            arb_mul(s,s,t,prec);
+            arb_add(w,w,s,prec);
+            
+            arb_mul_ui(s,A,2,prec);//2*A*ζ_G_r^2*μ
+            arb_pow_ui(t,zeta_G_r,2,prec);
+            arb_mul(s,s,t,prec);
+            arb_mul(s,s,mu,prec);
+            arb_add(w,w,s,prec);
+            
+            //ζ_G_r
+            arb_add(zeta_G_r,w,zeta_G_r,prec);
+            
+            arb_mul_si(s,zeta_G_r,2,prec);
+            arb_sub(t,mu,PT_mu_th,prec);//后面
+            arb_div(t,Mass_gamma,t,prec);
+            
+            arb_add(s,s,t,prec);
+            arb_abs(res,s);//行列式绝对值
+            
+            arb_clear(w);
+            arb_clear(A);
+            arb_clear(B);
+            arb_clear(C);
+            arb_clear(D);
+            arb_clear(E);
+            break;
+            default:
+                printf("Peak_Theory -> generate_mass -> Horizon_reentry_derivative_ln_M_mu 中 zeta_type 输入有误\n");
+                exit(1);
     }
     
     arb_clear(s);
     arb_clear(t);
+    arb_clear(zeta_G_r);
     
     return 0;
 }

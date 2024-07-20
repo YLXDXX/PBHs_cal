@@ -19,9 +19,10 @@ int Delta_c_q_parameter_new(arb_t res, const arb_t q, slong prec); //利用 q �
 
 int C_m_average(arb_t res, const arb_t r_m, slong prec); //求C_m的平均值
 
-int Find_PT_Mu_th(arb_t res, slong prec); //找PT_mu的临界值
+int Find_PT_Mu_th(arb_t res, const arb_t zeta_k, slong prec); //找PT_mu的临界值
 
 int Trans_C_to_C_l(arb_t res, const arb_t x, slong prec); //已知阈值C_th时，求阈值C_{l,th}
 
+int Get_PK_mu_max(arb_t res, const arb_t zeta_k, slong prec); //求出参数 μ 的上限
 
 #endif // __PBHS_GENERAL_THRESHPLD__ 

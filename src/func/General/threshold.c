@@ -104,7 +104,7 @@ int Delta_c_q_parameter_simple(arb_t res, const arb_t q, slong prec)
 
 
 
-int interior_delta_c_q_parameter_new_F_1(arb_t res, const arb_t q, slong prec)
+static int interior_delta_c_q_parameter_new_F_1(arb_t res, const arb_t q, slong prec)
 {
     arb_t a,b,c,d,s,t;
     
@@ -150,7 +150,7 @@ int interior_delta_c_q_parameter_new_F_1(arb_t res, const arb_t q, slong prec)
     return 0;
 }
 
-int interior_delta_c_q_parameter_new_F_2(arb_t res, const arb_t q, const arb_t alpha, slong prec)
+static int interior_delta_c_q_parameter_new_F_2(arb_t res, const arb_t q, const arb_t alpha, slong prec)
 {
     arb_t a,b,c,d,s,t;
     
@@ -203,7 +203,7 @@ int interior_delta_c_q_parameter_new_F_2(arb_t res, const arb_t q, const arb_t a
 }
 
 
-int interior_C_c_average_w(arb_t res, const arb_t w, slong prec)
+static int interior_C_c_average_w(arb_t res, const arb_t w, slong prec)
 {
     arb_t a,b,c,d,s,t;
     
@@ -242,7 +242,7 @@ int interior_C_c_average_w(arb_t res, const arb_t w, slong prec)
 
 
 
-int interior_q_parameter_alpha_w(arb_t res, const arb_t w, slong prec)
+static int interior_q_parameter_alpha_w(arb_t res, const arb_t w, slong prec)
 {
     arb_t e,f,g,h,s,t;
     
@@ -282,7 +282,7 @@ int interior_q_parameter_alpha_w(arb_t res, const arb_t w, slong prec)
 }
 
 
-int interior_q_parameter_g_q_w(arb_t res, const arb_t q, const arb_t w, const arb_t alpha, slong prec)
+static int interior_q_parameter_g_q_w(arb_t res, const arb_t q, const arb_t w, const arb_t alpha, slong prec)
 {
     arb_t s,t;
     
@@ -410,7 +410,7 @@ int Area_R(arb_t res, const arb_t r, slong prec)
 
 //求C_m的平均值用
 //积分函数 C(r)* R(r)^2 * dR(r)
-int interior_C_m_average(arb_t res, const arb_t r, void* params, const slong order, slong prec)
+static int interior_C_m_average(arb_t res, const arb_t r, void* params, const slong order, slong prec)
 {
     arb_t s,t,w;
     arb_init(s);
@@ -544,7 +544,7 @@ int C_m_average(arb_t res, const arb_t r_m, slong prec)
 
 
 //找PT_mu的临界值用 C(r)平均值版本
-int interior_PT_Mu_th_average(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
+static int interior_PT_Mu_th_average(arb_t res, const arb_t mu, void * zeta_k, const slong order, slong prec)
 {
     
     arb_t t,u,r_max,C_th_average;
@@ -556,7 +556,10 @@ int interior_PT_Mu_th_average(arb_t res, const arb_t mu, void * param, const slo
     
     
     //需要修改 PT_mu，因为非高斯时 r_m 与 PT_mu 有关
+    //当profile没有采取简化时，还与 PT_k 有关
     arb_set(PT_mu,mu);
+    arb_set(PT_k,zeta_k);
+    
     
     if(Stdout_verbose==true)
     {
@@ -625,7 +628,7 @@ int interior_PT_Mu_th_average(arb_t res, const arb_t mu, void * param, const slo
 
 
 //找PT_mu的临界值用 q参数版本
-int interior_PT_Mu_th_q_parameter(arb_t res, const arb_t mu, void * param, const slong order, slong prec)
+static int interior_PT_Mu_th_q_parameter(arb_t res, const arb_t mu, void * zeta_k, const slong order, slong prec)
 {
     
     arb_t s,t,r_max;
@@ -635,7 +638,9 @@ int interior_PT_Mu_th_q_parameter(arb_t res, const arb_t mu, void * param, const
     arb_init(r_max);
     
     //需要修改 PT_mu，因为非高斯时 r_m 与 PT_mu 有关
+    //当profile没有采取简化时，还与 PT_k 有关
     arb_set(PT_mu,mu);
+    arb_set(PT_k,zeta_k);
     
     if(Stdout_verbose==true)
     {
@@ -701,20 +706,24 @@ int interior_PT_Mu_th_q_parameter(arb_t res, const arb_t mu, void * param, const
 
 
 //找PT_mu的临界值
-int Find_PT_Mu_th(arb_t res, slong prec)
+int Find_PT_Mu_th(arb_t res, const arb_t zeta_k, slong prec)
 {
-    //采用新的arb求根算法
+    arb_t k;
+    arb_init(k);
+    
+    arb_set(k,zeta_k);
+    
     //求临界值有两种方法
     //求临界值的四种方式 q_parameter_method_simple / q_parameter_method_new
     //                average_method_simple / average_method_new
     if ( PT_Mu_th_METHOD==q_parameter_method_simple || PT_Mu_th_METHOD==q_parameter_method_new )
     {
-        Find_interval_root(res, interior_PT_Mu_th_q_parameter, NULL, 0,
+        Find_interval_root(res, interior_PT_Mu_th_q_parameter, k, 0,
                            Int_mu_min, Int_mu_max, Int_mu_precision,
                            Root_mu_num, Root_Normal, prec);
     }else if ( PT_Mu_th_METHOD==average_method_simple || PT_Mu_th_METHOD==average_method_new )
     {
-        Find_interval_root(res, interior_PT_Mu_th_average, NULL, 0,
+        Find_interval_root(res, interior_PT_Mu_th_average, k, 0,
                            Int_mu_min, Int_mu_max, Int_mu_precision,
                            Root_mu_num, Root_Normal, prec);
     }else
@@ -724,6 +733,8 @@ int Find_PT_Mu_th(arb_t res, slong prec)
     }
     
     printf("\n\nFind PT_mu_th: ");arb_printn(res, 50,0);printf("\n\n"); //打印变量
+    
+    arb_clear(k);
     
     return 0;
 }
@@ -760,3 +771,52 @@ int Trans_C_to_C_l(arb_t res, const arb_t x, slong prec)
     return 0; 
 }
 
+
+static int interior_Get_PK_mu_max(arb_t res, const arb_t mu, void * zeta_k, const slong order, slong prec)
+{
+    arb_t s;
+    arb_init(s);
+    
+    //与 μ 和 k 均有关
+    arb_set(PT_mu,mu);
+    arb_set(PT_k,zeta_k);
+    
+    //通过利用 C_l 的最大值 4/3 来得到 μ 的最大值
+    //C_l=-4/3*r*ζ' --> r*ζ'的最大值为 -1
+    
+    zeta_profile_n(s, R_MAX, 1, prec);
+    arb_mul(s,s,R_MAX,prec);
+    
+    arb_add_ui(res,s,1,prec);
+    
+    arb_clear(s);
+    
+    return 0; 
+}
+
+//求出参数 μ 的上限
+int Get_PK_mu_max(arb_t res, const arb_t zeta_k, slong prec)
+{
+    arb_t s,a,k;
+    
+    arb_init(s);
+    arb_init(a);
+    arb_init(k);
+    
+    //当不考虑profile的简化时，与k参数相关
+    arb_set(k,zeta_k);
+    
+    //找根的最小值，从 C_l_th 开始
+    arb_set(a,PS_C_l_th); 
+    
+    Find_interval_root(s, interior_Get_PK_mu_max, k, 0,
+                       a, Int_mu_max, Int_mu_precision,
+                       Root_mu_num, Root_Normal, prec);
+    arb_set(res,s);
+    
+    arb_clear(s);
+    arb_clear(a);
+    arb_clear(k);
+    
+    return 0; 
+}

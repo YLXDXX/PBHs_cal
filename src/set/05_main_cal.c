@@ -106,7 +106,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -145,7 +145,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -196,7 +196,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -234,7 +234,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -287,7 +287,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-8",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-8",prec);
                     
@@ -325,7 +325,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -367,7 +367,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -409,7 +409,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -454,7 +454,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -516,7 +516,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -554,7 +554,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -599,7 +599,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -645,7 +645,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -685,20 +685,27 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //变量 mu，ζ(r) 的参数 µ
     arb_one(PT_mu); //ζ(r) 的参数 µ，默认为PT_mu=1
     
-    //变量 PT_k_square，ζ(r) 的参数 k
-    arb_one(PT_k_square); //默认为PT_k_square=1
+    //变量 PT_k，ζ(r) 的参数 k
+    arb_one(PT_k); //默认为PT_k=1
     
     //此设定应在计算 PT_mu_th 之前，有此设定有影响 PT_mu_th 的值
     FIT_FUNC_IF=false; //在后需的计算中，若拟合完成，是否开启拟合 true/false
-    Relative_Mass=true; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
+    PT_Mass_Relative=true; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
                         //即： β(M)-->β(M/M_H) ， f(M)-->f(M/M_H)
                         // 非相对质量的计算还有点小问题
-    PT_profile_simplify=true; //是否启用简化版本的计算
-    //简化启用时，PT_k_square设为其平均值，此时ζ^G(r)的表达式大为化简，只剩下一个随机变量 μ
+    PT_profile_simplify=true; //是否启用简化版本的计算，typical profile 计算
+    PT_threshold_simplify=true;  //是否启用简化版本的计算，threshold 计算
+    if(PT_profile_simplify==true) //当启用profile的简化时，PT_threshold_simplify必为真
+    {
+        PT_threshold_simplify=true;
+    }
+    //简化启用时，PT_k设为其平均值，此时ζ^G(r)的表达式大为化简，只剩下一个随机变量 μ
     //对于typical profile 没取梯度，则 k_1=σ_1/σ_0, ζ(r)=μ_0 * ψ_0(r)
     //对于typical profile 取了梯度，则 k_3=σ_3/σ_2 --> k_3=γ_3 , ζ(r)=μ_2 * ψ_1(r)
-    //并且，此时 μ_2th 也不会变动 (PT_k_square 改变会导致 μ_2th 改变)
-    
+    //并且，此时 μ_2th 也不会变动 (PT_k 改变会导致 μ_2th 改变)
+    //当考虑 zeta_k 对于 profile 的影响后，阈值计算会变得非常麻烦，另外求 n_pbh(M) 时的积分区间也会非常复杂
+    //例如，2109.00791 中的 (2.23)
+    //μ_2(M,k_3)，此时，我们不考虑k_3对于μ_2的影响，也认为阈值μ_2th不变，此时会大大简化计算
     
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式

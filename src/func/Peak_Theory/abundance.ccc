@@ -49,21 +49,21 @@ int PBH_abundance_f_to_M(arb_t res,const arb_t M, slong prec)
             //最后
             
             //这里需要判断一下，是否使用相对质量
-            if( Relative_Mass )
+            if( PT_Mass_Relative )
             {
                 //使用相对质量
                 arb_set_str(t,"1E20",prec);
                 arb_div(s,M,t,prec);
-                Horizon_reentry_mu_M(mu,s,prec);//通过M获得µ
+                Horizon_reentry_M_to_mu(mu,s,prec);//通过M获得µ
             }else
             {
                 //不使用相对质量
-                Horizon_reentry_mu_M(mu,M,prec);//通过M获得µ
+                Horizon_reentry_M_to_mu(mu,M,prec);//通过M获得µ
             }
             
             
             
-            Horizon_reentry_D_ln_M_to_mu(s,mu,prec);
+            Horizon_reentry_derivative_ln_M_mu(s,mu,prec);
             arb_inv(s,s,prec);
             arb_mul(w,w,s,prec);
             
