@@ -691,8 +691,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //此设定应在计算 PT_mu_th 之前，有此设定有影响 PT_mu_th 的值
     FIT_FUNC_IF=false; //在后需的计算中，若拟合完成，是否开启拟合 true/false
     PT_Mass_Relative=true; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
-                        //即： β(M)-->β(M/M_H) ， f(M)-->f(M/M_H)
-                        // 非相对质量的计算还有点小问题
+                        //对于 直接使用数密度来计算 f，不能使用相对质量
+                        //使用相对质量：β(M/M_H) ， β(M/M_H) --> f(M/M_H)
+                        //不使用相对质量：β(M)，f(M)
+    Peak_theory_source_zeta_gradient=true; //采用ζ还是Δζ作为峰理论的源场
     PT_profile_simplify=true; //是否启用简化版本的计算，typical profile 计算
     PT_threshold_simplify=true;  //是否启用简化版本的计算，threshold 计算
     if(PT_profile_simplify==true) //当启用profile的简化时，PT_threshold_simplify必为真
@@ -706,7 +708,17 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //当考虑 zeta_k 对于 profile 的影响后，阈值计算会变得非常麻烦，另外求 n_pbh(M) 时的积分区间也会非常复杂
     //例如，2109.00791 中的 (2.23)
     //μ_2(M,k_3)，此时，我们不考虑k_3对于μ_2的影响，也认为阈值μ_2th不变，此时会大大简化计算
-    
+    PT_cal_r_m_fix=true; //在计算数密度时，μ_3 或 k_3 的变化，会引起 r_m 的变化
+                        //但由于 r_m 没有解析公式，都是通过数值求根计算所得，计算数度较慢
+                        //当有多个求根时，会极大的增加计算时长
+                        //这里，只有μ的变化不大，对应r_m的变化很小，可以适当忽略
+                        //特别是在profile简化的情况下
+    PT_cal_M_to_mu_func_zeta_m_simple=true; //ζ(r_m) 的变化不大，在其质量M的估算中，不考虑其对μ影响，对结果的影响在同一数量级
+                                //不考虑μ的影响后，可以得到对应的解析表达式，不用再数值求根，将极大加快计算速度
+    if(PT_cal_r_m_fix==false)
+    {
+        PT_cal_M_to_mu_func_zeta_m_simple=false; //当 r_m 不固定时，其为假
+    }
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式
     //临界坍缩： M=K*(C-C_th)^γ * M_H

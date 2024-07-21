@@ -75,7 +75,7 @@ arb_t Gamma_3; //(γ_3)
 arb_t R_1; //(R_1)
 arb_t R_3; //(R_3)
 
-bool Peak_theory_sorce_zeta_gradient; //peak theory计算中，统计量是否取ζ的梯度
+bool Peak_theory_source_zeta_gradient; //peak theory计算中，统计量是否取ζ的梯度
 
 
 
@@ -302,6 +302,8 @@ char* File_Laplacian_psi_1_4_fit;
 bool PT_profile_simplify; //是否启用简化版本的计算，typical profile 计算
 bool PT_threshold_simplify;  //是否启用简化版本的计算，threshold 计算
 bool PT_Mass_Relative; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
+bool PT_cal_r_m_fix; //在计算数密度时，是否重新计算 r_m
+bool PT_cal_M_to_mu_func_zeta_m_simple; //求M-->μ时，是否忽略 e^(ζ_m) 项
 bool Transfer_Function; //是否加入转移函数
 bool Continuum_spectrum_cal_simplify; //连续谱计算是否采用简化
 bool Continuum_spectrum_judge_help; //连续谱功率谱判断辅助

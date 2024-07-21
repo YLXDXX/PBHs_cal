@@ -205,7 +205,7 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
          default :
             
             int n;
-            if(Peak_theory_sorce_zeta_gradient==true) //peak theory计算中，统计量是否取ζ的梯度
+            if(Peak_theory_source_zeta_gradient==true) //peak theory计算中，统计量是否取ζ的梯度
             {
                 n=3; //取了梯度
                 
@@ -384,7 +384,7 @@ int PBH_number_density_M(arb_t res,const arb_t M, slong prec)
         //此时，k_3 为一常数，取其为对应的平均值
         //而 k 的取值，又要分有没有用 ζ 的梯度
         
-        if(Peak_theory_sorce_zeta_gradient==true)
+        if(Peak_theory_source_zeta_gradient==true)
         {
             //(k_3)^2=γ_3
             arb_sqrt(zeta_k,Gamma_3,prec);

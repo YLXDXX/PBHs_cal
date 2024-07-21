@@ -213,7 +213,7 @@ int interior_help_psi_n(arb_t res, const arb_t k, void* r, const slong order, sl
     }
     
     
-    if(Peak_theory_sorce_zeta_gradient==true)
+    if(Peak_theory_source_zeta_gradient==true)
     {
         //ψ_1(r) 前面系数 exp(k)^2
         arb_pow_ui(t,exp_k,2,prec); 
@@ -381,7 +381,7 @@ int Help_psi_n(arb_t res, const arb_t r, const slong order, slong prec)
                               Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
                               Integration_iterate_min,Integration_iterate_max, prec);
     
-    if(Peak_theory_sorce_zeta_gradient==true)
+    if(Peak_theory_source_zeta_gradient==true)
     {
         //ψ_1(r)=(积分值)/(σ_1)^2
         arb_div(res,s,Sigma_1_square,prec);
@@ -467,7 +467,7 @@ int interior_help_Laplacian_psi_n(arb_t res, const arb_t k, void* r, const slong
             exit(1);
     }
     
-    if(Peak_theory_sorce_zeta_gradient==true)
+    if(Peak_theory_source_zeta_gradient==true)
     {
         //ψ_1(r) 前面系数 k^4
         arb_pow_ui(t,exp_k,4,prec);
@@ -514,7 +514,7 @@ int Help_Laplacian_psi_n(arb_t res, const arb_t r, const slong order, slong prec
                               Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
                               Integration_iterate_min,Integration_iterate_max, prec);
     
-    if(Peak_theory_sorce_zeta_gradient==true)
+    if(Peak_theory_source_zeta_gradient==true)
     {
         //ψ_1(r)=(积分值)/(σ_1)^2
         arb_div(res,s,Sigma_1_square,prec);
@@ -577,7 +577,7 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                 break;
             }
             
-            if(Peak_theory_sorce_zeta_gradient==true)
+            if(Peak_theory_source_zeta_gradient==true)
             {
                 // ψ_1(r) 部分
                 arb_sqr(s,Gamma_3,prec); // 1-（Gamma_3）^2 

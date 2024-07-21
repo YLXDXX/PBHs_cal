@@ -214,8 +214,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"-0.8633379129",prec);
-    arb_set_str(w,"1.7587867E-1",prec);
+    arb_set_str(t,"0.5",prec);
+    arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
     //arb_sub(w,Ln_K_star,w,prec);
@@ -225,7 +225,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Help_sigma_n_square(Pk,4,prec);
     //Help_psi_n(Pk,t,3,prec);
     //Help_psi_n(Pk,t,0,prec);
-    zeta_Gauss_profile_n(Pk,R_MAX,0,prec);
+    //zeta_Gauss_profile_n(Pk,R_MAX,0,prec);
     
     arb_exp(Pk,Pk,prec);
     arb_div(Pk,Pi_2,Pk,prec);
@@ -269,8 +269,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_M_ratio_to_C_l(Pk,w,prec);
     //interior_probability_C_l(Pk,t,w,0,prec);
     //probability_gauss_2D(Pk,t,w,prec);
-    //PS_abundance_beta_m(Pk,t,prec);
-    //PS_abundance_beta_all(Pk,prec);
+    PS_abundance_beta_m(w,t,prec);
+    //PS_abundance_beta_all(w,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
     //PS_abundance_f_m(Pk, w, prec);
     //PS_abundance_f_all(Pk,prec);
@@ -278,7 +278,13 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Probability_C_l(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
     
-    Peak_theory_sorce_zeta_gradient=true;
+    //Peak theory相关
+    //PBH_number_density_M(Pk,t,prec);
+    //PT_abundance_beta_m(Pk,t,prec);
+    PT_abundance_beta_all(Pk,prec);
+    
+    
+    arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,60,0);printf("\n");
     
     //考虑所有k模式，用δ谱计算连续谱
