@@ -11,7 +11,7 @@ void Set_power_spectra(char* comd_argv, slong prec) // comd_argv 为命令行传
     //arb_set_str(Power_A, comd_argv, prec);
     
     //功率谱掌宽，例如 log-normal 的
-    arb_set_str(Power_sigma,"0.01",prec); // P(k)=A/sqrt(2*Pi*sigma^2)*exp( -( ln(k)-ln(k_star) )^2/(2*sigma^2) )
+    arb_set_str(Power_sigma,"0.1",prec); // P(k)=A/sqrt(2*Pi*sigma^2)*exp( -( ln(k)-ln(k_star) )^2/(2*sigma^2) )
     //arb_set_str(Power_sigma,argv[1],prec);//命令行中读取
     //对于非δ、log-normal、BPL等中心对称谱，可选择某个合适的值
     //如，Peak thoery中会用到

@@ -295,7 +295,6 @@ extern bool PT_profile_simplify; //是否启用简化版本的计算，typical p
 extern bool PT_threshold_simplify;  //是否启用简化版本的计算，threshold 计算
 extern bool PT_Mass_Relative; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算
 extern bool PT_cal_r_m_fix; //在计算数密度时，是否重新计算 r_m
-extern bool PT_cal_M_to_mu_func_zeta_m_simple; //求M-->μ时，是否忽略 e^(ζ_m) 项
 extern bool Transfer_Function; //是否加入转移函数
 extern bool Continuum_spectrum_cal_simplify; //连续谱计算是否采用简化
 extern bool Continuum_spectrum_judge_help; //连续谱功率谱判断辅助
@@ -341,6 +340,7 @@ extern arb_ptr P_normalization_coefficient; //概率归一化系数
 
 
 extern arb_t PS_M_ratio_max; // I 型扰动质量比的最大值
+extern arb_t PT_M_ratio_max;
 extern arb_t PS_C_th; // 压缩函数的临界值 C_th
 extern arb_t PS_C_l_th; // 线性压缩函数的临界值 C_th(r)
 extern arb_t PS_abundance_f_all_precision; //最终占比f积分的精度

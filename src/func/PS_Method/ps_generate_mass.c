@@ -129,3 +129,42 @@ int PS_M_ratio_to_C_l(arb_t res, const arb_t m, slong prec)
     return 0;
 }
 
+
+//获得相对质量取值的最大值
+void Func_get_relative_M_max(slong prec)
+{
+    arb_t t,s; //中间借用临时变量
+    arb_init(t);
+    arb_init(s);
+    
+    arb_one(t); // t = 4/3
+    arb_mul_ui(t,t,4,prec);
+    arb_div_ui(t,t,3,prec); // t = 4/3 ，对应于两类型PBH的分界点
+    PS_C_l_to_M_ratio(PS_M_ratio_max,t,prec);
+    
+    
+    //注意，这里M/M_{H}不能精确的取到最大值，会有 P(C_l->4/3) --> P(C) 的发散问题
+    //但P(C)的积分没有发散问题，为了数值计算上的方便，做一点微小的截断
+    arb_set_str(t, "1E-40", prec); // C_l_max=C_l_max-10^{-40}
+    arb_sub(PS_M_ratio_max,PS_M_ratio_max,t,prec);
+    
+    
+    //注意到，对于peak theory理论来说，其没有直接使用M_H，而是使用了M(k_*)
+    //M/M_H --> M/M(k_*) 则相对质量的定义域也有变化，扩大了 (x_m)^2*e^(2*ζ_m)
+    
+    
+    arb_mul(t,K_star,R_MAX,prec);
+    arb_sqr(t,t,prec);
+    
+    zeta_profile_n(s,R_MAX,0,prec); // e^(2*ζ_m)
+    arb_mul_ui(s,s,2,prec);
+    arb_exp(s,s,prec);
+    
+    arb_mul(t,t,s,prec);
+    
+    arb_mul(PT_M_ratio_max,PS_M_ratio_max,t,prec);
+    
+    arb_clear(t);
+    arb_clear(s);
+}
+

@@ -30,7 +30,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     
     //up_step_type
     //arb_set(Up_step_h,Upward_step_spectra_h);
-    arb_set_str(Up_step_h, "-0.1", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set_str(Up_step_h, "-1", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv, prec); //从命令行读取参数
     
     
@@ -41,7 +41,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
     
     //arb_set_str(Power_expansion_f, comd_argv, prec); //从命令行读取参数
-    arb_set_str(Power_expansion_f, "-30", prec); //power-series expansion 二次项 f_NL -> A
+    arb_set_str(Power_expansion_f, "-1", prec); //power-series expansion 二次项 f_NL -> A
     arb_set_str(Power_expansion_g, "0", prec); //power-series expansion 三次项 g_NL -> B
     arb_set_str(Power_expansion_four, "0", prec); //power-series expansion 四次项 four -> C
     arb_set_str(Power_expansion_five, "0", prec); //power-series expansion 五次项 five -> D
@@ -713,12 +713,6 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                         //当有多个求根时，会极大的增加计算时长
                         //这里，只有μ的变化不大，对应r_m的变化很小，可以适当忽略
                         //特别是在profile简化的情况下
-    PT_cal_M_to_mu_func_zeta_m_simple=true; //ζ(r_m) 的变化不大，在其质量M的估算中，不考虑其对μ影响，对结果的影响在同一数量级
-                                //不考虑μ的影响后，可以得到对应的解析表达式，不用再数值求根，将极大加快计算速度
-    if(PT_cal_r_m_fix==false)
-    {
-        PT_cal_M_to_mu_func_zeta_m_simple=false; //当 r_m 不固定时，其为假
-    }
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式
     //临界坍缩： M=K*(C-C_th)^γ * M_H

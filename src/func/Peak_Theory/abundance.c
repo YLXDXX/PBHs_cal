@@ -90,14 +90,30 @@ int PT_abundance_beta_all(arb_t res, slong prec)
     {
         //∫_0^{M_ratio_max} f(m)dln(m)
         //积分下界不能取到0，有除以零的运算
-        arb_set_str(a,"1E-5",prec); //a不能精确等于0
-        arb_set(b,PS_M_ratio_max);
+        arb_set_str(a,"1E-6",prec); //a不能精确等于0
+        arb_set(b,PT_M_ratio_max); //由于peak theory与PS方法相对质量利用的质量不同，其取值范围也不同
         //arb_set_str(b,"1.6",prec);
+        
+        int int_n_min,int_n_max;
+        if(Integral_method==double_exponential)
+        {
+            int_n_min=4;
+            int_n_max=6;
+            
+        }else if(Integral_method==gauss_kronrod_iterate)
+        {
+            int_n_min=2;
+            int_n_max=4;
+        }else
+        {
+            printf(" Peak_Theory -> abundance.c -> PT_abundance_beta_all -> 积分迭代次数设置错误\n");
+            exit(1);
+        }
         
         //使用新的gauss_kronrod积分算法
         Integration_arb(res, interior_PT_abundance_beta_all, NULL, 0, 
                         a, b, PS_abundance_f_all_precision,
-                        Integration_iterate_min,Integration_iterate_max, prec);
+                        int_n_min,int_n_max, prec);
         
     }else //不使用相对质量
     {

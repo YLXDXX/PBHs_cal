@@ -797,25 +797,29 @@ static int interior_Get_PK_mu_max(arb_t res, const arb_t mu, void * zeta_k, cons
 //求出参数 μ 的上限
 int Get_PK_mu_max(arb_t res, const arb_t zeta_k, slong prec)
 {
-    arb_t s,a,k;
+    arb_t s,a,b,k;
     
     arb_init(s);
     arb_init(a);
+    arb_init(b);
     arb_init(k);
     
     //当不考虑profile的简化时，与k参数相关
     arb_set(k,zeta_k);
     
-    //找根的最小值，从 C_l_th 开始
-    arb_set(a,PS_C_l_th); 
+    //找根的最小值，从 PT_mu_th 开始
+    arb_set(a,PT_mu_th); 
+    arb_set(b,Int_mu_max);
+    arb_mul_ui(b,b,2,prec);
     
     Find_interval_root(s, interior_Get_PK_mu_max, k, 0,
-                       a, Int_mu_max, Int_mu_precision,
-                       Root_mu_num, Root_Normal, prec);
+                       a, b, Int_mu_precision,
+                       2*Root_mu_num, Root_Normal, prec);
     arb_set(res,s);
     
     arb_clear(s);
     arb_clear(a);
+    arb_clear(b);
     arb_clear(k);
     
     return 0; 
