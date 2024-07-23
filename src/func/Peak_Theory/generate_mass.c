@@ -431,9 +431,8 @@ int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t ze
         
     }else //δ谱: ζ_G_r=sinc(x) 而 x=r_m*r_star
     {
-        arb_mul(s,r_m,K_star,prec);
-        Help_sinc_n(zeta_G_r,s,0,prec);
-        Help_sinc_n(zeta_G_r_prime,s,1,prec);
+        Help_psi_n(zeta_G_r,r_m,0,prec);
+        Help_psi_n(zeta_G_r_prime,r_m,1,prec);
     }
     
     
@@ -657,6 +656,7 @@ int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t ze
                 printf("Peak_Theory -> generate_mass -> Horizon_reentry_derivative_ln_M_mu 中 zeta_type 输入有误\n");
                 exit(1);
     }
+    
     
     arb_clear(s);
     arb_clear(t);

@@ -129,7 +129,7 @@ int N_pk_help_P_1_n(arb_t res, const arb_t nu, const arb_t xi, const slong n, sl
     arb_mul(w,nu,Gamma_1,prec);//原文公式此处漏写了下标1
     arb_sub(w,xi,w,prec);
     arb_sqr(w,w,prec);
-    arb_div(w,w,s,prec); // s 用掉
+    arb_div(w,w,s,prec); // s 用掉 
     
     arb_sqr(s,nu,prec);
     arb_add(s,s,w,prec);
@@ -298,9 +298,29 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
     return 0;
 }
 
+//对 n_pk(mu,k) 的 k 进行积分，简化版，此时μ与k无关
+static int interior_PBH_number_density_M_profile_simplify(arb_t res, const arb_t k, void * para_mu, const slong order, slong prec)
+{
+    arb_t s,t,mu;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(mu);
+    
+    arb_set(mu,para_mu); //mu与k无关，由参数传入
+    
+    Peak_number_density(s,mu,k,prec);
+    
+    arb_set(res,s);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(mu);
+    
+    return 0;
+}
 
-
-//对 n_pk(mu,k) 的 k 进行积分
+//对 n_pk(mu,k) 的 k 进行积分，完整版
 static int interior_PBH_number_density_M(arb_t res, const arb_t k, void * M, const slong order, slong prec)
 {
     // M 已由参数传入
@@ -373,18 +393,20 @@ int PBH_number_density_M(arb_t res,const arb_t M, slong prec)
     arb_init(t_mu);
     arb_init(zeta_k);
     
+    int ret_judge=0;
     
     //PT_threshold_simplify=true
     //PT_profile_simplify==true
     
     if(PT_profile_simplify==true || Power_spectrum_type==delta_type) //包含 δ 谱
     {
-        // dln(M)/dµ 与 k 无关，此时计算较为简单
+        //上面判断两都的共同点是，μ的取值与k无关
+        // dln(M)/dµ 也与 k 无关，此时计算较为简单
         
         //此时，k_3 为一常数，取其为对应的平均值
         //而 k 的取值，又要分有没有用 ζ 的梯度
         
-        if(Peak_theory_source_zeta_gradient==true)
+        if(Peak_theory_source_zeta_gradient==true) //这里对于δ一样，但对于PT_profile_simplify不一样
         {
             //(k_3)^2=γ_3
             arb_sqrt(zeta_k,Gamma_3,prec);
@@ -411,34 +433,46 @@ int PBH_number_density_M(arb_t res,const arb_t M, slong prec)
             return 0;
         }else
         {
-            //积分化为常量积分
-            Peak_number_density(s, t_mu, zeta_k, prec);
-            Horizon_reentry_derivative_ln_M_mu(w, t_mu, zeta_k, prec); //可利用上面保存的 R_MAX
-            arb_inv(w,w,prec); //取倒数
-            
-            arb_mul(s,s,w,prec);
-            arb_sub(w,t_mu,PT_mu_th,prec);
-            arb_mul(res,s,w,prec);
+            if(Power_spectrum_type==delta_type) //δ的情况最简单，不用积分，直接代入计算
+            {
+                //积分化为常量积分
+                Peak_number_density(s, t_mu, zeta_k, prec);
+                
+                Horizon_reentry_derivative_ln_M_mu(w, t_mu, zeta_k, prec); //可利用上面保存的 R_MAX
+                arb_inv(w,w,prec); //取倒数
+                arb_mul(res,s,w,prec);
+                
+            }else
+            {
+                //对于 PT_profile_simplify 的情况，还需要对于μ进行积分
+                //但是，由于这里μ与k无关，可以大大加快积分的计算速度
+                
+                ret_judge=Integration_arb(s, interior_PBH_number_density_M_profile_simplify, t_mu, 0, //积分计算传递质量 M 
+                                          Int_n_pk_k_min, Int_n_pk_k_max,Int_n_pk_k_precision,
+                                          Integration_iterate_min,Integration_iterate_max, prec);
+                
+                Horizon_reentry_derivative_ln_M_mu(w, t_mu, zeta_k, prec); //可利用上面保存的 R_MAX
+                arb_inv(w,w,prec); //取倒数
+                
+                arb_mul(res,s,w,prec);
+            }
         }
         
     }else
     {
         //一般不能解析求解，计算较为复杂
-        
-        
         arb_set(w,M);
         
-        int ret_judge=0;
         ret_judge=Integration_arb(s, interior_PBH_number_density_M, w, 0, //积分计算传递质量 M 
                                   Int_n_pk_k_min, Int_n_pk_k_max,Int_n_pk_k_precision,
                                   Integration_iterate_min,Integration_iterate_max, prec);
-        if(ret_judge==1)
-        {
-            printf("PBH_number_density_M \t 达到最大迭代次数\n");
-        }
-        
         arb_set(res,s);
-        
+    }
+    
+    
+    if(ret_judge==1)
+    {
+        printf("PBH_number_density_M \t 达到最大迭代次数\n");
     }
     
     arb_clear(s);

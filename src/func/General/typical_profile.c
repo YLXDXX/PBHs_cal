@@ -34,20 +34,34 @@ int interior_help_sigma_n(arb_t res, const arb_t k, void* params, const slong or
 int Help_sigma_n_square(arb_t res, const slong n,slong prec)
 {
     //函数中所用变量
+    arb_t s;
+    arb_init(s);
+    
     slong ord;
     
     ord=n*2; // 这里传入 2*n ，避免多次重复计算
     
     // interior_help_sigma_n
     
-    int ret_judge=0;
-    ret_judge=Integration_arb(res, interior_help_sigma_n,NULL,ord, 
-                                        Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
-                                        Integration_iterate_min,Integration_iterate_max, prec);
-    if(ret_judge==1)
+    if(Power_spectrum_type==delta_type)
     {
-        printf("Help_sigma_n_square \t %li \t 达到最大迭代次数\n", n);
+        //σ_n^2=k_*^{2n}*A
+        arb_pow_ui(s,K_star,ord,prec);
+        arb_mul(res,s,Power_A,prec);
+    }else
+    {
+        int ret_judge=0;
+        ret_judge=Integration_arb(s, interior_help_sigma_n,NULL,ord, 
+                                  Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
+                                  Integration_iterate_min,Integration_iterate_max, prec);
+        arb_set(res,s);
+        if(ret_judge==1)
+        {
+            printf("Help_sigma_n_square \t %li \t 达到最大迭代次数\n", n);
+        }
     }
+    
+    arb_clear(s);
     
     return 0;
 }
@@ -365,30 +379,79 @@ int Help_psi_n(arb_t res, const arb_t r, const slong order, slong prec)
     }
     */
     
-    arb_t s,r_pra;
+    arb_t s,x,r_pra;
     
     arb_init(s);
+    arb_init(x);
     arb_init(r_pra);
-    
-    arb_set(r_pra,r); //传递 r 的值
     
     //使用新的gauss_kronrod积分算法
     int ret_judge=0;
     
     
-    //计算 ψ_0/ψ_1
-    ret_judge=Integration_arb(s, interior_help_psi_n, r_pra, order,
-                              Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
-                              Integration_iterate_min,Integration_iterate_max, prec);
-    
-    if(Peak_theory_source_zeta_gradient==true)
+    if(Power_spectrum_type==delta_type) //δ谱下，ψ_0 = ψ_1 = sinc(x)=sinc(r*k_star)
     {
-        //ψ_1(r)=(积分值)/(σ_1)^2
-        arb_div(res,s,Sigma_1_square,prec);
-    }else
+        arb_mul(x,r,K_star,prec);
+        
+        switch(order) 
+        {
+            case 0 : //没有求导
+                
+                Help_sinc_n(s,x,0,prec); //sinc(x)
+                
+                break;
+            case 1 : //一阶导
+                
+                Help_sinc_n(s,x,1,prec); //[sinc(x)]'  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 2 : //二阶导
+                Help_sinc_n(s,x,2,prec); //[sinc(x)]''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 3 : //三阶导
+                Help_sinc_n(s,x,3,prec); //[sinc(x)]'''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 4 : //四阶导
+                Help_sinc_n(s,x,4,prec); //[sinc(x)]''''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            default:
+                printf("General -> typical_profile -> interior_help_psi_1_n 输入有误\n");
+                exit(1);
+        } 
+        
+        arb_set(res,s);
+        
+    }else //非δ谱需要积分
     {
-        //ψ_0(r)=(积分值)/(σ_0)^2
-        arb_div(res,s,Sigma_0_square,prec);
+        arb_set(r_pra,r); //为积分传递 r 的值
+        
+        //计算 ψ_0 or ψ_1
+        ret_judge=Integration_arb(s, interior_help_psi_n, r_pra, order,
+                                  Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
+                                  Integration_iterate_min,Integration_iterate_max, prec);
+        
+        if(Peak_theory_source_zeta_gradient==true)
+        {
+            //ψ_1(r)=(积分值)/(σ_1)^2
+            arb_div(res,s,Sigma_1_square,prec);
+        }else
+        {
+            //ψ_0(r)=(积分值)/(σ_0)^2
+            arb_div(res,s,Sigma_0_square,prec);
+        }
     }
     
     if(ret_judge==1)
@@ -397,6 +460,7 @@ int Help_psi_n(arb_t res, const arb_t r, const slong order, slong prec)
     }
     
     arb_clear(s);
+    arb_clear(x);
     arb_clear(r_pra);
     
     return 0;

@@ -95,102 +95,100 @@ void Set_zeta_r_cal(slong prec)
     
     
     //计算ζ(r)相关辅助变量
-    //delta情况不需要计算
-    if(!Power_spectrum_type==delta_type)
+    //注意，下面的量
+    //在PS中，delta情况不需要计算，但在PT中，δ情况下是需要计算的
+    //计算(σ_n)^2
+    // (σ_n)^2 的量级在 [10*K_star]^n
+    
+    if(Stdout_verbose==true)
     {
-        //计算(σ_n)^2
-        // (σ_n)^2 的量级在 [10*K_star]^n
-        
-        if(Stdout_verbose==true)
-        {
-            printf("计算： (σ_0)^2  ---  (σ_4)^2\n");
-        }
-        
-        Help_sigma_n_square(Sigma_0_square,0,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("(σ_0)^2 计算完成\n");
-        }
-        
-        Help_sigma_n_square(Sigma_1_square,1,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("(σ_1)^2 计算完成\n");
-        }
-        
-        Help_sigma_n_square(Sigma_2_square,2,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("(σ_2)^2 计算完成\n");
-        }
-        
-        
-        Help_sigma_n_square(Sigma_3_square,3,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("(σ_3)^2 计算完成\n");
-        }
-        
-        Help_sigma_n_square(Sigma_4_square,4,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("(σ_4)^2 计算完成\n");
-        }
-        
-        
-        //计算利用前面计算得到的 σ_n^2 得到 γ_1, γ_3
-        //γ_n=σ_n^2/(σ_n-1 * σ_n+1)
-        
-        arb_t temp_a,temp_b;
-        arb_init(temp_a);
-        arb_init(temp_b);
-        
-        // γ_n 的大小在 0.5 左右，基本不受 K_star 影响
-        arb_sqrt(temp_a,Sigma_0_square,2*prec); //γ_1
-        arb_sqrt(temp_b,Sigma_2_square,2*prec);
-        arb_mul(Gamma_1,temp_a,temp_b,prec);
-        arb_div(Gamma_1,Sigma_1_square,Gamma_1,prec);
-        
-        arb_sqrt(temp_a,Sigma_2_square,2*prec); //γ_3
-        arb_sqrt(temp_b,Sigma_4_square,2*prec);
-        arb_mul(Gamma_3,temp_a,temp_b,prec);
-        arb_div(Gamma_3,Sigma_3_square,Gamma_3,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("γ_1, γ_3     计算完成\n");
-        }
-        
-        //计算利用前面计算得到的 σ_n^2 得到 R_1, R_3
-        //R_n=sqrt(3)*σ_n/σ_n+1
-        
-        //R_n 的量级在 1/K_star 左右，随 K_star 增大而减小
-        arb_sqrt_ui(R_1,3,prec); //R_1
-        arb_sqrt(temp_a, Sigma_1_square, prec);
-        arb_sqrt(temp_b, Sigma_2_square, prec);
-        arb_mul(R_1,R_1,temp_a,prec);
-        arb_div(R_1,R_1,temp_b,prec);
-        
-        arb_sqrt_ui(R_3,3,prec); //R_3
-        arb_sqrt(temp_a, Sigma_3_square, prec);
-        arb_sqrt(temp_b, Sigma_4_square, prec);
-        arb_mul(R_3,R_3,temp_a,prec);
-        arb_div(R_3,R_3,temp_b,prec);
-        
-        if(Stdout_verbose==true)
-        {
-            printf("R_1, R_3     计算完成\n");
-        }
-        
-        
-        arb_clear(temp_a);
-        arb_clear(temp_b);
+        printf("计算： (σ_0)^2  ---  (σ_4)^2\n");
     }
+    
+    Help_sigma_n_square(Sigma_0_square,0,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("(σ_0)^2 计算完成\n");
+    }
+    
+    Help_sigma_n_square(Sigma_1_square,1,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("(σ_1)^2 计算完成\n");
+    }
+    
+    Help_sigma_n_square(Sigma_2_square,2,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("(σ_2)^2 计算完成\n");
+    }
+    
+    
+    Help_sigma_n_square(Sigma_3_square,3,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("(σ_3)^2 计算完成\n");
+    }
+    
+    Help_sigma_n_square(Sigma_4_square,4,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("(σ_4)^2 计算完成\n");
+    }
+    
+    
+    //计算利用前面计算得到的 σ_n^2 得到 γ_1, γ_3
+    //γ_n=σ_n^2/(σ_n-1 * σ_n+1)
+    
+    arb_t temp_a,temp_b;
+    arb_init(temp_a);
+    arb_init(temp_b);
+    
+    // γ_n 的大小在 0.5 左右，基本不受 K_star 影响
+    arb_sqrt(temp_a,Sigma_0_square,2*prec); //γ_1
+    arb_sqrt(temp_b,Sigma_2_square,2*prec);
+    arb_mul(Gamma_1,temp_a,temp_b,prec);
+    arb_div(Gamma_1,Sigma_1_square,Gamma_1,prec);
+    
+    arb_sqrt(temp_a,Sigma_2_square,2*prec); //γ_3
+    arb_sqrt(temp_b,Sigma_4_square,2*prec);
+    arb_mul(Gamma_3,temp_a,temp_b,prec);
+    arb_div(Gamma_3,Sigma_3_square,Gamma_3,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("γ_1, γ_3     计算完成\n");
+    }
+    
+    //计算利用前面计算得到的 σ_n^2 得到 R_1, R_3
+    //R_n=sqrt(3)*σ_n/σ_n+1
+    
+    //R_n 的量级在 1/K_star 左右，随 K_star 增大而减小
+    arb_sqrt_ui(R_1,3,prec); //R_1
+    arb_sqrt(temp_a, Sigma_1_square, prec);
+    arb_sqrt(temp_b, Sigma_2_square, prec);
+    arb_mul(R_1,R_1,temp_a,prec);
+    arb_div(R_1,R_1,temp_b,prec);
+    
+    arb_sqrt_ui(R_3,3,prec); //R_3
+    arb_sqrt(temp_a, Sigma_3_square, prec);
+    arb_sqrt(temp_b, Sigma_4_square, prec);
+    arb_mul(R_3,R_3,temp_a,prec);
+    arb_div(R_3,R_3,temp_b,prec);
+    
+    if(Stdout_verbose==true)
+    {
+        printf("R_1, R_3     计算完成\n");
+    }
+    
+    
+    arb_clear(temp_a);
+    arb_clear(temp_b);
     
     
 }

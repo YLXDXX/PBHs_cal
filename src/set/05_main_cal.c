@@ -93,7 +93,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.3",prec);
                     arb_set_str(Int_mu_max,"1.6",prec);
                     Root_mu_num=25;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -103,11 +103,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
-                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_min,"0.8",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
+                    arb_set_str(Int_n_pk_k_max,"1.2",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
                     // PS 计算相关 
@@ -132,7 +132,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.3",prec);
                     Root_mu_num=40;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=7;
@@ -142,10 +142,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -183,7 +183,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=40;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=5;
@@ -193,10 +193,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -221,7 +221,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=60;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=5;
@@ -231,10 +231,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -273,7 +273,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.2",prec);
                     arb_set_str(Int_mu_max,"1.2",prec);
                     Root_mu_num=35;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=5; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -284,10 +284,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.0",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-8",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-8",prec);
                     
@@ -311,7 +311,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.2",prec);
                     arb_set_str(Int_mu_max,"1.3",prec);
                     Root_mu_num=40;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     
                     C_m_average_iterate_min=5; //求 C_m_average 不好求，迭代次数需单独设置
@@ -322,10 +322,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -354,7 +354,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=50;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=7;
@@ -364,10 +364,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -396,7 +396,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=45;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=5;
@@ -406,10 +406,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=10;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -441,7 +441,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.4",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=15;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -451,10 +451,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -503,7 +503,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.3",prec);
                     arb_set_str(Int_mu_max,"1.2",prec);
                     Root_mu_num=15;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -513,10 +513,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=20;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -541,7 +541,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"21",prec);
                     Root_mu_num=200;
-                    arb_set_str(Int_mu_precision,"1E-6",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=5;
@@ -551,10 +551,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"0.7",prec);
                     Root_M_to_mu_num=12;
-                    arb_set_str(Root_M_to_mu_precision,"1E-6",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -586,7 +586,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.55",prec);
                     arb_set_str(Int_mu_max,"1.5",prec);
                     Root_mu_num=10;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -596,10 +596,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -632,7 +632,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_mu_min,"0.1",prec);
                     arb_set_str(Int_mu_max,"1.2",prec);
                     Root_mu_num=10;
-                    arb_set_str(Int_mu_precision,"1E-9",prec);
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
                     C_m_average_iterate_max=10;
@@ -642,10 +642,10 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
                     arb_set_str(Root_M_to_mu_max,"2.5",prec);
                     Root_M_to_mu_num=10;
-                    arb_set_str(Root_M_to_mu_precision,"1E-7",prec);
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，稍微取大点
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
                     arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
                     
@@ -695,6 +695,8 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                         //使用相对质量：β(M/M_H) ， β(M/M_H) --> f(M/M_H)
                         //不使用相对质量：β(M)，f(M)
     Peak_theory_source_zeta_gradient=true; //采用ζ还是Δζ作为峰理论的源场
+                                        //注意，当前的算法，对于不取梯度的情况，还有积分时变量替换的问题没解决
+                                        //故这里暂时只能设为 true
     PT_profile_simplify=true; //是否启用简化版本的计算，typical profile 计算
     PT_threshold_simplify=true;  //是否启用简化版本的计算，threshold 计算
     if(PT_profile_simplify==true) //当启用profile的简化时，PT_threshold_simplify必为真
@@ -713,6 +715,13 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                         //当有多个求根时，会极大的增加计算时长
                         //这里，只有μ的变化不大，对应r_m的变化很小，可以适当忽略
                         //特别是在profile简化的情况下
+    PT_number_density_simplify=false; //是否采用简化版本的数密度计算，在前面PT相关简化设置完后再设置
+    if( PT_number_density_simplify==true ) // 当采用简化版数密度时，Peak theory相关简化全为真
+    {
+        PT_profile_simplify=true;
+        PT_threshold_simplify=true;
+        PT_cal_r_m_fix=true;
+    }
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式
     //临界坍缩： M=K*(C-C_th)^γ * M_H
