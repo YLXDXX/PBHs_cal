@@ -7,7 +7,7 @@
 #include "../general.h"
 
 
-#include "generate_mass.h"
+#include "pt_generate_mass.h"
 #include "number_density.h"
 
 int PT_abundance_beta_m(arb_t res, const arb_t M, slong prec); //PBH abundance beta_PBH(M)

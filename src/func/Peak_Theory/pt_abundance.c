@@ -1,4 +1,4 @@
-#include "abundance.h"
+#include "pt_abundance.h"
 #include <stdlib.h>
 
 //当有了数密度后，β 或 f 都可以直接得到

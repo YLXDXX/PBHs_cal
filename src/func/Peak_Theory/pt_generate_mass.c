@@ -1,4 +1,4 @@
-#include "generate_mass.h"
+#include "pt_generate_mass.h"
 #include <stdlib.h>
 
 

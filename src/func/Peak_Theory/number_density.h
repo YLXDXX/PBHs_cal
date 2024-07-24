@@ -6,7 +6,7 @@
 #include "../math_method.h"
 #include "../general.h"
 
-#include "generate_mass.h"
+#include "pt_generate_mass.h"
 
 
 int N_pk_help_f_xi(arb_t res, const arb_t xi, slong prec); //峰数密度相关函数 f(ξ)
