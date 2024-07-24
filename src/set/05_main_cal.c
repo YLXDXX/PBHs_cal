@@ -694,9 +694,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                         //对于 直接使用数密度来计算 f，不能使用相对质量
                         //使用相对质量：β(M/M_H) ， β(M/M_H) --> f(M/M_H)
                         //不使用相对质量：β(M)，f(M)
-    Peak_theory_source_zeta_gradient=true; //采用ζ还是Δζ作为峰理论的源场
-                                        //注意，当前的算法，对于不取梯度的情况，还有积分时变量替换的问题没解决
-                                        //故这里暂时只能设为 true
+    Peak_theory_source_zeta_gradient=false; //采用ζ还是Δζ作为峰理论的源场
     PT_profile_simplify=true; //是否启用简化版本的计算，typical profile 计算
     PT_threshold_simplify=true;  //是否启用简化版本的计算，threshold 计算
     if(PT_profile_simplify==true) //当启用profile的简化时，PT_threshold_simplify必为真

@@ -255,8 +255,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_M_ratio_to_C_l(Pk,w,prec);
     //interior_probability_C_l(Pk,t,w,0,prec);
     //probability_gauss_2D(Pk,t,w,prec);
-    //PS_abundance_beta_m(w,t,prec);
-    PS_abundance_beta_all(w,prec);
+    PS_abundance_beta_m(w,t,prec);
+    //PS_abundance_beta_all(w,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
     //PS_abundance_f_m(Pk, w, prec);
     //PS_abundance_f_all(Pk,prec);
@@ -265,10 +265,11 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_delta_k(Pk,w,prec);
     
     //Peak theory相关
+    //Peak_number_density(Pk,t,w,prec);
     //PBH_number_density_M(Pk,t,prec);
     //Horizon_reentry_M_to_mu(Pk,t,t,prec);
-    //PT_abundance_beta_m(Pk,t,prec);
-    PT_abundance_beta_all(Pk,prec);
+    PT_abundance_beta_m(Pk,t,prec);
+    //PT_abundance_beta_all(Pk,prec);
     
     
     arb_printn(w,60,0);printf("\n");

@@ -675,6 +675,7 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                 
             }else
             {
+                //这里作了变量替换 \tilde{k}_1 ^ = k_1^2 * σ_0/σ_2
                 // ψ_0(r) 部分
                 arb_sqr(s,Gamma_1,prec); // 1-（Gamma_1）^2 
                 arb_neg(s,s);
@@ -682,9 +683,6 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                 
                 arb_sqr(t,PT_k,prec);
                 arb_mul(t,t,Gamma_1,prec);
-                arb_div(w,Sigma_0_square,Sigma_2_square,prec);
-                arb_sqrt(w,w,prec);
-                arb_mul(t,t,w,prec);
                 arb_neg(t,t);
                 arb_add_si(t,t,1,prec);
                 
@@ -695,12 +693,11 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                 // ∆ψ_0(r) 部分
                 arb_sqr(t,PT_k,prec);
                 arb_div(t,t,Gamma_1,prec);
-                arb_mul(t,t,w,prec);
                 arb_neg(t,t);
                 arb_add_si(t,t,1,prec);
                 arb_div(t,t,s,prec); //s用掉
                 
-                arb_sqr(s,R_3,prec);
+                arb_sqr(s,R_1,prec);
                 arb_div_si(s,s,3,prec);
                 arb_mul(t,t,s,prec); //系数完
                 

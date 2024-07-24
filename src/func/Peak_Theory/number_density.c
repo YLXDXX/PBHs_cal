@@ -241,6 +241,7 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
                 arb_sqr(w,k,prec);//第二个娈量
                 arb_mul(w,w,v,prec);
                 
+                
                 N_pk_help_P_1_n(t,v,w,n,prec);//后面函数部分
                 N_pk_help_f_xi(v,w,prec);
                 arb_mul(t,t,v,prec);
@@ -261,26 +262,28 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
                 arb_div(s,w,s,prec);
                 
                 //系数中 σ 部分
-                arb_mul(s,s,Sigma_2_square,prec);
-                arb_sqrt(v,Sigma_0_square,prec);
-                arb_div(s,s,v,prec);
+                arb_mul(s,s,Sigma_2_square,prec); // σ_2^3/σ_0^2/σ_1^3
+                arb_sqrt(v,Sigma_2_square,prec);
+                arb_mul(s,s,v,prec);
                 
+                arb_div(s,s,Sigma_0_square,prec);
+                
+                arb_div(s,s,Sigma_1_square,prec);
                 arb_sqrt(v,Sigma_1_square,prec);
-                arb_div(s,s,v,prec);
-                arb_div(s,s,Sigma_1_square,prec); //系数  σ 部分 完
+                arb_div(s,s,v,prec); //系数  σ 部分 完
                 
                 arb_mul(s,s,mu,prec);
                 arb_mul(s,s,k,prec);
                 
-                arb_sqrt(v,Sigma_0_square,prec); //第一个娈量
+                arb_sqrt(v,Sigma_0_square,prec); //第一个变量
                 arb_div(v,mu,v,prec);
                 
                 arb_sqr(w,k,prec);//第二个娈量
-                arb_mul(w,w,mu,prec);
-                arb_sqrt(t,Sigma_2_square,prec);
-                arb_div(w,w,t,prec);
+                arb_mul(w,v,w,prec);
+                
                 
                 N_pk_help_P_1_n(t,v,w,n,prec);//后面函数部分
+                
                 N_pk_help_f_xi(v,w,prec);
                 arb_mul(t,t,v,prec);
                 
