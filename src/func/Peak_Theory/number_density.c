@@ -126,7 +126,7 @@ int N_pk_help_P_1_n(arb_t res, const arb_t nu, const arb_t xi, const slong n, sl
     arb_mul(t,t,Pi_2,prec);
     
     //后面指数部分
-    arb_mul(w,nu,Gamma_1,prec);//原文公式此处漏写了下标1
+    arb_mul(w,nu,gamma,prec);//原文公式此处漏写了下标n
     arb_sub(w,xi,w,prec);
     arb_sqr(w,w,prec);
     arb_div(w,w,s,prec); // s 用掉 
@@ -173,10 +173,11 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
             //在delta谱的情况下，大为化简，由于P_1^n 里出现delta函数，可以得到 n_pk(mu)的解析式
             //此时，已与变量 k 无关了
             
-            //前面常系数
-            arb_ui_div(s,3,Pi_2,prec);
+            //前面常系数(1/(3*2π))^(3/2)
+            arb_mul_ui(s,Pi_2,3,prec);
             arb_sqrt(t,s,prec);
-            arb_mul(w,t,s,prec);
+            arb_mul(t,t,s,prec);
+            arb_inv(w,t,prec);
             
             //中间部分
             arb_pow_ui(s,K_star,3,prec);
@@ -209,15 +210,11 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
             {
                 n=3; //取了梯度
                 
-                //前面系数部分
-                arb_one(s);
-                arb_mul_si(s,s,3,prec); // 3
-                arb_div_si(t,s,2,prec); // 3/2
-                
-                arb_pow(w,s,t,prec);//系数分子
-                arb_mul_si(w,w,2,prec);
-                arb_pow(s,Pi_2,t,prec);//系数分母
-                arb_div(s,w,s,prec);
+                //前面系数部分 (2/(3*2π))^(3/2)
+                arb_mul_ui(s,Pi_2,3,prec);
+                arb_ui_div(s,2,s,prec);
+                arb_sqrt(t,s,prec);
+                arb_mul(s,s,t,prec);
                 
                 //系数中 σ 部分
                 arb_mul(s,s,Sigma_2_square,prec);
@@ -251,15 +248,11 @@ int Peak_number_density(arb_t res, const arb_t mu, const arb_t k, slong prec)
             {
                 n=1; //没取梯度
                 
-                //前面系数部分
-                arb_one(s);
-                arb_mul_si(s,s,3,prec); // 3
-                arb_div_si(t,s,2,prec); // 3/2
-                
-                arb_pow(w,s,t,prec);//系数分子
-                arb_mul_si(w,w,2,prec);
-                arb_pow(s,Pi_2,t,prec);//系数分母
-                arb_div(s,w,s,prec);
+                //前面系数部分 (2/(3*2π))^(3/2)
+                arb_mul_ui(s,Pi_2,3,prec);
+                arb_ui_div(s,2,s,prec);
+                arb_sqrt(t,s,prec);
+                arb_mul(s,s,t,prec);
                 
                 //系数中 σ 部分
                 arb_mul(s,s,Sigma_2_square,prec); // σ_2^3/σ_0^2/σ_1^3
