@@ -298,7 +298,6 @@ char* File_Laplacian_psi_1_2_fit;
 char* File_Laplacian_psi_1_3_fit;
 char* File_Laplacian_psi_1_4_fit;
 
-bool PT_number_density_simplify; //是否采用简化版本的数密度计算
 bool PT_profile_simplify; //是否启用简化版本的计算，typical profile 计算
 bool PT_threshold_simplify;  //是否启用简化版本的计算，threshold 计算
 bool PT_Mass_Relative; //计算黑洞的质量分布时，是否使用相对质量来进行表示和计算

@@ -713,13 +713,6 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                         //当有多个求根时，会极大的增加计算时长
                         //这里，只有μ的变化不大，对应r_m的变化很小，可以适当忽略
                         //特别是在profile简化的情况下
-    PT_number_density_simplify=false; //是否采用简化版本的数密度计算，在前面PT相关简化设置完后再设置
-    if( PT_number_density_simplify==true ) // 当采用简化版数密度时，Peak theory相关简化全为真
-    {
-        PT_profile_simplify=true;
-        PT_threshold_simplify=true;
-        PT_cal_r_m_fix=true;
-    }
     
     //在视界进入时，视界质量 M_H，形成黑洞质量 M，两者间的关系可近似看作 scaling law 形式
     //临界坍缩： M=K*(C-C_th)^γ * M_H
