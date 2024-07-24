@@ -7,7 +7,7 @@
 #include "../general.h"
 
 
-int Horizon_reentry_k_to_M_H(arb_t res,const arb_t k,slong prec); //在视界重进入时，对应的视界质量为 M_H(k)
+int Horizon_reentry_k_to_M(arb_t res,const arb_t k,slong prec); //在视界重进入时，对应的视界质量为 M_H(k)
 
 int Horizon_reentry_mu_to_M(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec); //在视界重进入时，形成的黑洞的质量为 M(µ)
 int Horizon_reentry_mu_to_M_relative(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec); //在视界重进入时，视界质量 M_H，形成的黑洞的质量为 M，两者之比

@@ -89,7 +89,7 @@ void Set_global_variable(slong prec)
     arb_init(R_MAX); // ζ(r) 取最大值时的 r 值
     arb_init(PT_mu); // ζ(r) 的参数 µ
     arb_init(PT_k); // ζ(r) 的参数 k
-    
+    arb_init(PT_beta_cal_need_exp_2_zeta_m); // 某个 M 对应的 e^(2*ζ_m)
     
     
     //主要计算参数

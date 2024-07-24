@@ -100,6 +100,7 @@ int Horizon_reentry_mu_to_M(arb_t res, const arb_t mu, const arb_t zeta_k, slong
     zeta_profile_n(t,r_m,0,prec);
     arb_mul_si(t,t,2,prec);
     arb_exp(t,t,prec);
+    arb_set(PT_beta_cal_need_exp_2_zeta_m,t); //保存 e^(2*ζ_m)，供计算β使用
     arb_mul(w,w,t,prec);
     
     //中间
@@ -185,6 +186,7 @@ int Horizon_reentry_mu_to_M_relative(arb_t res, const arb_t mu, const arb_t zeta
     zeta_profile_n(s,r_m,0,prec);
     arb_mul_si(s,s,2,prec);
     arb_exp(s,s,prec);
+    arb_set(PT_beta_cal_need_exp_2_zeta_m,s); //保存 e^(2*ζ_m)，供计算β使用
     
     arb_mul(x,x,s,prec);
     arb_mul(x,x,Mass_K,prec);

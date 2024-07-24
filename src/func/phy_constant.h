@@ -53,6 +53,7 @@ extern arb_t PT_mu; // ζ(r) 的参数µ
 extern arb_t PT_mu_th; // ζ(r) 的参数 µ 的临界值
 extern arb_t PT_mu_max; // ζ(r) 的参数 µ 的最大值
 extern arb_t PT_k; // ζ(r) 的参数k
+extern arb_t PT_beta_cal_need_exp_2_zeta_m; // 某个 M 对应的 e^(2*ζ_m)
 extern arb_t R_MAX; // ζ(r) 取最大值时的 r 值
 extern arb_t R_K_to_r_m; //求r_m动态区间用
 extern arb_t Q_parameter_th; //ζ(r)取临界值时的q参数
