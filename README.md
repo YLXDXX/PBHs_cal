@@ -9,7 +9,7 @@
 1. 基于 compaction function 的 Press–Schechter 方法
 2. 基于 compaction function 的 Peak Theory 的方法
 
-有三种方法计算高斯情况下的标量诱导引力波，有一种方法计算非高斯情况下的标量诱导引力波「$f_{NL}$」
+有三种方法计算高斯情况下的标量诱导引力波，有一种方法计算非高斯情况下的标量诱导引力波「 $f_{NL}$ 」
 
 
 
