@@ -6,6 +6,15 @@
 
 //定义新的类型，用于各种情况的判断
 
+
+//找根方法定义
+enum GET_K_CH_TYPE
+{
+    delta_approximation,
+    horizon_re_enter
+};
+
+
 //找根方法定义
 enum FIND_ROOT_ENUM_TYPE
 {

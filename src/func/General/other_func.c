@@ -189,6 +189,39 @@ void beta_m_to_f_m_coefficient(arb_t res, slong prec)
     arb_clear(w);
 }
 
-
-
+//考虑所有 k 模式时，特征模式的求解
+void Get_all_k_over_k_ch(arb_t k_ch, const arb_t x_m, slong prec)
+{
+    arb_t t,s;
+    arb_init(t);
+    arb_init(s);
+    
+    //有两种方法，一种是利用δ谱近似来求，一种是利用进入视界的条件来求
+    //这里的变量 x_m 仅在利用δ谱求时使用
+    if(Get_k_ch_type==delta_approximation)
+    {
+        //利用δ近似
+        //k_ch=x_m/r_m 
+        arb_div(k_ch,x_m,R_MAX,prec);
+        
+    }else if (Get_k_ch_type==horizon_re_enter)
+    {
+        //利用进入视界的条件
+        //k_ch=π/[r_m*e^(ζ_m)]
+        zeta_profile_n(s,R_MAX,0,prec);
+        arb_exp(s,s,prec);
+        arb_mul(s,s,R_MAX,prec);
+        
+        arb_div(k_ch, Pi, s, prec);
+        
+    }else
+    {
+        //出错
+        printf("连续谱考虑所有k模式，求特征模式方法 Get_k_ch_type 错误\n");
+        exit(1);
+    }
+    
+    arb_clear(t);
+    arb_clear(s);
+}
 

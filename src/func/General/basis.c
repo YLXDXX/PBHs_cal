@@ -250,7 +250,7 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             arb_exp(t,t,prec);
             
             //系数部分
-            arb_mul(t,t,Power_A,prec); // A/sqrt(2*Pi*sigma^2)=A/sqrt(2*Pi)*Δ
+            arb_mul(t,t,Power_A,prec); // A/sqrt(2*Pi*sigma^2)=A/[sqrt(2*Pi)*Δ]
             arb_sqrt(s,Pi_2,prec);
             arb_mul(s,s,Power_sigma,prec);
             arb_div(res,t,s,prec);

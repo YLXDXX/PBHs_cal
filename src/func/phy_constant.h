@@ -349,6 +349,8 @@ extern arb_t PS_abundance_f_all_precision; //最终占比f积分的精度
 extern arb_t Continuum_spectrum_A_old; //连续谱计算相关
 extern arb_t Continuum_spectrum_x_m; //求连续谱的特征模式用
 extern arb_t Continuum_spectrum_k_ch; //连续谱的特征模式
+extern enum GET_K_CH_TYPE Get_k_ch_type; //求连续谱特征模式方法
+
 
 //other
 extern char Path_save[PATH_MAX+1]; //获取存储相对路径

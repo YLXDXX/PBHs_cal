@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //M/M_H=K*[(C_l-3/8*C_l^2)-C_th]^γ  
     //其中 C_l 的最大取值为 4/3， 也对应了 M 的最大取值，即 M/M_H 的最大取值
     //这里计算出 M/M_H 的最大取值，方便后面 M/M_H 范围的选取，同时也作为后面计算范围的判据
-    Func_get_relative_M_max(prec);
+    Func_get_relative_M_max(PS_M_ratio_max, PT_M_ratio_max, prec);
     printf("Find PS_M_ratio_max: ");arb_printn(PS_M_ratio_max, 30,0);printf("\n");
     printf("Find PT_M_ratio_max: ");arb_printn(PT_M_ratio_max, 30,0);printf("\n\n");
     
@@ -178,8 +178,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //有两种方法：①利用δ谱参数计算，速度快，估算，太宽不准确；②利用连续谱参数计算，速度慢，准确
     //因与前面计算程序共用了数据，这里需传递设定几个参数
     //利用δ谱的x_m，求连续谱的特征模式 k_ch
-    arb_set_str(Continuum_spectrum_x_m, "2.743707269992269382561122",prec); //对于不同的非高斯性，首先用δ谱的情况算出x_m
-    arb_div(Continuum_spectrum_k_ch,Continuum_spectrum_x_m,R_MAX,prec); //连续谱的特征模式 k_ch
+    arb_set_str(Continuum_spectrum_x_m, "2.743707269992269382561122",prec); //求连续谱特征模式，δ谱近似用
+    Get_k_ch_type=horizon_re_enter; //求连续谱特征模式方法设定
+    Get_all_k_over_k_ch(Continuum_spectrum_k_ch, Continuum_spectrum_x_m, prec ); //求连续谱特征模式
+    
     
     //功率谱类型： lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
     Continuum_spectrum_type=lognormal_type; //计算连续谱类型
@@ -259,7 +261,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_all(w,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
     //PS_abundance_f_m(Pk, w, prec);
-    PS_abundance_f_all(w,prec);
+    //PS_abundance_f_all(w,prec);
     //Probability_C(Pk,w,prec);
     //Probability_C_l(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
@@ -271,7 +273,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PT_abundance_beta_m(Pk,t,prec);
     //PT_abundance_beta_all(Pk,prec);
     //PT_abundance_f_m(Pk,t,prec);
-    PT_abundance_f_all(Pk,prec);
+    //PT_abundance_f_all(Pk,prec);
     
     arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,60,0);printf("\n");
