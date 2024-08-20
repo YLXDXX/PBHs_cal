@@ -93,6 +93,8 @@ enum PT_MU_TH_enum PT_Mu_th_METHOD; ///求临界值的方法
 //与曲率扰动 K 有关，与 γ 也有关
 arb_t Mass_K;
 arb_t Mass_gamma;
+bool Critical_Collapse_Effect; //是否考虑临界坍缩效应
+
 
 //宇宙学基本常数
 arb_t Omega_DM; //暗物质所占比例
@@ -298,6 +300,7 @@ char* File_Laplacian_psi_1_1_fit;
 char* File_Laplacian_psi_1_2_fit;
 char* File_Laplacian_psi_1_3_fit;
 char* File_Laplacian_psi_1_4_fit;
+
 
 bool PT_profile_simplify; //是否启用简化版本的计算，typical profile 计算
 bool PT_threshold_simplify;  //是否启用简化版本的计算，threshold 计算

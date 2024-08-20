@@ -722,6 +722,13 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     //arb_set_str(Mass_gamma,"0.36",prec); // γ ≃ 0.36
     arb_set_str(Mass_gamma,"0.357",prec); // γ ≃ 0.357
     
+    Critical_Collapse_Effect=true; //是否考虑临界坍缩效应，在求丰度 β(M) 或数密度 n_pk 前设定即可
+    if(Critical_Collapse_Effect==false)
+    {
+        arb_one(Mass_K); //注意，当不考虑时，应设置好 Mass_K 的值，通常设为 1
+    }
+    
+    
     //β 到 f 的转换系数，可以采用不同方法 beta_f_general_I, beta_f_general_II, beta_f_myself
     beta_to_f_type=beta_f_general_I;
     

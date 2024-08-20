@@ -86,6 +86,7 @@ extern enum PT_MU_TH_enum PT_Mu_th_METHOD; ///求临界值的方法
 //与曲率扰动 K 有关，与 γ 也有关
 extern arb_t Mass_K; //曲率K
 extern arb_t Mass_gamma; //γ
+extern bool Critical_Collapse_Effect; //是否考虑临界坍缩效应
 
 
 //宇宙学基本常数
