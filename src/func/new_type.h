@@ -6,6 +6,16 @@
 
 //定义新的类型，用于各种情况的判断
 
+//对多种窗口函数定义其类型
+enum WINDOW_FUNC_TYPE
+{
+    Real_space_top_hat,
+    Fourier_space_top_hat,
+    Gaussian_hat,
+    Natural_hat_xx,
+    Natural_hat_yy
+};
+
 
 //找根方法定义
 enum GET_K_CH_TYPE

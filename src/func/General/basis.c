@@ -1,36 +1,97 @@
 #include "basis.h"
 #include <stdlib.h>
 
-//在k空间的窗口函数
-int window_function(arb_t res, const arb_t k, slong prec)
+//窗口函数
+int Power_spectra_window_function_k(arb_t res, const arb_t k, const arb_t R,
+                                    const enum WINDOW_FUNC_TYPE w_type, slong prec)
 {
-    arb_t s;
+    arb_t s,t,k_R;
     arb_init(s);
+    arb_init(t);
+    arb_init(k_R);
+    
+    //注意，这里的k传入时，是原本的k，没有取对数，传参时需注意
     
     //功率谱类型判断
-    switch(Power_spectrum_type) 
+    switch(w_type) 
     {
-        case lognormal_type :
-            //高斯型的窗口函数，中心点在 k_star
-            //exp[-(k-k_star)^2]
+        case Real_space_top_hat : //形状参考 1905.01230
+            //位置空间 W(r,R)=3/(4*π*R^3)*Θ(R-r)
+            //傅氏空间 W(k,r)=3*( sin(k*R)-k*R*cos(k*R)/(k*R)^3 )
             
-            //与功率谱等一同修改
-            //arb_sub(s,k,K_star,prec); //以 k 为变量
-            arb_exp(s,k,prec); //以 ln(k) 为变量， k=e^ln(k)
-            arb_sub(s,s,K_star,prec);
+            arb_mul(k_R,k,R,prec); //k*R
             
-            arb_sqr(s,s,prec);
+            arb_cos(s,k_R,prec); //分子
+            arb_mul(s,s,k_R,prec);
+            arb_sin(t,k_R,prec);
+            arb_sub(s,t,s,prec);
+            arb_mul_ui(s,s,3,prec);
+            
+            arb_pow_ui(t,k_R,3,prec); //分母
+            
+            arb_div(res,s,t,prec);
+            
+            break;
+        case Fourier_space_top_hat :
+            //位置空间 W(r,R)= 1905.01230 (25)
+            //傅氏空间 W(k,r)=Θ( 2.744/R - k )
+            
+            arb_set_str(s,"2.744",prec);
+            arb_div(s,s,R,prec);
+            arb_sub(s,s,k,prec);
+            
+            Heaviside_Theta_function(t,s,prec);
+            
+            arb_set(res,t);
+            
+            break;
+        case Gaussian_hat :
+            //位置空间 W(r,R)=1/(π*R^2)^(3/2)*Exp(-r^2/R^2)
+            //傅氏空间 W(k,r)=Exp(- (k*R)^2/4 )
+            
+            arb_mul(k_R,k,R,prec); //k*R
+            arb_sqr(s,k_R,prec);
+            arb_div_ui(s,s,4,prec);
             arb_neg(s,s);
+            
             arb_exp(res,s,prec);
             
             break;
+        case Natural_hat_xx : //这后面几种，是为使用compaction function 计算准备的
+                            //这里，形式上与前面对齐，求方差都为
+                            //σ = ∫d(ln k) * W^2(k,R) * T^2(k,η) * P(k)
+            //位置空间 W(r,R)=??
+            //傅氏空间 W(k,r)=(k*r) * dj_0/d_z(kr), j_0(z)=sin(z)/z
+            //dj_0/d_z=[z*cos(z)-sin(z)]/z^2
             
+            arb_mul(k_R,k,R,prec); //k*R
+            
+            arb_cos(s,k_R,prec); //分母
+            arb_mul(s,s,k_R,prec);
+            arb_sin(t,k_R,prec);
+            arb_sub(s,s,t,prec);
+            
+            arb_div(res,s,k_R,prec); //与前面约了一个k_R
+            
+            break;
+        case Natural_hat_yy :
+            //位置空间 W(r,R)=1/(4*π*R^2)*δ(r-R), δ(x) 是 delta 函数
+            //傅氏空间 W(k,r)=j_0(k*R)
+            
+            arb_mul(k_R,k,R,prec); //k*R
+            
+            arb_sin(s,k_R,prec);
+            arb_div(res,s,k_R,prec);
+            
+            break;
         default :
-            printf("General -> basis -> window_function 中 power_spectrum_type 有误\n");
+            printf("General -> basis -> 中 Power_spectra_window_function_k 类型有误\n");
             exit(1);
     }
     
     arb_clear(s);
+    arb_clear(t);
+    arb_init(k_R);
     
     return 0;
 }
@@ -38,7 +99,7 @@ int window_function(arb_t res, const arb_t k, slong prec)
 
 
 //线性转移函数
-int Linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong prec)
+int Power_spectra_linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong prec)
 {
     arb_t x,s,t;
     
@@ -70,6 +131,7 @@ int Linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong pr
     
     return 0;
 }
+
 
 //功率谱辅助函数
 //这里，不同k对应的势能，关系后期推导，先直接用 V_0 近似
@@ -235,7 +297,6 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             //log-normal形式
             // P(k)=A/sqrt(2*Pi*sigma^2)*exp( -( ln(k)-ln(k_star) )^2/(2*sigma^2) )
             
-            //与窗口函数等一同修改
             //arb_log(t, k, prec); //以 k 作为变量
             //arb_sub(t,t,Ln_K_star,prec); // 以 k 或 ln(k) 这里不一样
             
@@ -255,20 +316,6 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             arb_mul(s,s,Power_sigma,prec);
             arb_div(res,t,s,prec);
             
-            //加上窗口函数
-            //window_function(s,k,prec);
-            //arb_mul(res,t,s,prec);
-            
-            //加入转移函数 P_ζ(k,η)=T^2(k,η)*P_ζ(k)
-            //用Peake theory来算阈值，加入转移函数的改变几乎可以忽略不计
-            //在算方差的时候，再单独考虑转移函数的影响
-            /*
-            arb_set_str(t,"1.75878702981131e-13",prec);
-            arb_exp(w,k,prec);
-            Linear_transfer_function(s, w, t, prec);//转移函数需传入原本的未取对数的k
-            arb_sqr(s,s,prec);
-            arb_mul(res,res,s,prec);
-            */
             
             break;
             
@@ -468,11 +515,7 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             arb_mul(t,t,Power_A,prec);
             arb_sqrt(s,Pi_2,prec);
             arb_mul(s,s,Power_sigma,prec);
-            arb_div(res,t,s,prec); //不需要窗口函数了
-            
-            //加上窗口函数
-            //window_function(s,k,prec);
-            //arb_mul(res,t,s,prec);
+            arb_div(res,t,s,prec);
             
             arb_clear(tem_sigma);
             

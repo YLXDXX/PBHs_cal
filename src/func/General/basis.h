@@ -10,9 +10,10 @@
 
 void Upward_step_power_spectrum_k_c_to_k_s(arb_t k_s, const arb_t k_c, slong prec);
 
-int window_function(arb_t res, const arb_t k, slong prec); //在k空间的窗口函数
+int Power_spectra_window_function_k(arb_t res, const arb_t k, const arb_t R,
+                                    const enum WINDOW_FUNC_TYPE w_type, slong prec); //在k空间的窗口函数
 
-int Linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong prec);//线性转移函数
+int Power_spectra_linear_transfer_function(arb_t res, const arb_t k, const arb_t eta, slong prec);//线性转移函数
 
 int power_spectrum(arb_t res, const arb_t k, slong prec); //功率谱
 

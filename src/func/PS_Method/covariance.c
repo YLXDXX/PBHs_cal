@@ -45,7 +45,7 @@ int interior_variance_xx(arb_t res, const arb_t k, void* r, const slong order, s
         
         //加入转移函数
         //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-        Linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
+        Power_spectra_linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
         arb_sqr(t,t,prec); //这里是转移函数的平方
         
         arb_mul(res,s,t,prec);
@@ -108,7 +108,7 @@ int Variance_XX(arb_t res, const arb_t r, slong prec)
             
             //加入转移函数
             //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-            Linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
+            Power_spectra_linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
             arb_sqr(t,t,prec); //这里是转移函数的平方
             
             arb_mul(res,s,t,prec);
@@ -178,7 +178,7 @@ int interior_variance_xy(arb_t res, const arb_t k, void* r, const slong order, s
         
         //加入转移函数
         //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-        Linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
+        Power_spectra_linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
         arb_sqr(t,t,prec); //这里是转移函数的平方
         
         arb_mul(res,s,t,prec);
@@ -235,7 +235,7 @@ int Variance_XY(arb_t res, const arb_t r, slong prec)
             
             //加入转移函数
             //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-            Linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
+            Power_spectra_linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
             arb_sqr(t,t,prec); //这里是转移函数的平方
             
             arb_mul(res,s,t,prec);
@@ -297,7 +297,7 @@ int interior_variance_yy(arb_t res, const arb_t k, void* r, const slong order, s
         
         //加入转移函数
         //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-        Linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
+        Power_spectra_linear_transfer_function(t,w,r,prec); //传入的w已恢复成原本的k
         arb_sqr(t,t,prec); //这里是转移函数的平方
         
         arb_mul(res,s,t,prec);
@@ -352,7 +352,7 @@ int Variance_YY(arb_t res, const arb_t r, slong prec)
             
             //加入转移函数
             //arb_exp(w,k,prec); //注意，这里需作变量代换，取对数单位 ln(k)
-            Linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
+            Power_spectra_linear_transfer_function(t,K_star,r,prec); //这里需要传入原本的未取对数的k
             arb_sqr(t,t,prec); //这里是转移函数的平方
             
             arb_mul(res,s,t,prec);
