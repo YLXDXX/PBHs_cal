@@ -92,7 +92,7 @@ int Horizon_reentry_mu_to_M(arb_t res, const arb_t mu, const arb_t zeta_k, slong
         arb_set(R_MAX,r_m); // 赋值，供后面计算 dln(M)/dμ 用
     }
     
-    
+    // M=(r_m*k_star)^2 * exp(2*ζ_m)*K*(C_l-3/8*(C_l)^2-C_th)^γ*M_(k_star)
     arb_mul(t,r_m,K_star,prec);
     arb_sqr(w,t,prec);
     
@@ -106,22 +106,25 @@ int Horizon_reentry_mu_to_M(arb_t res, const arb_t mu, const arb_t zeta_k, slong
     //中间
     arb_mul(w,w,Mass_K,prec);
     
-    //中间，幂律部分
-    //原论文中使用的是 μ-μ_c，已改成 C-C_th
-    C_r_profile_n(s,r_m,0,prec);
-    
-    arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
-                        //因为求解 C_th 时并没有直接使用 C(mu_th) 两都有一个 1E-10 的差
-                        //若使用 C_th 对于较小的M不能求出对应的μ
-                        //另外，对于 mu_th 也可能变动
-    C_r_profile_n(t,r_m,0,prec);
-    arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
-    
-    arb_sub(s,s,t,prec);
-    
-    arb_abs(s,s);
-    arb_pow(s,s,Mass_gamma,prec);
-    arb_mul(w,w,s,prec);
+    if(Critical_Collapse_Effect==true) //考虑临界坍缩效应
+    {
+        //中间，幂律部分
+        //原论文中使用的是 μ-μ_c，已改成 C-C_th
+        C_r_profile_n(s,r_m,0,prec);
+        
+        arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
+        //因为求解 C_th 时并没有直接使用 C(mu_th) 两都有一个 1E-10 的差
+        //若使用 C_th 对于较小的M不能求出对应的μ
+        //另外，对于 mu_th 也可能变动
+        C_r_profile_n(t,r_m,0,prec);
+        arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
+        
+        arb_sub(s,s,t,prec);
+        
+        arb_abs(s,s);
+        arb_pow(s,s,Mass_gamma,prec);
+        arb_mul(w,w,s,prec);
+    }
     
     //最后
     //注意到，M_H 与r_m相关，而r_m又与μ_2和k_3相关
@@ -180,6 +183,7 @@ int Horizon_reentry_mu_to_M_relative(arb_t res, const arb_t mu, const arb_t zeta
         arb_set(R_MAX,r_m); // 赋值，供后面计算 dln(M)/dμ 用
     }
     
+    // M/M_(k_star)=(r_m*k_star)^2 * exp(2*ζ_m)*K*(C_l-3/8*(C_l)^2-C_th)^γ
     arb_mul(x,r_m,K_star,prec);
     arb_sqr(x,x,prec);
     
@@ -191,25 +195,29 @@ int Horizon_reentry_mu_to_M_relative(arb_t res, const arb_t mu, const arb_t zeta
     arb_mul(x,x,s,prec);
     arb_mul(x,x,Mass_K,prec);
     
-    
-    //幂律部分
-    //原论文中使用的是 μ-μ_c，已改成 C-C_th
-    C_r_profile_n(s,r_m,0,prec);
-    
-    arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
-                        //因为求解 C_th 时并没有直接使用 C(mu_th) 两都有一个 1E-10 的差
-                        //若使用 C_th 对于较小的M不能求出对应的μ
-                        //另外，对于 mu_th 也可能变动
-    C_r_profile_n(t,r_m,0,prec);
-    arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
-    
-    
-    arb_sub(s,s,t,prec);
-    
-    
-    arb_abs(s,s); //取绝对值，防止后面开幂次里面为负
-    arb_pow(s,s,Mass_gamma,prec);
-    arb_mul(res,x,s,prec);
+    if(Critical_Collapse_Effect==true) //考虑临界坍缩效应
+    {
+        //幂律部分
+        //原论文中使用的是 μ-μ_c，已改成 C-C_th
+        C_r_profile_n(s,r_m,0,prec);
+        
+        arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
+        //因为求解 C_th 时并没有直接使用 C(mu_th) 两都有一个 1E-10 的差
+        //若使用 C_th 对于较小的M不能求出对应的μ
+        //另外，对于 mu_th 也可能变动
+        C_r_profile_n(t,r_m,0,prec);
+        arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
+        
+        arb_sub(s,s,t,prec);
+        
+        arb_abs(s,s); //取绝对值，防止后面开幂次里面为负
+        arb_pow(s,s,Mass_gamma,prec);
+        
+        arb_mul(res,x,s,prec);
+    }else
+    {
+        arb_set(res,x);
+    }
     
     
     arb_clear(s);
@@ -414,11 +422,9 @@ int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t ze
             // 调用 Horizon_reentry_mu_to_M 或 Horizon_reentry_mu_to_M_relative 已解出
             // K(K_square) 被认为等于一 K(K_square)=1
             // 且在简化的情况下，前面作了如下假设 arb_set(K_square,Gamma_3);
-            // 此时有 ζ(r)=μ_2 * ψ_1(r) --> dζ/dμ=ψ_1(r)
+            // 此时有 ζ_G(r)=μ_2 * ψ_1(r) --> dζ_G/dμ=ψ_1(r)
             // 并且 μ_th 与 K_square 已无关系
             // dln(M)/dµ 与 k 无关
-            
-            // 2*ψ_1(r) + γ/(μ_2-μ_2th)
             
             Help_psi_n(zeta_G_r,r_m,0,prec);
             Help_psi_n(zeta_G_r_prime,r_m,1,prec);
@@ -438,34 +444,44 @@ int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t ze
     }
     
     
-    //高斯和非高斯，公共部分 γ/(C-C_th)*(1-3/4*C_l)*(-4/3*r)
+    if(Critical_Collapse_Effect==true) //考虑临界坍缩效应
+    {
+        //高斯和非高斯，公共部分 γ/(C-C_th)*(1-3/4*C_l)*(-4/3*r)
+        
+        C_r_profile_n(C,r_m,0,prec); // γ/(C-C_th)
+        Trans_C_to_C_l(C_l,C,prec); // C --> C_l
+        
+        arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
+        C_r_profile_n(C_th,r_m,0,prec);
+        arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
+        
+        
+        arb_sub(s,C,C_th,prec);
+        arb_div(s,Mass_gamma,s,prec);
+        
+        arb_mul_si(t,C_l,-3,prec); //(1-3/4*C_l)
+        arb_div_ui(t,t,4,prec);
+        arb_add_ui(t,t,1,prec);
+        arb_mul(s,s,t,prec);
+        
+        arb_mul_si(t,r_m,-4,prec);//(-4/3*r)
+        arb_div_ui(t,t,3,prec);
+        arb_mul(cal_c,s,t,prec);
+        
+    }else //不考虑临界坍缩效应
+    {
+        //这里的处理有点粗糙，直接将相乘系数设为零
+        //其实，下面计算中 ∂/∂μ_2*∂/∂r*F(μ*ζ_G_r) 部分也是可以略去的
+        arb_zero(cal_c);
+    }
     
-    C_r_profile_n(C,r_m,0,prec); // γ/(C-C_th)
-    Trans_C_to_C_l(C_l,C,prec); // C --> C_l
     
-    arb_set(PT_mu,mu_th); //注意，这里不能直接使用 C_th
-    C_r_profile_n(C_th,r_m,0,prec);
-    arb_set(PT_mu,mu); //求解完后，重新设为当前的 μ
-    
-    
-    arb_sub(s,C,C_th,prec);
-    arb_div(s,Mass_gamma,s,prec);
-    
-    arb_mul_si(t,C_l,-3,prec); //(1-3/4*C_l)
-    arb_div_ui(t,t,4,prec);
-    arb_add_ui(t,t,1,prec);
-    arb_mul(s,s,t,prec);
-    
-    arb_mul_si(t,r_m,-4,prec);//(-4/3*r)
-    arb_div_ui(t,t,3,prec);
-    arb_mul(cal_c,s,t,prec);
     
     switch(Zeta_type) 
     {
         case gaussian_type :
             //dζ/dμ=ζ_G_r
             // 2*dζ/dμ + γ/(C-C_th)*dC/dμ_2
-            //近似写为 0.282+0.36/(mu-mu_th)
             
             //前面 2*dζ/dμ 部分
             arb_mul_si(w,zeta_G_r,2,prec);
@@ -676,4 +692,34 @@ int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t ze
     return 0;
 }
 
- 
+
+//获得相对质量取值的范围
+void PT_get_relative_M_range(arb_t min, arb_t max, const arb_t zeta_k, slong prec)
+{
+    arb_t t,s;
+    arb_init(t);
+    arb_init(s);
+    
+    //计算相对质量的最大值
+    Horizon_reentry_mu_to_M_relative(t, PT_mu_max, zeta_k, prec);
+    arb_set(max,t);
+    
+    arb_set_str(t, "1E-45", prec);
+    arb_sub(max,max,t,prec); //一点微小截断，避免可能的发散
+    
+    if(Critical_Collapse_Effect==true) //考虑临界坍缩效应
+    {
+        arb_zero(min); //相对质量最小值为零
+    }else
+    {
+        Horizon_reentry_mu_to_M_relative(s, PT_mu_th, zeta_k, prec);
+        arb_set(min,s);
+    }
+    
+    arb_add(min,min,t,prec); //一点微小截断，避免可能的发散
+    
+    arb_clear(t);
+    arb_clear(s);
+}
+
+

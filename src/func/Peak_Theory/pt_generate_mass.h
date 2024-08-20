@@ -16,6 +16,6 @@ int Horizon_reentry_M_to_mu(arb_t res,const arb_t M, const arb_t zeta_k, slong p
 
 int Horizon_reentry_derivative_ln_M_mu(arb_t res, const arb_t mu, const arb_t zeta_k, slong prec); //质量 M(mu) 的导数 dln(M)/dµ
 
-
+void PT_get_relative_M_range(arb_t min, arb_t max, const arb_t zeta_k, slong prec); //获得相对质量取值的范围
 
 #endif // __PBHS_PEAK_THEORY_GENERATE_MASS__ 

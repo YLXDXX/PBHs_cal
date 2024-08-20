@@ -118,7 +118,7 @@ int PT_abundance_beta_all(arb_t res, slong prec)
     {
         //∫_0^{M_ratio_max} f(m)dln(m)
         //积分下界不能取到0，有除以零的运算
-        arb_set_str(a,"1E-6",prec); //a不能精确等于0
+        arb_set(a,PT_M_ratio_min);
         arb_set(b,PT_M_ratio_max); //由于peak theory与PS方法相对质量利用的质量不同，其取值范围也不同
         //arb_set_str(b,"1.6",prec);
         
@@ -218,7 +218,7 @@ int PT_abundance_f_all(arb_t res, slong prec)
     {
         //∫_0^{M_ratio_max} f(m)dln(m)
         //积分下界不能取到0，有除以零的运算
-        arb_set_str(a,"1E-6",prec); //a不能精确等于0
+        arb_set(a,PT_M_ratio_min);
         arb_set(b,PT_M_ratio_max); //由于peak theory与PS方法相对质量利用的质量不同，其取值范围也不同
         //arb_set_str(b,"1.6",prec);
         

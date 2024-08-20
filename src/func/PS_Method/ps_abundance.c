@@ -144,7 +144,7 @@ int PS_abundance_beta_all(arb_t res, slong prec)
     {
         //∫_0^{M_ratio_max} f(m)dln(m)
         //积分下界不能取到0，有除以零的运算
-        arb_set_str(a,"1E-90",prec); //a不能精确等于0
+        arb_set(a,PS_M_ratio_min);
         arb_set(b,PS_M_ratio_max);
         
         //使用新的gauss_kronrod积分算法
@@ -231,7 +231,7 @@ int PS_abundance_f_all(arb_t res, slong prec)
     {
         //∫_0^{M_ratio_max} f(m)dln(m)
         //积分下界不能取到0，有除以零的运算
-        arb_set_str(a,"1E-90",prec); //a不能精确等于0
+        arb_set(a,PS_M_ratio_min);
         arb_set(b,PS_M_ratio_max);
         
         //使用新的gauss_kronrod积分算法

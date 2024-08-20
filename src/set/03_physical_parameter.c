@@ -49,7 +49,7 @@ void Set_physical_parameter(slong prec)
     //状态方程 w
     arb_one(Equation_Of_State_w); // w=1/3
     arb_div_ui(Equation_Of_State_w,Equation_Of_State_w,3,prec);
-    //注意到，在本程序的计算中，只有一些少数的地方考虑了状态方程的影响
+    //注意到，在本程序的计算中，只有少数地方考虑了状态方程的影响
     //大部分地方，都没采用的 w=1/3 的值来表达计算的，故若要考虑 w≠1/3 的情况
     //并不能仅仅修改这里的值，还需要做大量函数的匹配
     //ToDO：对所有与状态方程相关的函数做变量 w 的匹配

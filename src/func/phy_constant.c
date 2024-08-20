@@ -351,6 +351,8 @@ arb_ptr P_normalization_coefficient; //概率归一化系数
 
 arb_t PS_M_ratio_max; // I 型扰动质量比的最大值
 arb_t PT_M_ratio_max;
+arb_t PS_M_ratio_min; // I 型扰动质量比的最小值
+arb_t PT_M_ratio_min;
 arb_t PS_C_th; // 压缩函数的临界值 C_th(r)
 arb_t PS_C_l_th; // 线性压缩函数的临界值 C_th(r)
 arb_t PS_abundance_f_all_precision; //最终占比f积分的精度

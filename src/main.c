@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
         Delta_c_q_parameter_simple(PS_C_th,Q_parameter_th,prec);
     }else
     {
-        C_r_profile_n(PS_C_th,R_MAX,0,prec); 
+        C_r_profile_n(PS_C_th,R_MAX,0,prec);
     }
     //arb_set_str(PS_C_th,"0.5869",prec);
     printf("\nFind C_th：");arb_printn(PS_C_th, 60,0);printf("\n");
@@ -169,10 +169,15 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS 计算 M_ratio_max 
     //M/M_H=K*[(C_l-3/8*C_l^2)-C_th]^γ  
     //其中 C_l 的最大取值为 4/3， 也对应了 M 的最大取值，即 M/M_H 的最大取值
-    //这里计算出 M/M_H 的最大取值，方便后面 M/M_H 范围的选取，同时也作为后面计算范围的判据
-    Func_get_relative_M_max(PS_M_ratio_max, PT_M_ratio_max, prec);
-    printf("Find PS_M_ratio_max: ");arb_printn(PS_M_ratio_max, 30,0);printf("\n");
+    //这里获取 M/M_H 的范围，最小值和最大值，同时也作为后面计算范围的依据
+    PS_get_relative_M_range(PS_M_ratio_min, PS_M_ratio_max, prec);
+    printf("Find PS_M_ratio_min: ");arb_printn(PS_M_ratio_min, 30,0);printf("\n");
+    printf("Find PS_M_ratio_max: ");arb_printn(PS_M_ratio_max, 30,0);printf("\n\n");
+    
+    PT_get_relative_M_range(PT_M_ratio_min, PT_M_ratio_max, PT_k, prec); //使用到 PT_mu_max, 需要其后调用
+    printf("Find PT_M_ratio_min: ");arb_printn(PT_M_ratio_min, 30,0);printf("\n");
     printf("Find PT_M_ratio_max: ");arb_printn(PT_M_ratio_max, 30,0);printf("\n\n");
+    
     
     //考虑所有k模式的影响，利用δ谱的方式来求连续谱的PBHs
     //有两种方法：①利用δ谱参数计算，速度快，估算，太宽不准确；②利用连续谱参数计算，速度慢，准确
@@ -202,7 +207,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"1",prec);
+    arb_set_str(t,"9",prec);
     arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -258,10 +263,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //interior_probability_C_l(Pk,t,w,0,prec);
     //probability_gauss_2D(Pk,t,w,prec);
     //PS_abundance_beta_m(w,t,prec);
-    //PS_abundance_beta_all(w,prec);
+    //PS_abundance_beta_all(Pk,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
-    //PS_abundance_f_m(Pk, w, prec);
-    //PS_abundance_f_all(w,prec);
+    //PS_abundance_f_m(w, w, prec);
+    //PS_abundance_f_all(Pk,prec);
     //Probability_C(Pk,w,prec);
     //Probability_C_l(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
@@ -270,8 +275,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Peak_number_density(Pk,t,w,prec);
     //PBH_number_density_M(Pk,t,prec);
     //Horizon_reentry_M_to_mu(Pk,t,t,prec);
-    //PT_abundance_beta_m(Pk,t,prec);
-    //PT_abundance_beta_all(Pk,prec);
+    PT_abundance_beta_m(w,t,prec);
+    PT_abundance_beta_all(Pk,prec);
     //PT_abundance_f_m(Pk,t,prec);
     //PT_abundance_f_all(Pk,prec);
     

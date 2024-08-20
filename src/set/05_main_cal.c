@@ -723,6 +723,8 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
     arb_set_str(Mass_gamma,"0.357",prec); // γ ≃ 0.357
     
     Critical_Collapse_Effect=true; //是否考虑临界坍缩效应，在求丰度 β(M) 或数密度 n_pk 前设定即可
+                                //这里并没有采用将 γ=0 的方式来进行设定，
+                                //一是计算简化提升速席，二是 γ=0 在某些表式式里有发散问题
     if(Critical_Collapse_Effect==false)
     {
         arb_one(Mass_K); //注意，当不考虑时，应设置好 Mass_K 的值，通常设为 1
