@@ -39,7 +39,18 @@ void PS_variance_help_M_to_R(arb_t res, const arb_t m, slong prec)
     arb_sqrt(s,m,prec);
     arb_div(s,K_star,s,prec);
     
-    arb_sqr(t,Mass_K,prec); //考虑了PBHs质量与视界质量的关系
+    if(Critical_Collapse_Effect==true)
+    {
+        //当考虑临界坍缩效应时
+        arb_one(t); //这样做，对于密度扰动、曲率扰动和compaction function 三者没有冲突
+                    //对密度扰动，β(M)中的M我们认为是视界质量
+                    //对于曲率扰动，临界效应不起作用，β(M) 依然是视界质量
+                    //对于compaction function，与密度扰动同理，也认为是视界质量
+    }else
+    {
+        arb_sqrt(t,Mass_K,prec); //考虑了PBHs质量与视界质量的关系
+    }
+    
     arb_mul(k,s,t,prec);
     
     arb_div(res, Delta_spectrum_x_m, k, prec);
@@ -156,11 +167,9 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
                                   const enum WINDOW_FUNC_TYPE w_type, const enum WINDOW_FUNC_TYPE w_type_second,
                                   const int method, slong prec)
 {
-    arb_t t,a,b;
+    arb_t t;
     
     arb_init(t);
-    arb_init(a);
-    arb_init(b);
     
     int order;
     
@@ -191,8 +200,6 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
     arb_set(res,t);
     
     arb_clear(t);
-    arb_clear(a);
-    arb_clear(b);
     free(para); //手动释放自定义结构体内存
 }
 
