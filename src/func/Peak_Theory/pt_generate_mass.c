@@ -340,6 +340,7 @@ int Horizon_reentry_M_to_mu(arb_t res, const arb_t M, const arb_t zeta_k, slong 
     arb_clear(b);
     arb_clear(r_m);
     arb_clear(ratio);
+    free(parameter); //手动释放自定义结构体内存
     
     return 0;
 }

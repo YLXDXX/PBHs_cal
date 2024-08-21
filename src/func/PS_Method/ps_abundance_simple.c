@@ -183,7 +183,7 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
         order=1;
     }
     
-    //复用 compaction function 协方差积分参数
+    //复用 compaction function 的协方差积分参数
     Integration_arb(t, interior_PS_variance_with_window_func, para, order, 
                     PS_Int_variance_min, PS_Int_variance_max, PS_Int_variance_precision,
                     Integration_iterate_min,Integration_iterate_max, prec);
@@ -193,6 +193,7 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
     arb_clear(t);
     arb_clear(a);
     arb_clear(b);
+    free(para); //手动释放自定义结构体内存
 }
 
 
