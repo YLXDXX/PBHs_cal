@@ -355,10 +355,12 @@ arb_t PS_M_ratio_min; // I 型扰动质量比的最小值
 arb_t PT_M_ratio_min;
 arb_t PS_C_th; // 压缩函数的临界值 C_th(r)
 arb_t PS_C_l_th; // 线性压缩函数的临界值 C_th(r)
+arb_t PS_zeta_th; // 曲率扰动估算阈值 ζ_th
+arb_t PS_delta_th; // 密度扰动估算阈值 δ_th
 arb_t PS_abundance_f_all_precision; //最终占比f积分的精度
 
 arb_t Continuum_spectrum_A_old; //连续谱计算相关
-arb_t Continuum_spectrum_x_m; //求连续谱的特征模式用
+arb_t Delta_spectrum_x_m; //求连续谱的特征模式用
 arb_t Continuum_spectrum_k_ch; //连续谱的特征模式
 enum GET_K_CH_TYPE Get_k_ch_type; //求连续谱特征模式方法
 

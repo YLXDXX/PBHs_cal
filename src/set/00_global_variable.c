@@ -170,12 +170,14 @@ void Set_global_variable(slong prec)
     
     arb_init(PS_C_th); //compaction function threshold
     arb_init(PS_C_l_th); // linear compaction function threshold
+    arb_init(PS_zeta_th); // 曲率扰动估算阈值 ζ_th
+    arb_init(PS_delta_th); // 密度扰动估算阈值 δ_th
     arb_init(PS_M_ratio_max); //相对质量的最大比
     arb_init(PT_M_ratio_max);
     arb_init(PS_M_ratio_min); //相对质量的最小比
     arb_init(PT_M_ratio_min);
     
-    arb_init(Continuum_spectrum_x_m); //利用δ谱的x_m，求连续谱的特征模式 k_ch
+    arb_init(Delta_spectrum_x_m); //利用δ谱的x_m，求连续谱的特征模式 k_ch
     arb_init(Continuum_spectrum_k_ch); //连续谱的特征模式
     arb_init(Continuum_spectrum_A_old);
     
