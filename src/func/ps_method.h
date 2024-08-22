@@ -7,6 +7,7 @@
 #include "PS_Method/ps_generate_mass.h"
 #include "PS_Method/ps_abundance.h"
 #include "PS_Method/ps_abundance_all_k.h"
+#include "PS_Method/ps_abundance_simple.h"
 
 
 #endif // __PBHS_PS_METHOD__  

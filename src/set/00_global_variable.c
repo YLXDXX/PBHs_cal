@@ -123,8 +123,10 @@ void Set_global_variable(slong prec)
     arb_init(PS_Root_C_l_to_Y_max);
     arb_init(PS_Root_C_l_to_Y_precision);
     
-    arb_init(PS_abundance_f_all_precision); //PS 最终占比f积分的精度
-    
+    arb_init(PS_abundance_int_precision); //计算丰度β和f的积分精度
+    arb_init(PS_abundance_simple_int_precision);
+    arb_init(PS_abundance_simple_int_min);
+    arb_init(PS_abundance_simple_int_max);
     
     //非高斯相关参数设定
     //exponential_tail_type

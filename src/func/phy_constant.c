@@ -87,7 +87,9 @@ ulong C_m_average_iterate_max;
 arb_t C_m_average_precision; 
 
 
-enum PT_MU_TH_enum PT_Mu_th_METHOD; ///求临界值的方法
+enum PT_MU_TH_enum PT_Mu_th_METHOD; //求临界值的方法
+enum WINDOW_FUNC_TYPE PS_simple_window_func; //简单PS方法中窗口函数类型
+
 
 //在视界进入时，视界质量M_H，形成的黑洞的质量为M，两者间的关系
 //与曲率扰动 K 有关，与 γ 也有关
@@ -357,7 +359,11 @@ arb_t PS_C_th; // 压缩函数的临界值 C_th(r)
 arb_t PS_C_l_th; // 线性压缩函数的临界值 C_th(r)
 arb_t PS_zeta_th; // 曲率扰动估算阈值 ζ_th
 arb_t PS_delta_th; // 密度扰动估算阈值 δ_th
-arb_t PS_abundance_f_all_precision; //最终占比f积分的精度
+arb_t PS_abundance_int_precision; //计算丰度β和f的积分精度
+arb_t PS_abundance_simple_int_precision;
+arb_t PS_abundance_simple_int_min;
+arb_t PS_abundance_simple_int_max;
+
 
 arb_t Continuum_spectrum_A_old; //连续谱计算相关
 arb_t Delta_spectrum_x_m; //求连续谱的特征模式用

@@ -86,7 +86,7 @@ int PS_abundance_beta_m(arb_t res, const arb_t m, slong prec)
             arb_div_ui(b,b,3,prec);
             
             Integration_arb(t, interior_PS_abundance_beta_m, NULL, 0, 
-                            a, b, PS_abundance_f_all_precision,
+                            a, b, PS_abundance_int_precision,
                             Integration_iterate_min,Integration_iterate_max, prec);
             arb_set(res,t);
             
@@ -149,7 +149,7 @@ int PS_abundance_beta_all(arb_t res, slong prec)
         
         //使用新的gauss_kronrod积分算法
         Integration_arb(t, interior_PS_abundance_beta_all, NULL, 0, 
-                        a, b, PS_abundance_f_all_precision,
+                        a, b, PS_abundance_int_precision,
                         Integration_iterate_min,Integration_iterate_max, prec);
         arb_set(res,t);
         
@@ -236,7 +236,7 @@ int PS_abundance_f_all(arb_t res, slong prec)
         
         //使用新的gauss_kronrod积分算法
         Integration_arb(t, interior_PS_abundance_f_all, NULL, 0, 
-                        a, b, PS_abundance_f_all_precision,
+                        a, b, PS_abundance_int_precision,
                         Integration_iterate_min,Integration_iterate_max, prec);
         arb_set(res,t);
         

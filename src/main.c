@@ -213,7 +213,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"9",prec);
+    arb_set_str(t,"1.5",prec);
     arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -276,6 +276,19 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Probability_C(Pk,w,prec);
     //Probability_C_l(Pk,w,prec);
     //PS_abundance_beta_delta_k(Pk,w,prec);
+    
+    //PS的简单估算，曲率扰动
+    //PS_abundance_simpele_zeta_beta_m(w,t,prec);
+    //PS_abundance_simpele_zeta_beta_all(Pk,prec);
+    //PS_abundance_simpele_zeta_f_m(w,t,prec);
+    //PS_abundance_simpele_zeta_f_all(Pk,prec);
+    
+    //PS的简单估算，密度扰动
+    //PS_abundance_simpele_delta_beta_m(w,t,prec);
+    //PS_abundance_simpele_delta_beta_all(Pk,prec);
+    PS_abundance_simpele_delta_f_m(w,t,prec);
+    PS_abundance_simpele_delta_f_all(Pk,prec);
+    
     
     //Peak theory相关
     //Peak_number_density(Pk,t,w,prec);

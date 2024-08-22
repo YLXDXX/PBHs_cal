@@ -140,7 +140,7 @@ int PT_abundance_beta_all(arb_t res, slong prec)
         
         //使用新的gauss_kronrod积分算法
         Integration_arb(res, interior_PT_abundance_beta_all, NULL, 0, 
-                        a, b, PS_abundance_f_all_precision,
+                        a, b, PS_abundance_int_precision,
                         int_n_min,int_n_max, prec);
         
     }else //不使用相对质量
@@ -240,7 +240,7 @@ int PT_abundance_f_all(arb_t res, slong prec)
         
         //使用新的gauss_kronrod积分算法
         Integration_arb(res, interior_PT_abundance_f_all, NULL, 0, 
-                        a, b, PS_abundance_f_all_precision,
+                        a, b, PS_abundance_int_precision,
                         int_n_min,int_n_max, prec);
         
     }else //不使用相对质量

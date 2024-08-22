@@ -6,14 +6,10 @@
 //其中 δ 和 ζ 只能处理高斯的情况，而 C 可以处理非高斯情况
 //在这里，关于不同视界质量的计算，统一都是利用窗口函数来获得
 
-struct Window_func_and_R
-{
-    //利用R和窗口函数求方差时用
-    arb_t R;
-    enum WINDOW_FUNC_TYPE w_type;
-    enum WINDOW_FUNC_TYPE w_type_second;
-    int method;
-};
+
+//
+//这里主要是计算前的一些准备工作
+//
 
 
 //从PBHs的质量 M 得到相应的视界尺度 R 
@@ -43,9 +39,9 @@ void PS_variance_help_M_to_R(arb_t res, const arb_t m, slong prec)
     {
         //当考虑临界坍缩效应时
         arb_one(t); //这样做，对于密度扰动、曲率扰动和compaction function 三者没有冲突
-                    //对密度扰动，β(M)中的M我们认为是视界质量
-                    //对于曲率扰动，临界效应不起作用，β(M) 依然是视界质量
-                    //对于compaction function，与密度扰动同理，也认为是视界质量
+        //对密度扰动，β(M)中的M我们认为是视界质量
+        //对于曲率扰动，临界效应不起作用，β(M) 依然是视界质量
+        //对于compaction function，与密度扰动同理，也认为是视界质量
     }else
     {
         arb_sqrt(t,Mass_K,prec); //考虑了PBHs质量与视界质量的关系
@@ -61,7 +57,7 @@ void PS_variance_help_M_to_R(arb_t res, const arb_t m, slong prec)
 }
 
 //密度扰动的功率谱，以 ln(k) 作为变量
-static void power_spectrum_density_contrast(arb_t res, const arb_t k, const arb_t R, slong prec)
+void power_spectrum_density_contrast(arb_t res, const arb_t k, const arb_t R, slong prec)
 {
     arb_t t,s,w;
     
@@ -106,7 +102,7 @@ static int interior_PS_variance_with_window_func(arb_t res, const arb_t k,
     
     if(order==0)
     {
-        //方差 σ =∫W^2(k,R)*P(k)*T(k,η)*dln(k)
+        //方差 σ^2 =∫W^2(k,R)*P(k)*T(k,η)*dln(k)
         
         Power_spectra_window_function_k(s, w, para->R, para->w_type, prec);
         arb_sqr(s,s,prec);
@@ -133,7 +129,7 @@ static int interior_PS_variance_with_window_func(arb_t res, const arb_t k,
         
     }else //专门为compaction function Σ_{XY} 准备
     {
-        //协方差 σ_{XY} =∫W_x(k,R)*W_y(k,R)*P(k)*T(k,η)*dln(k)
+        //协方差 σ^2_{XY} =∫W_x(k,R)*W_y(k,R)*P(k)*T(k,η)*dln(k)
         
         Power_spectra_window_function_k(s, w, para->R, para->w_type, prec);
         Power_spectra_window_function_k(t, w, para->R, para->w_type_second, prec);
@@ -204,11 +200,3 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
 }
 
 
-
-//利用曲率扰动 ζ 估算，高斯情况
-
-
-//利用密度扰动 δ 估算
-
-
-//利用compaction function C 估算

@@ -115,7 +115,12 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 计算丰度β和f的积分精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
+                    
                     
                     break;
                     
@@ -165,7 +170,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     }
                     
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                     
@@ -205,7 +214,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-50",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 case up_step_type :
@@ -245,7 +258,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); // ζ_G<1/h
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                     
@@ -292,7 +309,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(Int_n_pk_k_precision,"1E-8",prec);
                     
                     // PS 计算相关
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                     
@@ -336,7 +357,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Root_C_l_to_Y_precision,"1E-15",prec);
                     
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 case exponential_tail_type :
@@ -377,7 +402,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     PS_Root_C_l_to_Y_num=150;
                     arb_set_str(PS_Root_C_l_to_Y_precision,"1E-15",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                     
@@ -419,7 +448,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     PS_Root_C_l_to_Y_num=150;
                     arb_set_str(PS_Root_C_l_to_Y_precision,"1E-15",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                     
@@ -468,7 +501,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 default :
@@ -525,7 +562,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 case up_step_type :
@@ -565,7 +606,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); // ζ_G<1/h
                     arb_set_str(PS_Int_P_C_l_precision,"1E-35",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 default :
@@ -612,7 +657,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 default :
@@ -658,7 +707,11 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
                     arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
                     arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
                     
-                    arb_set_str(PS_abundance_f_all_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
                 default :
@@ -731,6 +784,7 @@ void Set_main_cal(char* comd_argv, slong prec) // comd_argv 为命令行传递�
         arb_one(Mass_K); //注意，当不考虑时，应设置好 Mass_K 的值，通常设为 1
     }
     
+    PS_simple_window_func=Gaussian_hat; //简单PS方法中窗口函数类型 Real_space_top_hat, Fourier_space_top_hat, Gaussian_hat
     
     //β 到 f 的转换系数，可以采用不同方法 beta_f_general_I, beta_f_general_II, beta_f_myself
     beta_to_f_type=beta_f_general_I;
