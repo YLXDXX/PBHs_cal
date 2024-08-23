@@ -8,6 +8,7 @@
 
 1. 基于 compaction function 的 Press–Schechter 方法
 2. 基于 compaction function 的 Peak Theory 的方法
+2. 简单 Press–Schechter 方法计算（密度扰动、曲率扰动、compaction function）
 
 有三种方法计算高斯情况下的标量诱导引力波，有一种方法计算非高斯情况下的标量诱导引力波「 $f_{NL}$ 」
 
@@ -108,6 +109,8 @@
 `ps_abundance.h`​ 计算 PBHs 丰度
 
 `ps_abundance_all_k.h`​ 计算 PBHs 丰度，主要针对连续谱，考虑了连续谱中所有 $k$ 模式的影响
+
+`ps_abundance_simple.h` PS方法简单估算，包括密度扰动、曲率扰动、compaction function
 
 
 
