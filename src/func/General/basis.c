@@ -492,35 +492,9 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             break;
             
         case delta_type :
-            
-            //delta形式
-            //P(k)=A*delta( ln(k)-ln(k_star) )
-            //可用 log-normal 形式取极限 σ → 0 得到
-            
-            arb_t tem_sigma;
-            arb_init(tem_sigma);
-            arb_set_str(tem_sigma,"1E-13",100);
-            
-            arb_sub(t,k,Ln_K_star,prec); //以 ln(k) 作为变量
-            
-            //指数部分
-            arb_sqr(t,t,prec);
-            arb_sqr(s,tem_sigma,prec);
-            arb_mul_si(s,s,2,prec);
-            arb_div(t,t,s,prec);
-            arb_neg(t,t);
-            arb_exp(t,t,prec);
-            
-            //系数部分
-            arb_mul(t,t,Power_A,prec);
-            arb_sqrt(s,Pi_2,prec);
-            arb_mul(s,s,Power_sigma,prec);
-            arb_div(res,t,s,prec);
-            
-            arb_clear(tem_sigma);
-            
+            printf("General -> basis -> power_spectrum 中 delta_type\n请在程序中单独处理 δ 谱情况\n");
+            exit(1);
             break;
-            
         default :
             printf("General -> basis -> power_spectrum 中 power_spectrum_type 有误\n");
             exit(1);

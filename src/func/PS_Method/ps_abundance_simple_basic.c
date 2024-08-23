@@ -68,16 +68,30 @@ void power_spectrum_density_contrast(arb_t res, const arb_t k, const arb_t R, sl
     //此处，对于密度扰动δ与曲率扰动ζ功率谱间的关系，使用简单的线性关系
     //对于w=1/3，P_δ(k)=16/81*(k*R)^4*P_ζ(k)
     
-    arb_exp(w,k,prec); //w=e^k 恢复为原本的 k
-    
-    arb_mul(s,w,R,prec);
-    arb_pow_ui(s,s,4,prec);
-    arb_mul_ui(s,s,16,prec);
-    arb_div_ui(s,s,81,prec);
-    
-    power_spectrum(t, k, prec); //以 ln(k) 作为变量
-    
-    arb_mul(res,s,t,prec);
+    if(Power_spectrum_type==delta_type)
+    {
+        //P_ζ(k)=A*δ[ln(k)-ln(k_star)]
+        
+        arb_mul(t,K_star,R,prec);
+        arb_pow_ui(t,t,4,prec);
+        arb_mul(t,t,Power_A,prec);
+        
+        arb_mul_ui(t,t,16,prec);
+        arb_div_ui(res,t,81,prec);
+        
+    }else
+    {
+        arb_exp(w,k,prec); //w=e^k 恢复为原本的 k
+        
+        arb_mul(s,w,R,prec);
+        arb_pow_ui(s,s,4,prec);
+        arb_mul_ui(s,s,16,prec);
+        arb_div_ui(s,s,81,prec);
+        
+        power_spectrum(t, k, prec); //以 ln(k) 作为变量
+        
+        arb_mul(res,s,t,prec); 
+    }
     
     arb_clear(t);
     arb_clear(s);
@@ -110,6 +124,7 @@ static int interior_PS_variance_with_window_func(arb_t res, const arb_t k,
         if( para->method==0 ) //使用曲率扰动功率谱计算
         {
             power_spectrum(t, k, prec); //以 ln(k) 作变量
+            
         }else //使用密度扰动的功率谱计算
         {
             power_spectrum_density_contrast(t, k, para->R, prec);
@@ -163,9 +178,10 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
                                   const enum WINDOW_FUNC_TYPE w_type, const enum WINDOW_FUNC_TYPE w_type_second,
                                   const int method, slong prec)
 {
-    arb_t t;
+    arb_t t,s;
     
     arb_init(t);
+    arb_init(s);
     
     int order;
     
@@ -188,14 +204,73 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
         order=1;
     }
     
-    //复用 compaction function 的协方差积分参数
-    Integration_arb(t, interior_PS_variance_with_window_func, para, order, 
-                    PS_Int_variance_min, PS_Int_variance_max, PS_Int_variance_precision,
-                    Integration_iterate_min,Integration_iterate_max, prec);
-    
-    arb_set(res,t);
+    if(Power_spectrum_type==delta_type)
+    {
+        //对于δ谱，有解析解
+        //需注意到，对于δ谱的情况，这种方法不太靠谱
+        //P_ζ(k)=A*δ[ln(k)-ln(k_star)]
+        if(order==0)
+        {
+            //方差 σ^2 =∫W^2(k,R)*P(k)*T(k,η)*dln(k) ⇒ σ^2 = W^2(k_star,R)*A*T(k_star,η)
+            
+            Power_spectra_window_function_k(s, K_star, para->R, para->w_type, prec);
+            arb_sqr(s,s,prec);
+            
+            if( para->method==0 ) //使用曲率扰动功率谱计算
+            {
+                arb_set(t,Power_A);
+                
+            }else //使用密度扰动的功率谱计算
+            {
+                power_spectrum_density_contrast(t, Ln_K_star, para->R, prec);
+            }
+            arb_mul(s,s,t,prec);
+            
+            //是否考虑转移函数的影响
+            if( Transfer_Function )
+            {
+                Power_spectra_linear_transfer_function(t, K_star, para->R, prec); //传入的k未取对数
+                arb_sqr(t,t,prec);
+                
+                arb_mul(s,s,t,prec);
+            }
+            
+            arb_set(res,s);
+            
+        }else //专门为compaction function Σ_{XY} 准备
+        {
+            //协方差 σ^2_{XY} =∫W_x(k,R)*W_y(k,R)*P(k)*T(k,η)*dln(k)
+            
+            Power_spectra_window_function_k(s, K_star, para->R, para->w_type, prec);
+            Power_spectra_window_function_k(t, K_star, para->R, para->w_type_second, prec);
+            arb_mul(s,s,t,prec);
+            
+            arb_mul(s,s,Power_A,prec); //为ζ的功率谱
+            
+            //是否考虑转移函数的影响
+            if( Transfer_Function )
+            {
+                Power_spectra_linear_transfer_function(t, K_star, para->R, prec); //传入的w已恢复成原本的k
+                arb_sqr(t,t,prec);
+                
+                arb_mul(s,s,t,prec);
+            }
+            
+            arb_set(res,s);
+        }
+        
+    }else
+    {
+        //连续谱的情况，通过积分来求解
+        //复用 compaction function 的协方差积分参数
+        Integration_arb(t, interior_PS_variance_with_window_func, para, order, 
+                        PS_Int_variance_min, PS_Int_variance_max, PS_Int_variance_precision,
+                        Integration_iterate_min,Integration_iterate_max, prec);
+        arb_set(res,t);
+    }
     
     arb_clear(t);
+    arb_clear(s);
     free(para); //手动释放自定义结构体内存
 }
 
