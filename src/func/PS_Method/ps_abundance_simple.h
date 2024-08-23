@@ -39,4 +39,10 @@ int PS_abundance_simpele_delta_f_m(arb_t res, const arb_t m, slong prec);
 int PS_abundance_simpele_delta_f_all(arb_t res, slong prec);
 
 
+int PS_abundance_simpele_compact_beta_m(arb_t res, const arb_t m, slong prec); //利用compaction function C 估算，高斯/非高斯
+int PS_abundance_simpele_compact_beta_all(arb_t res, slong prec);
+int PS_abundance_simpele_compact_f_m(arb_t res, const arb_t m, slong prec);
+int PS_abundance_simpele_compact_f_all(arb_t res, slong prec);
+
+
 #endif // __PBHS_PS_METHOD_PS_ABUNDANCE_SIMPLE__  
