@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Power_spectrum_type=lognormal_type;
     
     
-    Set_power_spectra(argv[1],prec); //功率谱相关具体参数设定，可由命令行传递参数
+    Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
     
     Set_physical_parameter(prec); //宇宙学基本参数设定，这里设定相对论自由度数需要功率谱相关信息，需要功率谱设定之后
     
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //主要计算设定
     //包括：非高斯性参数，各种功率谱和各种非高斯性情况下 r_m，μ_th，β，f等计算参数的设定，临界坍缩等
-    Set_main_cal(argv[1], prec); //可从命令行读取参数
+    Set_main_cal(argv, prec); //可从命令行读取参数
     
     
     //变量PT_mu_th， ζ(r) 的参数 µ 的临界值 
@@ -364,7 +364,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_set_str(PS_Sigma_YY,"0.02",prec); //算P(ζ)用
     
     
-    //draw_pic(argv[1],prec); //输出点用于画图，可从命令行传递参数
+    //draw_pic(argv,prec); //输出点用于画图，可从命令行传递参数
     
     return 0;
     

@@ -4,7 +4,7 @@ int C_r_prime_I(arb_t res, arb_t r, slong prec);
 int C_r_prime_II(arb_t res, arb_t r, slong prec);
 
 //画图
-void draw_pic(char* comd_argv, slong prec) // comd_argv 为命令行传递参数
+void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参数，可传递多个
 {
     arb_t t,s,aa,bb,gap_x,gap_y,out_point,out_point_2,ay,by,ay_copy;
     
