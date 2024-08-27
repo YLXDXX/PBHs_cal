@@ -10,6 +10,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     //非高斯相关参数设定，需在求 r_max 和 PT_mu_th 之前设定，其与两都都有关
     //exponential_tail_type
     arb_set_str(Exponential_tail_beta, "-5", prec); //exponential_tail_type 中β的取值，文献中通常取为β=3
+    //arb_set_str(Exponential_tail_beta, comd_argv[1], prec); //从命令行读取参数
     
     /*
     //对应指数尾巴的展开系数 --> (-1)^(n-1)*1/n*β^(n-1)*x^n
@@ -30,15 +31,15 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     
     //up_step_type
     //arb_set(Up_step_h,Upward_step_spectra_h);
-    arb_set_str(Up_step_h, "-1", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set_str(Up_step_h, "-0.8", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv[1], prec); //从命令行读取参数
     
     
     //power_expansion_type 最高可展开到 6 阶
     //通过 h 得到 f=5/12 * |h|
-    arb_abs(Power_expansion_f,Up_step_h);
-    arb_mul_ui(Power_expansion_f,Power_expansion_f,5,prec);
-    arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
+    //arb_abs(Power_expansion_f,Up_step_h);
+    //arb_mul_ui(Power_expansion_f,Power_expansion_f,5,prec);
+    //arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
     
     //arb_set_str(Power_expansion_f, comd_argv[1], prec); //从命令行读取参数
     arb_set_str(Power_expansion_f, "-1", prec); //power-series expansion 二次项 f_NL -> A
@@ -605,6 +606,49 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     arb_abs(PS_Int_P_C_l_max,Up_step_h);
                     arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); // ζ_G<1/h
                     arb_set_str(PS_Int_P_C_l_precision,"1E-35",prec);
+                    
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
+                    
+                    break;
+                case power_expansion_type :
+                    
+                    //根据δ谱下r*k为定值，采用动态r_m区间
+                    arb_set_str(R_K_to_r_m,"1",prec);
+                    arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
+                    arb_div_ui(Int_r_min,Int_r_min,20,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,90,prec);
+                    Root_r_num=120;
+                    arb_set_str(Int_r_precision,"1E-20",prec);
+                    
+                    
+                    arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_max,"1.5",prec);
+                    Root_mu_num=80;
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
+                    
+                    C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
+                    C_m_average_iterate_max=5;
+                    arb_set_str(C_m_average_precision,"1E-6",prec);
+                    
+                    // M -> μ 求根用
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
+                    arb_set_str(Root_M_to_mu_max,"0.7",prec);
+                    Root_M_to_mu_num=12;
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
+                    
+                    
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
+                    
+                    // PS 计算相关
+                    arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                    arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
+                    arb_set_str(PS_Int_P_C_l_precision,"1E-50",prec);
                     
                     arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
                     

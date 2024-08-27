@@ -181,6 +181,7 @@ void Set_global_variable(slong prec)
     
     arb_init(Delta_spectrum_x_m); //利用δ谱的x_m，求连续谱的特征模式 k_ch
     arb_init(Continuum_spectrum_k_ch); //连续谱的特征模式
+    arb_init(Continuum_spectrum_k_ch_times_r_m); //k_ch*r_m
     arb_init(Continuum_spectrum_A_old);
     
     arb_init(Func_output_x_min);//函数数据的输入输出，及拟合

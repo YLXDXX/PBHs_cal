@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type/upward_step_spectra_type
-    Power_spectrum_type=lognormal_type;
+    Power_spectrum_type=delta_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -190,8 +190,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //因与前面计算程序共用了数据，这里需传递设定几个参数
     //利用δ谱的x_m，求连续谱的特征模式 k_ch
     arb_set_str(Delta_spectrum_x_m, "2.743707269992269382561122",prec); //求连续谱特征模式，δ谱近似用，也用此来求k与r的对应关系
+                                                                        //这个值，可能与非高斯性相关，不同非高斯性参数需重新设置
     Get_k_ch_type=horizon_re_enter; //求连续谱特征模式方法设定
-    Get_all_k_over_k_ch(Continuum_spectrum_k_ch, Delta_spectrum_x_m, prec ); //求连续谱特征模式
+    Get_all_k_over_k_ch(Continuum_spectrum_k_ch_times_r_m, Continuum_spectrum_k_ch,
+                        Delta_spectrum_x_m, prec ); //求连续谱特征模式
     
     
     //功率谱类型： lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
@@ -274,9 +276,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_m(w,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    //PS_abundance_f_all(Pk,prec);
+    PS_abundance_f_all(Pk,prec);
     
-    //PS_abundance_beta_delta_k(Pk,w,prec);
     
     //PS的简单估算
     //PS_abundance_simpele_zeta_beta_m(w,t,prec); //曲率扰动
@@ -291,8 +292,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //PS_abundance_simpele_compact_beta_m(w,t,prec); //compaction function
     //PS_abundance_simpele_compact_beta_all(Pk,prec);
-    PS_abundance_simpele_compact_f_m(w,t,prec);
-    PS_abundance_simpele_compact_f_all(Pk,prec);
+    //PS_abundance_simpele_compact_f_m(w,t,prec);
+    //PS_abundance_simpele_compact_f_all(Pk,prec);
     
     
     //Peak theory相关
@@ -304,7 +305,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PT_abundance_f_m(w,t,prec);
     //PT_abundance_f_all(Pk,prec);
     
-    arb_printn(w,60,0);printf("\n");
+    //arb_printn(w,60,0);printf("\n");
     arb_printn(Pk,60,0);printf("\n");
     
     //考虑所有k模式，用δ谱计算连续谱
@@ -348,7 +349,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     arb_fprintn(fpdate,PS_C_l_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,R_MAX,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,R_m_times_K,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
-    arb_fprintn(fpdate,Delta_spectrum_x_m,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
+    arb_fprintn(fpdate,Continuum_spectrum_k_ch_times_r_m,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,Continuum_spectrum_k_ch,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,Q_parameter_th,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");
     arb_fprintn(fpdate,PS_Sigma_XX_save,20,ARB_STR_NO_RADIUS);fprintf(fpdate, "\t");

@@ -190,7 +190,7 @@ void beta_m_to_f_m_coefficient(arb_t res, slong prec)
 }
 
 //考虑所有 k 模式时，特征模式的求解
-void Get_all_k_over_k_ch(arb_t k_ch, const arb_t x_m, slong prec)
+void Get_all_k_over_k_ch(arb_t k_ch_times_r_m, arb_t k_ch, const arb_t x_m, slong prec)
 {
     arb_t t,s;
     arb_init(t);
@@ -220,6 +220,8 @@ void Get_all_k_over_k_ch(arb_t k_ch, const arb_t x_m, slong prec)
         printf("连续谱考虑所有k模式，求特征模式方法 Get_k_ch_type 错误\n");
         exit(1);
     }
+    
+    arb_mul(k_ch_times_r_m,k_ch,R_MAX,prec);
     
     arb_clear(t);
     arb_clear(s);

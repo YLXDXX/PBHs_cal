@@ -46,18 +46,18 @@ void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行�
     //broken power law功率谱使用 α
     //α 影响的是P(k_star)左边的部分，k<k_star，α越大，下降的越厉害
     //arb_set_str(BPL_alpha,"4.52",prec); //PTAs对BPL的拟合
-    arb_set_str(BPL_alpha,"4",prec); // upward step 拟合
+    arb_set_str(BPL_alpha,"4",prec); // upward step 拟合 4
     
     //broken power law功率谱使用 β 
     //β 影响的是P(k_star)右边的部分，k>k_star，β越大，下降的越厉害
     //arb_set_str(BPL_beta,"5.17",prec); //PTAs对BPL的拟合
-    arb_set_str(BPL_beta,"6",prec); // upward step 拟合
+    arb_set_str(BPL_beta,"6",prec); // upward step 拟合 6
     
     //broken power law功率谱使用 γ
     //γ 影响的是P(k)左右两边的转化，γ越大，转化越圆润，P(k_star)周围下降的越慢
     //arb_one(BPL_gamma); //一般设 γ=1
     //arb_set_str(BPL_gamma,"5.03",prec); //PTAs对BPL的拟合
-    arb_set_str(BPL_gamma,"2",prec); // upward step 拟合
+    arb_set_str(BPL_gamma,"2",prec); // upward step 拟合 2
     
     //link cmb 功率谱用
     arb_set_str(Link_CMB_K_t,"10",prec);

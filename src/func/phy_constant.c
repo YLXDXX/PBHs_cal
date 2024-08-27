@@ -368,6 +368,7 @@ arb_t PS_abundance_simple_int_max;
 arb_t Continuum_spectrum_A_old; //连续谱计算相关
 arb_t Delta_spectrum_x_m; //求连续谱的特征模式用
 arb_t Continuum_spectrum_k_ch; //连续谱的特征模式
+arb_t Continuum_spectrum_k_ch_times_r_m; //k_ch*r_m
 enum GET_K_CH_TYPE Get_k_ch_type; //求连续谱特征模式方法
 
 
