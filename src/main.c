@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type/upward_step_spectra_type
-    Power_spectrum_type=delta_type;
+    Power_spectrum_type=lognormal_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -189,12 +189,17 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //有两种方法：①利用δ谱参数计算，速度快，估算，太宽不准确；②利用连续谱参数计算，速度慢，准确
     //因与前面计算程序共用了数据，这里需传递设定几个参数
     //利用δ谱的x_m，求连续谱的特征模式 k_ch
-    arb_set_str(Delta_spectrum_x_m, "2.743707269992269382561122",prec); //求连续谱特征模式，δ谱近似用，也用此来求k与r的对应关系
+    arb_set_str(Delta_spectrum_x_m, "2.74370726999226938256112208",prec); //求连续谱特征模式，δ谱近似用，也用此来求k与r的对应关系
                                                                         //这个值，可能与非高斯性相关，不同非高斯性参数需重新设置
-    Get_k_ch_type=horizon_re_enter; //求连续谱特征模式方法设定
-    Get_all_k_over_k_ch(Continuum_spectrum_k_ch_times_r_m, Continuum_spectrum_k_ch,
-                        Delta_spectrum_x_m, prec ); //求连续谱特征模式
+    arb_set_str(Delta_spectrum_reenter_coefficient_C, "2.75079850853030792421595746",prec); //这个系数，是为了使得利用视界进入条件得到的特征模式方法，在δ谱情况下能回到k_*
+    arb_div(Delta_spectrum_reenter_coefficient_C,Delta_spectrum_x_m,Delta_spectrum_reenter_coefficient_C,prec);
     
+    Get_k_ch_type=horizon_re_enter; //求连续谱特征模式方法设定 delta_approximation/horizon_re_enter
+                                    //delta_approximation 需要该连续谱的窄谱极限是δ谱
+    
+    Get_all_k_over_k_ch(Continuum_spectrum_k_ch_times_r_m, Continuum_spectrum_k_ch,
+                        Delta_spectrum_x_m, prec ); //求连续谱特征模式 
+    printf("Horizon reenter --> k_ch_times_r_m: ");arb_printn(Continuum_spectrum_k_ch_times_r_m, 30,0);printf("\n\n");                                               
     
     //功率谱类型： lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
     Continuum_spectrum_type=lognormal_type; //计算连续谱类型
@@ -215,7 +220,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"1.5",prec);
+    arb_set_str(t,"14.26019638",prec);
     arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -276,7 +281,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_m(w,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    PS_abundance_f_all(Pk,prec);
+    //PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算
@@ -306,11 +311,11 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PT_abundance_f_all(Pk,prec);
     
     //arb_printn(w,60,0);printf("\n");
-    arb_printn(Pk,60,0);printf("\n");
+    //arb_printn(Pk,60,0);printf("\n");
     
     //考虑所有k模式，用δ谱计算连续谱
     //PS_abundance_beta_delta_k(Pk, t, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
-    //PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β，传递值为ln(k)
+    PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
     //诱导引力波
@@ -327,7 +332,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
     
     
-    //arb_printn(Pk,30,0);printf("\n");
+    arb_printn(Pk,30,0);printf("\n");
     //arb_printn(w,30,0);printf("\n");
     //sleep(600);
     exit(0);

@@ -212,8 +212,12 @@ void Get_all_k_over_k_ch(arb_t k_ch_times_r_m, arb_t k_ch, const arb_t x_m, slon
         arb_exp(s,s,prec);
         arb_mul(s,s,R_MAX,prec);
         
-        arb_div(k_ch, Pi, s, prec);
-        
+        arb_div(s, Pi, s, prec);
+        if(Power_spectrum_type!=delta_type)
+        {
+            arb_mul(s,s,Delta_spectrum_reenter_coefficient_C,prec);
+        }
+        arb_set(k_ch,s);
     }else
     {
         //出错

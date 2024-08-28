@@ -180,6 +180,7 @@ void Set_global_variable(slong prec)
     arb_init(PT_M_ratio_min);
     
     arb_init(Delta_spectrum_x_m); //利用δ谱的x_m，求连续谱的特征模式 k_ch
+    arb_init(Delta_spectrum_reenter_coefficient_C); //利用视界进入条件，求连续谱的特征模式 k_ch 用
     arb_init(Continuum_spectrum_k_ch); //连续谱的特征模式
     arb_init(Continuum_spectrum_k_ch_times_r_m); //k_ch*r_m
     arb_init(Continuum_spectrum_A_old);
