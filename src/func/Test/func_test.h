@@ -46,6 +46,14 @@ int Func_test_quad_func_03(arb_t res, const arb_t x, const arb_t y, void* params
 int Func_test_quad_func_03_y_a(arb_t res, const arb_t x, void* params, const slong order, slong prec);
 int Func_test_quad_func_03_y_b(arb_t res, const arb_t x, void* params, const slong order, slong prec);
 
+int Func_test_ODEs_func_01(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec);
 
+int Func_test_ODEs_func_02(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec);
 
+int Func_test_ODEs_func_03(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec);
+int Func_test_ODEs_func_04(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec);
 #endif // __PBHS_TEST_FUNC_TEST__  

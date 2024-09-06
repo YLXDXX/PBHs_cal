@@ -17,7 +17,7 @@ void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行�
     //如，Peak thoery中会用到
     
     //lognormal 功率谱参考尺度，单位 Mpc^{-1}
-    arb_set_str(K_star,"1.56E6",prec); //参考值 K_star=1.56E13
+    arb_set_str(K_star,"1.56E13",prec); //参考值 K_star=1.56E13
     //arb_set_str(K_star,"151356124.8",prec); //10^8.18 PTAs对log-normal的拟合
     //arb_set_str(K_star,"114815362.1",prec); //10^8.06 PTAs对BPL的拟合
     //arb_set_str(K_star,"6E7",prec); // upward step 拟合

@@ -431,7 +431,6 @@ int PBH_number_density_M(arb_t res,const arb_t M, slong prec)
         {
             if(Power_spectrum_type==delta_type) //δ的情况最简单，不用积分，直接代入计算
             {
-                //积分化为常量积分
                 Peak_number_density(s, t_mu, zeta_k, prec);
                 
                 Horizon_reentry_derivative_ln_M_mu(w, t_mu, zeta_k, prec); //可利用上面保存的 R_MAX

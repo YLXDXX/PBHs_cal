@@ -6,6 +6,7 @@
 #include "Math_Method/fit_date.h"
 #include "Math_Method/quadrature.h"
 #include "Math_Method/quadrature_binary.h"
+#include "Math_Method/ODEs.h"
 
 
 #endif // __PBHS_MATH_METHOD__

@@ -582,5 +582,148 @@ int Func_test_quad_func_03_y_b(arb_t res, const arb_t x, void* params, const slo
     return 0;
 }
 
+int Func_test_ODEs_func_01(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec)
+{
+    arb_t s,t,w;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //arb_ptr v_s,v_t,
+    //v_s=_arb_vec_init(dim);
+    //v_t=_arb_vec_init(dim);
+    
+    //一阶常微分方程
+    //y′=[1-(3*x^2+2*x)]/(x^3+x^2) * y    初始条件：y'(1)=1
+    //精确解为 y=1/x^3 * Exp(1-1/x)
+    
+    arb_sqr(s,x,prec);
+    arb_mul_ui(s,s,3,prec);
+    arb_mul_ui(t,x,2,prec);
+    arb_add(s,s,t,prec);
+    arb_neg(s,s);
+    arb_add_ui(s,s,1,prec);
+    
+    arb_pow_ui(t,x,3,prec);
+    arb_sqr(w,x,prec);
+    arb_add(t,t,w,prec);
+    arb_div(s,s,t,prec);
+    
+    arb_mul(yp,s,y,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    
+    //_arb_vec_clear(v_s,dim);
+    //_arb_vec_clear(v_t,dim);
+    
+   return 0; 
+}
+
+int Func_test_ODEs_func_02(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec)
+{
+    arb_t s,t,w;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //arb_ptr v_s,v_t,
+    //v_s=_arb_vec_init(dim);
+    //v_t=_arb_vec_init(dim);
+    
+    //一阶常微分方程
+    //y′=y-x^2+1    初始条件：y(0)=0.5
+    //精确解为 y=x^2+2*x+1-e^x/2
+    
+    arb_sqr(s,x,prec);
+    arb_sub(s,y,s,prec);
+    arb_add_ui(yp,s,1,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    
+    //_arb_vec_clear(v_s,dim);
+    //_arb_vec_clear(v_t,dim);
+    
+    return 0; 
+}
 
 
+int Func_test_ODEs_func_03(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec)
+{
+    arb_t s,t,w;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //arb_ptr v_s,v_t,
+    //v_s=_arb_vec_init(dim);
+    //v_t=_arb_vec_init(dim);
+    
+    //二阶常微分方程 y''+y=x^2
+    //通解 $ C_1\cos x + C_2\sin x + x^2 - 2 $
+    //C_1=1,C_2=1
+    //y1'=y2     y1(0)=-1
+    //y2'=-y1+x^2  y2(0)=1
+    
+    
+    arb_set(yp,y+1); //y1'=y2
+    
+    arb_sqr(s,x,prec); //y2'=y1+x^2
+    arb_neg(t,y);
+    arb_add(yp+1,s,t,prec);
+    
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    
+    //_arb_vec_clear(v_s,dim);
+    //_arb_vec_clear(v_t,dim);
+    
+    return 0; 
+}
+
+int Func_test_ODEs_func_04(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec)
+{
+    arb_t s,t,w;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //arb_ptr v_s,v_t,
+    //v_s=_arb_vec_init(dim);
+    //v_t=_arb_vec_init(dim);
+    
+    //二阶常微分方程 y''-2y'+y=x*e^x
+    //精确解 y=(1+1/6*x^3)*e^{x}
+    //y1'=y2     y1(0)=1
+    //y2'=2*y2-y1+x*e^x  y2(0)=1
+    
+    
+    arb_set(yp,y+1); //y1'=y2
+    
+    arb_mul_si(s,y+1,2,prec); //y2'=2*y2-y1+x*e^x
+    arb_sub(s,s,y,prec);
+    
+    arb_exp(t,x,prec);
+    arb_mul(t,t,x,prec);
+    
+    arb_add(yp+1,s,t,prec);
+    
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    
+    //_arb_vec_clear(v_s,dim);
+    //_arb_vec_clear(v_t,dim);
+    
+    return 0; 
+}

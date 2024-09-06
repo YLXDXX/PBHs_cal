@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    //routine_test(prec); exit(0); //测试程序
+    routine_test(prec); exit(0); //测试程序
     
     
     /*
@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"14.26019638",prec);
+    arb_set_str(t,"0.1",prec);
     arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -232,13 +232,6 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Help_psi_n(Pk,t,3,prec);
     //Help_psi_n(Pk,t,0,prec);
     //zeta_Gauss_profile_n(Pk,R_MAX,0,prec);
-    
-    arb_exp(Pk,Pk,prec);
-    arb_div(Pk,Pi_2,Pk,prec);
-    arb_div_ui(Pk,Pk,2,prec);
-    arb_sub(Pk,Pk,R_m_times_K,prec);
-    arb_abs(Pk,Pk);
-    arb_div(Pk,Pk,R_m_times_K,prec);
     
     //zeta_profile_n(w,R_MAX,0,prec);
     //arb_mul(Pk,w,t,prec);
@@ -291,7 +284,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_simpele_zeta_f_all(Pk,prec);
     
     //PS_abundance_simpele_delta_beta_m(w,t,prec); //密度扰动
-    //PS_abundance_simpele_delta_beta_all(Pk,prec);
+    PS_abundance_simpele_delta_beta_all(Pk,prec);
     //PS_abundance_simpele_delta_f_m(w,t,prec);
     //PS_abundance_simpele_delta_f_all(Pk,prec);
     
@@ -315,7 +308,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //考虑所有k模式，用δ谱计算连续谱
     //PS_abundance_beta_delta_k(Pk, t, prec); //计算某个k的β，临界坍缩的贡献都归到该k模式，传递值为ln(k)
-    PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β
+    //PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
     //诱导引力波

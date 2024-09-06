@@ -61,6 +61,10 @@ typedef int (*my_calc_func)(arb_t out, const arb_t inp, void* param, const slong
 
 typedef int (*my_calc_func_binary)(arb_t out, const arb_t in_x, const arb_t in_y, void* param, const slong order, slong prec);
 
+typedef int (*my_odes_func)(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                             void* param, const slong order, slong prec);
+
+
 typedef int (*func_NULL)(); //此类型后接的参数可任意
 
 
