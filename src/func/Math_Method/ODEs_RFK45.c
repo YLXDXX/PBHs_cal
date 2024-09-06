@@ -2,26 +2,15 @@
 #include <stdlib.h>
 
 
-/***
-int Integration_arb(arb_t res, my_calc_func func, void *param, const slong order,
-                    const arb_t a, const arb_t b, const arb_t error,
-                    slong step_min , slong step_max,
-                    slong prec);
-
-typedef void (*my_odes_func)(arb_ptr yp, const arb_t x, const arb_ptr y, const ulong dim,
-                             void* param, const slong order, slong prec);
-
-***/
-
 //求k_1 .. k_6 相关系数
-arb_ptr ODEs_RFK45_coe_ah;
-arb_ptr ODEs_RFK45_coe_b1,ODEs_RFK45_coe_b2,ODEs_RFK45_coe_b3,ODEs_RFK45_coe_b4,ODEs_RFK45_coe_b5;
-arb_ptr ODEs_RFK45_coe_ck_s,ODEs_RFK45_coe_ck_t;
+static arb_ptr ODEs_RFK45_coe_ah;
+static arb_ptr ODEs_RFK45_coe_b1,ODEs_RFK45_coe_b2,ODEs_RFK45_coe_b3,ODEs_RFK45_coe_b4,ODEs_RFK45_coe_b5;
+static arb_ptr ODEs_RFK45_coe_ck_s,ODEs_RFK45_coe_ck_t;
 
 static void Get_RFK45_cal_coe(slong prec)
 {
     if(ODEs_RFK45_coe_ah != NULL) //判断是否已设定系数
-    {   
+    {
         return;
     }
     
@@ -362,6 +351,14 @@ int ODEs_RFK45(arb_ptr res, my_odes_func func, const slong dim, void *param, con
             }
         }
         
+        if(!arb_is_finite(R))
+        {
+         printf("遇到错误已退出，可能原因：\n");
+         printf("1) 精度要求太高，当前精度不能满足要求，请提高 prec 值后重试\n");
+         printf("2) 求解条件设定有问题，请检查求解条件\n");
+         exit(1);
+        }
+        
         arb_div(s,error,R,prec);
         arb_pow(s,s,pow_1_div_4,prec);
         arb_mul(delta,s,coe_0_dot_84,prec);
@@ -383,7 +380,7 @@ int ODEs_RFK45(arb_ptr res, my_odes_func func, const slong dim, void *param, con
         
         arb_mul(h,delta,h,prec); //改变下一次迭代的步长，需在X位置更新后
         
-        arb_sub(t,x_end,x,prec); //用于终点
+        arb_sub(t,x_end,x,prec); //用于终点判断
         
         if( judge_toward==0 && arb_gt(h,t))
         {

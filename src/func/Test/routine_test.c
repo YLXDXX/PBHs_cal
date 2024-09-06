@@ -24,9 +24,9 @@ void routine_test(slong prec)
     arb_set_str(x_start,"0",prec); //初始条件
     arb_set_str(y_start,"1",prec);
     arb_set_str(y_start+1,"1",prec);
-    arb_set_str(error,"1E-15",prec);
+    arb_set_str(error,"1E-8",prec);
     
-    arb_set_str(x_end,"-5",prec);
+    arb_set_str(x_end,"-15",prec);
     
     
     
