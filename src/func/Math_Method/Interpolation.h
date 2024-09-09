@@ -1,0 +1,21 @@
+#ifndef __PBHS_MATH_METHOD_INTERPOLATION__   /* Include guard */
+#define __PBHS_MATH_METHOD_INTERPOLATION__ 
+
+#include <arb.h> //高精度实数运算
+#include "../new_type.h"
+#include "../phy_constant.h"
+
+//函数插值
+
+//插值点位置查找
+slong Interpolation_position_i_search(const arb_t x, const arb_ptr x_array, const slong N, slong prec );
+
+Interp_coe_t Interpolation_coe_init(slong num); //初始化插值多项式系数，为其分配内存
+void Interpolation_coe_clear(Interp_coe_t coe, slong num); //清理初始化插值多项式系数，释放内存
+
+//通过各个点的离散函数值，给出相应的拟合函数 y=func(x)
+void Interpolation_fit_func(arb_t res, const arb_t x,
+                            const arb_ptr x_array, const arb_ptr y_array, const Interp_coe_t coe, const slong N,
+                            slong prec);
+
+#endif // __PBHS_MATH_METHOD_INTERPOLATION__ 

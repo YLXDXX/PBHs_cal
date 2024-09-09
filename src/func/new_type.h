@@ -6,6 +6,16 @@
 
 //定义新的类型，用于各种情况的判断
 
+
+//用来存储多项式系数拟合后得到的结果，相同区间，不用每次计算，加快速度
+struct Interpolation_coe_structure {
+    slong num;
+    arb_poly_t* coe_poly;
+};
+
+typedef struct Interpolation_coe_structure* Interp_coe_t;
+
+
 //对多种窗口函数定义其类型
 enum WINDOW_FUNC_TYPE
 {

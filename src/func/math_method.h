@@ -7,6 +7,7 @@
 #include "Math_Method/quadrature.h"
 #include "Math_Method/quadrature_binary.h"
 #include "Math_Method/ODEs.h"
+#include "Math_Method/Interpolation.h"
 
 
 #endif // __PBHS_MATH_METHOD__

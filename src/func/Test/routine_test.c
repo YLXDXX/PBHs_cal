@@ -1,9 +1,18 @@
 #include "routine_test.h"
 #include <stdlib.h>
+#include <arb_poly.h>
+#include "../Other/ODEs_slove.h"
+#include "fmpz.h"
+#include <sys/time.h> 
+
 
 //测试程序
 void routine_test(slong prec)
 {
+    //运行时间
+    struct timeval start, end; 
+    long double time_taken; 
+    
     //微分方程测试
     
     arb_t s,t,w,x_start,x_end,error;
@@ -14,30 +23,145 @@ void routine_test(slong prec)
     arb_init(x_end);
     arb_init(error);
     
-    int dim=2;
+    int dim=500;
     
-    arb_ptr v_s,v_t,y_start;
+    arb_ptr v_s,v_t,v_w,y_start;
     v_s=_arb_vec_init(dim);
     v_t=_arb_vec_init(dim);
     y_start=_arb_vec_init(dim);
     
-    arb_set_str(x_start,"0",prec); //初始条件
-    arb_set_str(y_start,"1",prec);
-    arb_set_str(y_start+1,"1",prec);
-    arb_set_str(error,"1E-8",prec);
+    slong n=dim;
+    v_w=_arb_vec_init(n);
     
-    arb_set_str(x_end,"-15",prec);
+    gettimeofday(&start, NULL); 
+    
+    //函数插值测试
+    for(slong i=0;i<n;i++)
+    {
+        arb_set_d(s,0.01*i+1.1); //x*sin(x)+cos(x)*e^(x)/(x^2-1)
+        arb_sin(v_w+i,s,prec);
+        arb_mul(v_w+i,v_w+i,s,prec);
+        
+        arb_sqr(t,s,prec);
+        arb_sub_ui(t,t,1,prec);
+        arb_exp(w,s,prec);
+        arb_div(w,w,t,prec);
+        arb_cos(t,s,prec);
+        arb_mul(w,w,t,prec);
+        arb_add(v_w+i,v_w+i,w,prec);
+        
+        arb_set(v_s+i,s);
+    }
+    
+    gettimeofday(&end, NULL); 
+    time_taken = (end.tv_sec  - start.tv_sec)  + (end.tv_usec  - start.tv_usec)  / 1e6; 
+    printf("\nTime taken: %Lf seconds\n\n", time_taken); 
+    
+    
+    arb_set_str(s,"3.13",prec);
+    
+    arb_poly_t p_s;
+    arb_poly_init(p_s);
+    
+    /*
+    // dim 个点全拟合，测试用
+    arb_poly_interpolate_newton(p_s,v_s,v_w,dim,prec); 
+    arb_poly_evaluate(w,p_s,s,prec);
+    arb_printn(w, 20,0);printf("\n");
+    */
+    
+    //分段拟合，实际用
+    Interp_coe_t c_s; //用来存系数
+    c_s=Interpolation_coe_init(dim);
+    
+    Interpolation_fit_func(w,s,v_s,v_w,c_s,dim,prec);
+    arb_printn(w, 20,0);printf("\n");
+    
+    gettimeofday(&start, NULL);
+    
+    arb_set_str(s,"4.005",prec);
+    
+    Interpolation_fit_func(w,s,v_s,v_w,c_s,dim,prec);
+    arb_printn(w, 20,0);printf("\n");
+    //arb_poly_printd(p_s,5);
+    
+    arb_cos(w,s,prec); //x*sin(x)+cos(x)*e^(x)/(x^2-1)
+    arb_exp(t,s,prec);
+    arb_mul(w,w,t,prec);
+    arb_sqr(t,s,prec);
+    arb_sub_ui(t,t,1,prec);
+    arb_div(w,w,t,prec);
+
+    arb_sin(t,s,prec); 
+    arb_mul(t,t,s,prec);
+    arb_add(w,w,t,prec);
+    
+    arb_printn(w, 20,0);printf("\n");
+    
+    gettimeofday(&end, NULL); 
+    time_taken = (end.tv_sec  - start.tv_sec)  + (end.tv_usec  - start.tv_usec)  / 1e6; 
+    printf("\nTime taken: %Lf seconds\n\n", time_taken); 
+    
+    Interpolation_coe_clear(c_s,dim);
+    exit(0);
+    
+    // 初始条件
+    /*
+    phi_dot_0 = 1.0
+    phi_0 = 1.0
+    tau_0 = 0.0
+    N_0 = 0.0
+    H_0 = np.sqrt((1/6) * phi_dot_0**2 + V(phi_0) / 3)
+    y0 = [phi_dot_0, phi_0, tau_0, N_0, H_0]
+    */
+    
+    fmpz_t N;
+    fmpz_init(N);
+    
+    arb_set_str(x_start,"3.3",prec); //初始条件
+    arb_mul_ui(x_start,x_start,3,prec);
+    //arb_get_mid_arb(x_start,x_start);
+    arb_trunc(x_start,x_start,prec);
+    //arb_get_rad_arb(x_start,x_start);
+    arb_printn(x_start, 50,0);printf("\n");
+    
+    
+    arb_get_unique_fmpz(N,x_start);
+    
+    printf("%li",fmpz_get_si(N));
+    
+    fmpz_clear(N);exit(0);
+    
+    arb_set_str(y_start,"1.0",prec);
+    arb_set_str(y_start+1,"1.0",prec);
+    arb_set_str(y_start+2,"0.0",prec);
+    arb_set_str(y_start+3,"0.0",prec);
+    
+    arb_sqr(s,y_start,prec); //H_0 = np.sqrt((1/6) * phi_dot_0**2 + V(phi_0) / 3)
+    arb_div_ui(s,s,6,prec);
+    V_phi(t,y_start+1,prec);
+    arb_div_ui(t,t,3,prec);
+    arb_add(s,s,t,prec);
+    arb_sqrt(y_start+4,s,prec);
+    
+    
+    arb_set_str(error,"1E-5",prec);
+    
+    arb_set_str(x_end,"10",prec);
     
     
     
-    ODEs_RFK45(v_s, Func_test_ODEs_func_04, dim, NULL, 0, //常微分方程组函数
+    ODEs_RFK45(v_s, Func_coupled_odes, dim, NULL, 0, //常微分方程组函数
                x_start, y_start, //给定初始条件
                x_end, //求出点 x_end 对应的函数值
                50, error, //num为迭代区间为[x_start,x_end]，将其分为几等份，从而给出初始步长
                prec);
     
     arb_printn(v_s, 50,0);printf("\n");
-    
+    arb_printn(v_s+1, 50,0);printf("\n");
+    arb_printn(v_s+2, 50,0);printf("\n");
+    arb_printn(v_s+3, 50,0);printf("\n");
+    arb_printn(v_s+4, 50,0);printf("\n");
     
     //arb_set_str(x_end,"0.022",prec);
     
@@ -71,17 +195,16 @@ void routine_test(slong prec)
     arb_add(s,s,t,prec);
     arb_sub_ui(s,s,2,prec);
     */
-    
+    /*
     // Func_test_ODEs_func_04 精确解为 y=(1+1/6*x^3)*e^{x}
-    
     arb_pow_ui(s,x_end,3,prec);
     arb_div_ui(s,s,6,prec);
     arb_add_ui(s,s,1,prec);
-    
     arb_exp(t,x_end,prec);
     arb_mul(s,s,t,prec);
+    */
     
-    arb_printn(s, 50,0);printf("\n");
+    //arb_printn(s, 50,0);printf("\n");
     
     arb_clear(s);
     arb_clear(t);
