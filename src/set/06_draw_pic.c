@@ -3,6 +3,50 @@
 int C_r_prime_I(arb_t res, arb_t r, slong prec);
 int C_r_prime_II(arb_t res, arb_t r, slong prec);
 
+void Get_interval_poit(arb_ptr x, const arb_t a, const arb_t b, const slong N, slong prec)
+{
+    //很多图是对数图，其函数取点应是对数图log(x) 上均匀，但在坐标值 x 上不均匀
+    //[a,b]上取 N 个点，共分成 N-1 份
+    
+    arb_t s,t,c_i,log_a,log_b,ln_10;
+    arb_init(s);
+    arb_init(t);
+    arb_init(c_i);
+    arb_init(log_a);
+    arb_init(log_b);
+    arb_init(ln_10);
+    
+    arb_one(s);
+    arb_mul_si(s,s,10,prec);
+    arb_log(ln_10,s,prec);
+    
+    arb_log(s,a,prec);
+    arb_div(log_a,s,ln_10,prec);
+    arb_log(s,b,prec);
+    arb_div(log_b,s,ln_10,prec);
+    
+    for(slong i=0; i < N; i++ )
+    {
+        //c_i=log(a) + [ log(b)-log(a) ]/(N-1)*i
+        arb_sub(s,log_b,log_a,prec);
+        arb_div_si(s,s,N-1,prec);
+        arb_mul_si(s,s,i,prec);
+        arb_add(c_i,log_a,s,prec);
+        
+        //x_i=Exp(c_i*ln(10))
+        arb_mul(s,c_i,ln_10,prec);
+        arb_exp(x+i,s,prec);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(c_i);
+    arb_clear(log_a);
+    arb_clear(log_b);
+    arb_clear(ln_10);
+}
+
+
 //画图
 void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参数，可传递多个
 {
@@ -21,8 +65,8 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
     arb_init(by);
     arb_init(ay_copy);
     
-    arb_set_str(aa,"-1",prec); //一层循环用
-    arb_set_str(bb,"1",prec);
+    arb_set_str(aa,"1E-10",prec); //一层循环用
+    arb_set_str(bb,"1E-6",prec);
     
     /*
     arb_mul_ui(aa,Power_sigma, 30, prec); //aa=Ln_K_star-σ
@@ -37,7 +81,12 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
     
     slong out_number,number;
     
-    number=1E2; //输出点的个数
+    number=4E2; //输出点的个数
+    
+    arb_ptr v_x_i;
+    v_x_i=_arb_vec_init(number);
+    Get_interval_poit(v_x_i,aa,bb,number,prec); //获取对数图上的间隔点
+    
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);
@@ -60,15 +109,16 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
         exit(-1);
     }
     
-    //arb_set_str(PT_mu, "0.28", prec); //修改 PT_mu
+    //arb_set_str(PT_mu, "0.60", prec); //修改 PT_mu
     
-    /*
+    
     //一层输出
-    for (long int i=1; i <= number; i++)
+    for (slong i=0; i < number; i++)
     {
+        arb_set(aa,v_x_i+i);
         //arb_sub_ui(t,Upward_step_spectra_k_c,1,prec);
-        arb_log(t,aa,prec);
-        power_spectrum(out_point,t,prec);
+        //arb_log(t,aa,prec);
+        //power_spectrum(out_point,t,prec);
         //arb_printn(out_point, 50,0);printf("\n");
         
         //zeta_Gauss_profile_n(out_point, aa, 0, prec);
@@ -129,9 +179,9 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
         //printf("%ld/%ld\n",i,number);//进度显示
         print_progress(i,number); //进度条显示
     }
-    */
     
     
+    /*
     //二层输出，例如，输出二维概率密度
     for (long int i=1; i <= number; i++)
     {
@@ -162,7 +212,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
         
         //printf("%ld/%ld\n",i,number);//进度显示
     }
-    
+    */
     
     
     printf("\n输出完成\n");
@@ -179,6 +229,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
     arb_clear(ay);
     arb_clear(by);
     
+    _arb_vec_clear(v_x_i,number);
 }
 
 
