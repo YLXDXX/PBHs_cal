@@ -502,7 +502,7 @@ int ODEs_RFK45_interval_point_output(ODEs_point_output_t p_out,
     
     //这里求解时，利用了上一个点的值
     _arb_vec_set(v_y,y_start,dim);
-    for(slong i=1; i<N; i++)
+    for(slong i=0; i<N; i++)
     {
         //x_i=x_start+(x_end-x_start)/(N-1)*i
         arb_mul_si(s,D_x,i,prec);

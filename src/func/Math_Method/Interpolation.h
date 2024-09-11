@@ -18,4 +18,10 @@ void Interpolation_fit_func(arb_t res, const arb_t x,
                             const arb_ptr x_array, const arb_ptr y_array, const Interp_coe_t coe, const slong N,
                             slong prec);
 
+//为常微分方程的输出形式适配，用于拟合常微分方程结果
+void Interpolation_fit_func_odes(arb_t res, const arb_t x,
+                                 ODEs_point_output_t p_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                 const Interp_coe_t coe, const slong N,
+                                 slong prec);
+
 #endif // __PBHS_MATH_METHOD_INTERPOLATION__ 
