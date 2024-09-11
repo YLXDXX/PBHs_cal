@@ -13,8 +13,6 @@ void routine_test(slong prec)
     struct timeval start, end; 
     long double time_taken; 
     
-    //微分方程测试
-    
     arb_t s,t,w,x_start,x_end,error;
     arb_init(s);
     arb_init(t);
@@ -23,7 +21,7 @@ void routine_test(slong prec)
     arb_init(x_end);
     arb_init(error);
     
-    int dim=500;
+    int dim=5;
     
     arb_ptr v_s,v_t,v_w,y_start;
     v_s=_arb_vec_init(dim);
@@ -33,9 +31,10 @@ void routine_test(slong prec)
     slong n=dim;
     v_w=_arb_vec_init(n);
     
-    gettimeofday(&start, NULL); 
-    
+    /*
     //函数插值测试
+    
+    gettimeofday(&start, NULL);
     for(slong i=0;i<n;i++)
     {
         arb_set_d(s,0.01*i+1.1); //x*sin(x)+cos(x)*e^(x)/(x^2-1)
@@ -63,12 +62,10 @@ void routine_test(slong prec)
     arb_poly_t p_s;
     arb_poly_init(p_s);
     
-    /*
     // dim 个点全拟合，测试用
-    arb_poly_interpolate_newton(p_s,v_s,v_w,dim,prec); 
-    arb_poly_evaluate(w,p_s,s,prec);
-    arb_printn(w, 20,0);printf("\n");
-    */
+    //arb_poly_interpolate_newton(p_s,v_s,v_w,dim,prec); 
+    //arb_poly_evaluate(w,p_s,s,prec);
+    //arb_printn(w, 20,0);printf("\n");
     
     //分段拟合，实际用
     Interp_coe_t c_s; //用来存系数
@@ -103,7 +100,9 @@ void routine_test(slong prec)
     printf("\nTime taken: %Lf seconds\n\n", time_taken); 
     
     Interpolation_coe_clear(c_s,dim);
+    
     exit(0);
+    */
     
     // 初始条件
     /*
@@ -115,23 +114,9 @@ void routine_test(slong prec)
     y0 = [phi_dot_0, phi_0, tau_0, N_0, H_0]
     */
     
-    fmpz_t N;
-    fmpz_init(N);
+    //微分方程测试
     
-    arb_set_str(x_start,"3.3",prec); //初始条件
-    arb_mul_ui(x_start,x_start,3,prec);
-    //arb_get_mid_arb(x_start,x_start);
-    arb_trunc(x_start,x_start,prec);
-    //arb_get_rad_arb(x_start,x_start);
-    arb_printn(x_start, 50,0);printf("\n");
-    
-    
-    arb_get_unique_fmpz(N,x_start);
-    
-    printf("%li",fmpz_get_si(N));
-    
-    fmpz_clear(N);exit(0);
-    
+    arb_set_str(x_start,"0",prec); //初始条件
     arb_set_str(y_start,"1.0",prec);
     arb_set_str(y_start+1,"1.0",prec);
     arb_set_str(y_start+2,"0.0",prec);
@@ -147,7 +132,7 @@ void routine_test(slong prec)
     
     arb_set_str(error,"1E-5",prec);
     
-    arb_set_str(x_end,"10",prec);
+    arb_set_str(x_end,"50",prec);
     
     
     
@@ -161,7 +146,37 @@ void routine_test(slong prec)
     arb_printn(v_s+1, 50,0);printf("\n");
     arb_printn(v_s+2, 50,0);printf("\n");
     arb_printn(v_s+3, 50,0);printf("\n");
-    arb_printn(v_s+4, 50,0);printf("\n");
+    arb_printn(v_s+4, 50,0);printf("\n\n");
+    
+    slong num=500;
+    
+    ODEs_point_output_t p_out;
+    p_out=ODEs_point_output_init(num,dim);
+    
+    gettimeofday(&start, NULL);
+    ODEs_RFK45_interval_point_output(p_out,Func_coupled_odes,dim,NULL,0, //常微分方程组函数
+                                     x_start, y_start, //给定初始条件
+                                     x_end, //给定区间 [x_start, x_end]
+                                     num, error, //N为输出点个数，区间 N-1 等分，误差为相对精度
+                                     prec);
+    gettimeofday(&end, NULL); 
+    time_taken = (end.tv_sec  - start.tv_sec)  + (end.tv_usec  - start.tv_usec)  / 1e6; 
+    printf("\nTime taken: %Lf seconds\n\n", time_taken); 
+    
+    slong i=num-1;
+    arb_printn(p_out->p_x+i, 50,0);printf("\n");
+    arb_printn(p_out->p_y[i]+0, 50,0);printf("\n");
+    arb_printn(p_out->p_y[i]+1, 50,0);printf("\n");
+    arb_printn(p_out->p_y[i]+2, 50,0);printf("\n");
+    arb_printn(p_out->p_y[i]+3, 50,0);printf("\n");
+    arb_printn(p_out->p_y[i]+4, 50,0);printf("\n");
+    
+    if(0)
+    {
+        arb_printn(v_t+0, 50,0);printf("\n");
+        arb_printn(v_w+0, 50,0);printf("\n");
+    }
+    
     
     //arb_set_str(x_end,"0.022",prec);
     

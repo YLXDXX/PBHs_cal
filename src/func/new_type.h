@@ -16,6 +16,17 @@ struct Interpolation_coe_structure {
 typedef struct Interpolation_coe_structure* Interp_coe_t;
 
 
+//用于微分方程多个点求解结果的输出，每个 x 有多个 y 值
+struct ODEs_point_output_structure {
+    slong num; //点个数
+    slong dim; //微分方程组维数
+    arb_ptr p_x;
+    arb_ptr* p_y;
+};
+
+typedef struct ODEs_point_output_structure* ODEs_point_output_t;
+
+
 //对多种窗口函数定义其类型
 enum WINDOW_FUNC_TYPE
 {
