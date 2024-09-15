@@ -93,3 +93,30 @@ void print_progress(size_t count, size_t max) {
 }
 
 
+//将一组矢量 x,y 中每点的值输出到文件
+void Vector_point_output_to_file(const arb_ptr x, const arb_ptr y, const slong num, char tag)
+{
+    char* mod=&tag;
+    int digit=18; //输出数字的有效位数
+    
+    FILE * fp;
+    fp = fopen(Out_picture_file, mod); //打开文件，a追加，w重新写入
+    
+    if( fp == NULL ) { //对文件打开操作进行判断
+        printf("\n\nOpen Error: %s\t\n",Out_picture_file);perror("file");printf("\n");
+        exit(-1);
+    }
+    
+    for(slong i=0; i<num; i++)
+    {
+        arb_fprintn(fp,x+i,digit,ARB_STR_NO_RADIUS);
+        fprintf(fp, "\t");
+        arb_fprintn(fp,y+i,digit,ARB_STR_NO_RADIUS);
+        fprintf(fp, "\n");
+    }
+    
+    fclose(fp); //关闭文件
+    printf("\n输出完成，共 %li 个点 \n",num);
+    
+}
+
