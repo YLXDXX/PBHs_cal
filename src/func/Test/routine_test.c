@@ -1,7 +1,6 @@
 #include "routine_test.h"
 #include <stdlib.h>
 #include <arb_poly.h>
-#include "../Other/ODEs_slove.h"
 #include "fmpz.h"
 #include <sys/time.h> 
 
@@ -10,18 +9,19 @@
 void routine_test(slong prec)
 {
     //运行时间
-    struct timeval start, end; 
-    long double time_taken; 
+    //struct timeval start, end; 
+    //long double time_taken; 
     
-    arb_t s,t,w,x_start,x_end,error;
+    arb_t s,t,w,x_start,x_end,error_abs,error_rel;
     arb_init(s);
     arb_init(t);
     arb_init(w);
     arb_init(x_start);
     arb_init(x_end);
-    arb_init(error);
+    arb_init(error_abs);
+    arb_init(error_rel);
     
-    int dim=5;
+    int dim=4;
     
     arb_ptr v_s,v_t,v_w,y_start;
     v_s=_arb_vec_init(dim);
@@ -117,59 +117,57 @@ void routine_test(slong prec)
     //微分方程测试
     
     arb_set_str(x_start,"0",prec); //初始条件
-    arb_set_str(y_start,"1.0",prec);
-    arb_set_str(y_start+1,"1.0",prec);
+    arb_set_str(y_start,"0",prec);
+    arb_set_str(y_start+1,"5.2",prec);
     arb_set_str(y_start+2,"0.0",prec);
     arb_set_str(y_start+3,"0.0",prec);
     
-    arb_sqr(s,y_start,prec); //H_0 = np.sqrt((1/6) * phi_dot_0**2 + V(phi_0) / 3)
-    arb_div_ui(s,s,6,prec);
-    V_phi(t,y_start+1,prec);
-    arb_div_ui(t,t,3,prec);
-    arb_add(s,s,t,prec);
-    arb_sqrt(y_start+4,s,prec);
+    
+    arb_set_str(error_abs,"1E-12",prec);
+    arb_set_str(error_rel,"1E-10",prec);
+    
+    arb_set_str(x_end,"1E5",prec);
     
     
-    arb_set_str(error,"1E-5",prec);
-    
-    arb_set_str(x_end,"50",prec);
-    
-    
-    
+    /*
     ODEs_RFK45(v_s, Func_coupled_odes, dim, NULL, 0, //常微分方程组函数
                x_start, y_start, //给定初始条件
                x_end, //求出点 x_end 对应的函数值
                50, error, //num为迭代区间为[x_start,x_end]，将其分为几等份，从而给出初始步长
                prec);
-    
     arb_printn(v_s, 50,0);printf("\n");
     arb_printn(v_s+1, 50,0);printf("\n");
     arb_printn(v_s+2, 50,0);printf("\n");
     arb_printn(v_s+3, 50,0);printf("\n");
-    arb_printn(v_s+4, 50,0);printf("\n\n");
+    */
     
-    slong num=500;
+    slong num=4E4;
     
-    ODEs_point_output_t p_out;
-    p_out=ODEs_point_output_init(num,dim);
+    G_Interp_coe_0=Interpolation_coe_init(num);
+    G_Interp_coe_1=Interpolation_coe_init(num);
+    G_Interp_coe_2=Interpolation_coe_init(num);
+    G_Interp_coe_3=Interpolation_coe_init(num);
+    G_Interp_coe_4=Interpolation_coe_init(num);
     
-    gettimeofday(&start, NULL);
-    ODEs_RFK45_interval_point_output(p_out,Func_coupled_odes,dim,NULL,0, //常微分方程组函数
+    
+    
+    
+    //背景方程求解
+    ODEs_DOPRI54_dense_t d_out;
+    d_out=ODEs_DOPRI54_dense_init(num,dim);
+    
+    ODEs_DOPRI54(v_w,Func_background_coupled_odes,dim,NULL,0, //常微分方程组函数
                                      x_start, y_start, //给定初始条件
                                      x_end, //给定区间 [x_start, x_end]
-                                     num, error, //N为输出点个数，区间 N-1 等分，误差为相对精度
+                                     error_abs, error_rel, d_out,  //N为输出点个数，区间 N-1 等分，误差为相对精度
                                      prec);
-    gettimeofday(&end, NULL); 
-    time_taken = (end.tv_sec  - start.tv_sec)  + (end.tv_usec  - start.tv_usec)  / 1e6; 
-    printf("\nTime taken: %Lf seconds\n\n", time_taken); 
     
     slong i=num-1;
-    arb_printn(p_out->p_x+i, 50,0);printf("\n");
-    arb_printn(p_out->p_y[i]+0, 50,0);printf("\n");
-    arb_printn(p_out->p_y[i]+1, 50,0);printf("\n");
-    arb_printn(p_out->p_y[i]+2, 50,0);printf("\n");
-    arb_printn(p_out->p_y[i]+3, 50,0);printf("\n");
-    arb_printn(p_out->p_y[i]+4, 50,0);printf("\n");
+    ///arb_printn(v_w+0, 50,0);printf("\n");
+    arb_printn(v_w+0, 50,0);printf("\n");
+    arb_printn(v_w+1, 50,0);printf("\n");
+    arb_printn(v_w+2, 50,0);printf("\n");
+    arb_printn(v_w+3, 50,0);printf("\n\n");
     
     if(0)
     {
@@ -177,6 +175,80 @@ void routine_test(slong prec)
         arb_printn(v_w+0, 50,0);printf("\n");
     }
     
+    
+    //扰动方程求解
+    arb_t t_ini,a_ini,Qphi_Real_t0,Qphi_Real_dot_t0;
+    arb_t Qphi_Imag_t0,Qphi_Imag_dot_t0;
+    
+    arb_init(t_ini);
+    arb_init(a_ini);
+    arb_init(Qphi_Real_t0);
+    arb_init(Qphi_Real_dot_t0);
+    arb_init(Qphi_Imag_t0);
+    arb_init(Qphi_Imag_dot_t0);
+    
+    arb_init(G_fourier_k);
+    arb_set_str(G_fourier_k,"1E-4",prec);
+    arb_set_str(t_ini,"0",prec);
+    arb_set_str(a_ini,"1",prec);
+    
+    //Qphi_Real_t0 = 1./(a_ini*np.sqrt(2.*fk)) //(np.cos(fk))/()
+    arb_mul_si(s,G_fourier_k,2,prec);
+    arb_sqrt(s,s,prec);
+    arb_mul(s,s,a_ini,prec);
+    arb_inv(Qphi_Real_t0,s,prec);
+    
+    //Qphi_Real_dot_t0 = 0.
+    arb_set_str(Qphi_Real_dot_t0, "0", prec);
+    
+    //Qphi_Imag_t0 = 0. //(np.cos(fk))/()
+    arb_set_str(Qphi_Imag_t0, "0", prec);
+    
+    //Qphi_Imag_dot_t0 = np.sqrt(fk)/(a_ini**2 * np.sqrt(2.))
+    arb_one(s);
+    arb_mul_si(s,s,2,prec);
+    arb_sqrt(s,s,prec);
+    arb_sqr(t,a_ini,prec);
+    arb_mul(t,t,s,prec);
+    arb_sqrt(s,G_fourier_k,prec);
+    arb_div(Qphi_Imag_dot_t0,s,t,prec);
+    
+    // y_start = { Qphi_Real_t0, Qphi_Real_dot_t0, Qphi_Imag_t0, Qphi_Imag_dot_t0 }
+    arb_set(y_start,Qphi_Real_t0);
+    arb_set(y_start+1,Qphi_Real_dot_t0);
+    arb_set(y_start+2,Qphi_Imag_t0);
+    arb_set(y_start+3,Qphi_Imag_dot_t0);
+    
+    ODEs_point_output_t p_out_2;
+    p_out_2=ODEs_point_output_init(num,dim);
+    
+    arb_set_str(x_end,"1E5",prec);
+    
+    
+    
+    ODEs_DOPRI54(v_s, Func_perturbation_phi_odes, dim, d_out, 0, //常微分方程组函数
+               t_ini, y_start, //给定初始条件
+               x_end, //求出点 x_end 对应的函数值
+               error_abs, error_rel,NULL, //num为迭代区间为[x_start,x_end]，将其分为几等份，从而给出初始步长
+               prec);
+    arb_printn(v_s, 50,0);printf("\n");
+    arb_printn(v_s+1, 50,0);printf("\n");
+    arb_printn(v_s+2, 50,0);printf("\n");
+    arb_printn(v_s+3, 50,0);printf("\n");
+    
+    exit(0);
+    
+    ODEs_RFK45_interval_point_output(p_out_2,Func_perturbation_phi_odes,dim,p_out_2,0, //常微分方程组函数
+                                     x_start, y_start, //给定初始条件
+                                     x_end, //给定区间 [x_start, x_end]
+                                     num, error_rel, //N为输出点个数，区间 N-1 等分，误差为相对精度
+                                     prec);
+    
+    arb_printn(p_out_2->p_x+i, 50,0);printf("\n");
+    arb_printn(p_out_2->p_y[i]+0, 50,0);printf("\n");
+    arb_printn(p_out_2->p_y[i]+1, 50,0);printf("\n");
+    arb_printn(p_out_2->p_y[i]+2, 50,0);printf("\n");
+    arb_printn(p_out_2->p_y[i]+3, 50,0);printf("\n");
     
     //arb_set_str(x_end,"0.022",prec);
     

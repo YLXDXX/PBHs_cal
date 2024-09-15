@@ -14,6 +14,7 @@ target("./PBHs") --Name of the generated executable file
     add_files("src/func/GW_induced/01/*.c")
     add_files("src/func/GW_induced/02/*.c")
     add_files("src/func/GW_induced/03/*.c")
+    add_files("src/func/Power_Spectra_numeric/*.c")
     add_files("src/func/Test/*.c")
     add_files("src/set/*.c")
     

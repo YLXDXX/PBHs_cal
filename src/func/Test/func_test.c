@@ -727,3 +727,39 @@ int Func_test_ODEs_func_04(arb_ptr yp, const arb_t x, const arb_ptr y, const slo
     
     return 0; 
 }
+
+
+int Func_test_ODEs_func_05(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec)
+{
+    arb_t s,t,w;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //arb_ptr v_s,v_t,
+    //v_s=_arb_vec_init(dim);
+    //v_t=_arb_vec_init(dim);
+    
+    //一阶常微分方程
+    //y1'=x     y1(0)=0
+    
+    //arb_pow_ui(t,x,5,prec);
+    
+    arb_mul_si(t,x,-2,prec); //解 y=e^{-x^2} y(0)=1
+    arb_mul(t,t,y,prec);
+    arb_set(yp,t); 
+    
+    //arb_zero(yp+1);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    
+    //_arb_vec_clear(v_s,dim);
+    //_arb_vec_clear(v_t,dim);
+    
+    return 0; 
+}
+
+

@@ -56,4 +56,8 @@ int Func_test_ODEs_func_03(arb_ptr yp, const arb_t x, const arb_ptr y, const slo
                            void* param, const slong order, slong prec);
 int Func_test_ODEs_func_04(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
                            void* param, const slong order, slong prec);
+
+int Func_test_ODEs_func_05(arb_ptr yp, const arb_t x, const arb_ptr y, const slong dim,
+                           void* param, const slong order, slong prec);
+
 #endif // __PBHS_TEST_FUNC_TEST__  
