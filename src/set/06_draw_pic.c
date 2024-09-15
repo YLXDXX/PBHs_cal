@@ -3,49 +3,6 @@
 int C_r_prime_I(arb_t res, arb_t r, slong prec);
 int C_r_prime_II(arb_t res, arb_t r, slong prec);
 
-void Get_interval_poit(arb_ptr x, const arb_t a, const arb_t b, const slong N, slong prec)
-{
-    //很多图是对数图，其函数取点应是对数图log(x) 上均匀，但在坐标值 x 上不均匀
-    //[a,b]上取 N 个点，共分成 N-1 份
-    
-    arb_t s,t,c_i,log_a,log_b,ln_10;
-    arb_init(s);
-    arb_init(t);
-    arb_init(c_i);
-    arb_init(log_a);
-    arb_init(log_b);
-    arb_init(ln_10);
-    
-    arb_one(s);
-    arb_mul_si(s,s,10,prec);
-    arb_log(ln_10,s,prec);
-    
-    arb_log(s,a,prec);
-    arb_div(log_a,s,ln_10,prec);
-    arb_log(s,b,prec);
-    arb_div(log_b,s,ln_10,prec);
-    
-    for(slong i=0; i < N; i++ )
-    {
-        //c_i=log(a) + [ log(b)-log(a) ]/(N-1)*i
-        arb_sub(s,log_b,log_a,prec);
-        arb_div_si(s,s,N-1,prec);
-        arb_mul_si(s,s,i,prec);
-        arb_add(c_i,log_a,s,prec);
-        
-        //x_i=Exp(c_i*ln(10))
-        arb_mul(s,c_i,ln_10,prec);
-        arb_exp(x+i,s,prec);
-    }
-    
-    arb_clear(s);
-    arb_clear(t);
-    arb_clear(c_i);
-    arb_clear(log_a);
-    arb_clear(log_b);
-    arb_clear(ln_10);
-}
-
 
 //画图
 void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参数，可传递多个
@@ -85,7 +42,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
     
     arb_ptr v_x_i;
     v_x_i=_arb_vec_init(number);
-    Get_interval_poit(v_x_i,aa,bb,number,prec); //获取对数图上的间隔点
+    Get_interval_logspace_point(v_x_i,aa,bb,number,prec); //获取对数图上的间隔点
     
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
