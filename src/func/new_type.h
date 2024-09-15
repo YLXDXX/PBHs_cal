@@ -27,6 +27,25 @@ struct ODEs_point_output_structure {
 typedef struct ODEs_point_output_structure* ODEs_point_output_t;
 
 
+//用于微分方程的密度输出（dense output）
+struct ODEs_DOPRI54_dense_output_structure {
+    //用于四阶的多项式拟合
+    //y(xn+θh)=r1+θ(r2+(1−θ)(r3+θ(r4+(1−θ)r5)))
+    slong num_keep; //可容纳点的个数
+    slong num_real; //真实存入点的个数
+    slong dim; //微分方程组维数
+    arb_ptr x;
+    arb_ptr h;
+    arb_ptr* r_1;
+    arb_ptr* r_2;
+    arb_ptr* r_3;
+    arb_ptr* r_4;
+    arb_ptr* r_5;
+};
+typedef struct ODEs_DOPRI54_dense_output_structure* ODEs_DOPRI54_dense_t;
+
+
+
 //对多种窗口函数定义其类型
 enum WINDOW_FUNC_TYPE
 {

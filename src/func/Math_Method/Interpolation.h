@@ -24,4 +24,11 @@ void Interpolation_fit_func_odes(arb_t res, const arb_t x,
                                  const Interp_coe_t coe, const slong N,
                                  slong prec);
 
+
+//常微分方程求解中，DOPRI54 方法对应的内部插值法
+void Interpolation_fit_func_odes_DOPRI54(arb_t res, const arb_t x,
+                                         ODEs_DOPRI54_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                         slong prec);
+
+
 #endif // __PBHS_MATH_METHOD_INTERPOLATION__ 

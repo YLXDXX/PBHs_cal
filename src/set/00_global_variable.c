@@ -203,4 +203,9 @@ void Set_global_variable(slong prec)
     arb_init(Int_GW_power_spectra_y_max);
     arb_init(Int_GW_power_spectra_y_precision);
     
+    //常微分方程求解相关系数的初始化
+    ODEs_get_step_cal_coe(prec);
+    ODEs_get_RFK45_cal_coe(prec);
+    ODEs_get_DOPRI54_cal_coe(prec);
+    
 }

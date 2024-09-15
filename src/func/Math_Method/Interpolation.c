@@ -423,3 +423,58 @@ void Interpolation_fit_func_odes(arb_t res, const arb_t x,
     arb_poly_interpolate_newton(coe->coe_poly[i],x_coe,y_coe,6,prec); //获得插值多项式，牛顿插值法
     arb_poly_evaluate(res,coe->coe_poly[i],x,prec); //利用多项式求解
 }
+
+
+//常微分方程求解中，DOPRI54 方法对应的内部插值法
+void Interpolation_fit_func_odes_DOPRI54(arb_t res, const arb_t x,
+                                 ODEs_DOPRI54_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                 slong prec)
+{
+    
+    //找到 x 在插值点中所处位置
+    slong i,N;
+    
+    N=dense_out->num_real; //点数个数
+    i=Interpolation_position_i_search(x,dense_out->x,N,prec);
+    
+    if(i==-1)
+    {
+        printf("\n所求 x 并不在插值点范围，请检查, N=%li \nx = ", N);
+        arb_printn(x, 20,0);printf("\nx[0] = ");
+        arb_printn(dense_out->x+0, 20,0);printf("\tx[N-1] = ");
+        arb_printn(dense_out->x+N-1, 20,0);printf("\n\n");
+        exit(0);
+    }
+    
+    arb_t s,t,theta;
+    arb_init(s);
+    arb_init(t);
+    arb_init(theta);
+    
+    //参看 https://math.stackexchange.com/questions/2947231/how-can-i-derive-the-dense-output-of-ode45
+    
+    // θ=(x-x_i)/h
+    arb_sub(theta,x,dense_out->x+i,prec);
+    arb_div(theta,theta,dense_out->h+i,prec);
+    
+    //y(xn+θh)=r1+θ(r2+(1−θ)(r3+θ(r4+(1−θ)r5)))
+    arb_neg(t,theta);
+    arb_add_si(t,t,1,prec); //t=(1-θ)
+    arb_mul(s,t,dense_out->r_5[i]+i_y,prec);
+    
+    arb_add(s,s,dense_out->r_4[i]+i_y,prec);
+    arb_mul(s,s,theta,prec);
+    
+    arb_add(s,s,dense_out->r_3[i]+i_y,prec);
+    arb_mul(s,s,t,prec);
+    
+    arb_add(s,s,dense_out->r_2[i]+i_y,prec);
+    arb_mul(s,s,theta,prec);
+    
+    arb_add(res,s,dense_out->r_1[i]+i_y,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(theta);
+}
+

@@ -5,6 +5,7 @@ target("./PBHs") --Name of the generated executable file
     add_files("src/main.c")
     add_files("src/func/*.c")
     add_files("src/func/Math_Method/*.c")
+    add_files("src/func/Math_Method/ODEs/*.c")
     add_files("src/func/General/*.c")
     add_files("src/func/Peak_Theory/*.c")
     add_files("src/func/PS_Method/*.c")
