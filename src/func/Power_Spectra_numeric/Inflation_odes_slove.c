@@ -705,3 +705,144 @@ int Func_perturbation_phi_odes(arb_ptr yp, const arb_t t, const arb_ptr y, const
     
     return 0;
 }
+
+
+struct Get_time_k_enter_structure {
+    ODEs_DOPRI54_dense_t d_out;
+    arb_t ln_a_i;
+    arb_t ln_k;
+};
+
+
+int interior_Func_get_time_k_enter(arb_t res, const arb_t ln_t,
+                                   void * pass, const slong order,  slong prec)
+{
+    arb_t s,t,w,N,ln_H,phi,phi_dot,V;
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(N);
+    arb_init(ln_H);
+    arb_init(phi);
+    arb_init(phi_dot);
+    arb_init(V);
+    
+    struct Get_time_k_enter_structure* param;
+    param=pass;
+    
+    
+    //进入视界条件 k=aH ⇒ ln(k)=N+ln(a_i)+ln(H)
+    arb_exp(t,ln_t,prec); //恢复线性时间
+    
+    //背景解 N = N_interp(t)
+    Interpolation_fit_func_odes_DOPRI54(N, t, param->d_out, 3,  prec);
+    
+    //背景解 phi = phi_interp(t)
+    Interpolation_fit_func_odes_DOPRI54(phi, t, param->d_out, 1, prec);
+    
+    //背景解 phi_dot = phi_dot_interp(t)
+    Interpolation_fit_func_odes_DOPRI54(phi_dot, t, param->d_out, 0, prec);
+    
+    Func_V_phi(V,phi,prec); //V = V_phi(phi)
+    
+    //背景解 H = H_interp(t), 这里不用插值
+    //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)
+    arb_sqr(s,phi_dot,prec);
+    arb_div_ui(s,s,6,prec);
+    arb_div_ui(w,V,3,prec);
+    arb_add(s,s,w,prec);
+    arb_sqrt(ln_H,s,prec); //得到 H
+    arb_log(ln_H,ln_H,prec); //取对数
+    
+    //ln(k)=N+ln(a_i)+ln(H) ⇒ N+ln(a_i)+ln(H)-ln(k)=0
+    
+    arb_add(s,N,param->ln_a_i,prec);
+    arb_add(s,s,ln_H,prec);
+    
+    //arb_set_str(w,"1.2",prec); //添加系数，将时间适当缩小
+    //arb_mul(s,s,w,prec);
+    
+    arb_sub(res,s,param->ln_k,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(N);
+    arb_clear(ln_H);
+    arb_clear(phi);
+    arb_clear(phi_dot);
+    arb_clear(V);
+    return 0;
+}
+
+//得到暴胀中，模式 k 进入视界的时间及此时的 N
+//这里的 k 没取对数，以实际 k 输入
+//这里，输出的时间 t 没取对数值
+void Func_get_time_k_enter(arb_t t, arb_t N, const arb_t k, const arb_t t_a, const arb_t t_b, //在区间 [t_a, t_b] 内找根
+                           const arb_t a_i, const ODEs_DOPRI54_dense_t d_out, // a_i 为尺度因子的初始值
+                           slong prec)
+{
+    //进入视界条件 k=aH ⇒ ln(k)=N+ln(a_i)+ln(H)
+    arb_t s,ln_ta,ln_tb,error;
+    
+    arb_init(s);
+    arb_init(ln_ta);
+    arb_init(ln_tb);
+    arb_init(error);
+    
+    
+    struct Get_time_k_enter_structure* param; //用来传递参数
+    
+    param= (struct Get_time_k_enter_structure*)calloc(1,sizeof(struct Get_time_k_enter_structure)); //分配内存
+    
+    arb_init(param->ln_a_i); //使用前初始化其中变量
+    arb_init(param->ln_k);
+    param->d_out=d_out;
+    
+    arb_log(param->ln_a_i,a_i,prec);
+    arb_log(param->ln_k,k,prec);
+    
+    //这里时间 t 会非常大，为了求根方便，我们用对数值计算
+    if( arb_is_zero(t_a) ) //区间端点可能会有零的情况
+    {
+        arb_set_str(s,"1E-50",prec);
+        arb_log(ln_ta,s,prec);
+    }else
+    {
+        arb_log(ln_ta,t_a,prec);
+    }
+    
+    if( arb_is_zero(t_b) )
+    {
+        arb_set_str(s,"1E-50",prec);
+        arb_log(ln_tb,s,prec);
+    }else
+    {
+        arb_log(ln_tb,t_b,prec);
+    }
+    
+    
+    
+    arb_set_ui(error,1E5); //1E-5
+    arb_inv(error,error,prec);
+    
+    //需要利用求根方法来得到 k 进入视界的时间
+    Find_interval_root(s, interior_Func_get_time_k_enter, param, 0,
+                       ln_ta, ln_tb, error,
+                       10,Root_C_Max,
+                       prec);
+    arb_exp(t,s,prec);
+    
+    //求出此时的 N，可以通过此来计算 当前 a， ln(a)=N+ln(a_i) 
+    Interpolation_fit_func_odes_DOPRI54(s, t, param->d_out, 3,  prec);
+    arb_set(N,s);
+    
+    arb_clear(s);
+    arb_clear(ln_ta);
+    arb_clear(ln_tb);
+    arb_clear(error);
+    
+    arb_clear(param->ln_a_i); //释放结构体内存
+    arb_clear(param->ln_k);
+    free(param);
+}
