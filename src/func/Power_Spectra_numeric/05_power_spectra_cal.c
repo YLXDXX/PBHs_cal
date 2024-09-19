@@ -32,7 +32,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
    
     
     slong dim=4; //方程组维数
-    slong num=1E5; //可能迭代数目的估计值
+    slong num=1E6; //可能迭代数目的估计值
     
     arb_ptr v_s,v_w,y_start;
     v_s=_arb_vec_init(dim);
@@ -48,10 +48,10 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_set_str(y_start+2,"0.0",prec); //τ
     arb_set_str(y_start+3,"0.0",prec); //N
     
-    arb_set_str(error_abs,"1E-15",prec); //误差
-    arb_set_str(error_rel,"1E-13",prec);
+    arb_set_str(error_abs,"1E-20",prec); //误差
+    arb_set_str(error_rel,"1E-20",prec);
     
-    arb_set_str(x_end,"1E7",prec); //需要足够大，方便后面计算
+    arb_set_str(x_end,"6E6",prec); //需要足够大，方便后面计算
     
     
     //背景方程求解
@@ -70,20 +70,20 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     
     /*
     //背景解作图
-    slong out_num=1E3;
+    slong out_num=1E4;
     arb_ptr out_x,out_y;
     out_x=_arb_vec_init(out_num);
     out_y=_arb_vec_init(out_num);
     
-    arb_set_str(s,"1",prec);
-    arb_set_str(t,"1E7",prec);
+    arb_set_str(s,"1E6",prec);
+    arb_set_str(t,"2E6",prec);
     Get_interval_logspace_point(out_x, s, t, out_num, prec);
     //Get_interval_linspace_point(out_x, s, t, out_num, prec);
     for(slong j=0; j< out_num;j++)
     {
         //Func_V_phi_p(out_y+j, , prec);
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 1, prec); //ϕ
-        //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); //ϕ'
+        Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); //ϕ'
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 3, prec); //N
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 2, prec); //τ
         
@@ -134,7 +134,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     //参数传入
     Inflation_perturb_ODEs_param_t param_p;
     param_p=Inflation_perturb_ODEs_param_init(d_out,fk); //背景的dense output 和 当前的 fk
-    
+    /*
     Inflation_ODEs_solver(v_s, Inflation_perturbation_phi_odes, dim, param_p, 0, //常微分方程组函数
                           t_ini, y_start, //给定初始条件
                           x_end, //求出点 x_end 对应的函数值
@@ -145,7 +145,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_printn(v_s+1, 50,0);printf("\n");
     arb_printn(v_s+2, 50,0);printf("\n");
     arb_printn(v_s+3, 50,0);printf("\n\n");
-    
+    */
     //exit(0);
     
     slong nn=100;
@@ -153,8 +153,8 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     fi_k=_arb_vec_init(nn);
     fi_P=_arb_vec_init(nn);
     
-    arb_set_str(s,"1E2",prec);
-    arb_set_str(t,"3E5",prec);
+    arb_set_str(s,"1E3",prec);
+    arb_set_str(t,"3E6",prec);
     
     Get_interval_logspace_point(fi_k, s, t, nn, prec);
     
@@ -162,8 +162,8 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_zero(t_ini);
     arb_one(a_ini);
     
-    arb_set_str(error_abs,"1E-25",prec);
-    arb_set_str(error_rel,"1E-25",prec);
+    arb_set_str(error_abs,"1E-22",prec);
+    arb_set_str(error_rel,"1E-22",prec);
     
     
     //改造for循环后，可以使用 多线程加速，采用 OpenMP 方法

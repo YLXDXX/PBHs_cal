@@ -57,7 +57,10 @@ static int interior_Inflation_get_time_k_enter(arb_t res, const arb_t ln_t,
     param=pass;
     
     
-    //进入视界条件 k=aH ⇒ ln(k)=N+ln(a_i)+ln(H)
+    //进入视界条件 k=n*aH ⇒ ln(k)=N+ln(a_i)+ln(H)+ln(n)
+    //利用这里得到的时间，作为后面计算的初始条件
+    //系数 n 保证后面的计算是从视界内开始
+    
     arb_exp(t,ln_t,prec); //恢复线性时间
     
     //背景解 N = N_interp(t)
@@ -80,13 +83,14 @@ static int interior_Inflation_get_time_k_enter(arb_t res, const arb_t ln_t,
     arb_sqrt(ln_H,s,prec); //得到 H
     arb_log(ln_H,ln_H,prec); //取对数
     
-    //ln(k)=N+ln(a_i)+ln(H) ⇒ N+ln(a_i)+ln(H)-ln(k)=0
+    //ln(k)=N+ln(a_i)+ln(H)+ln(n) ⇒ N+ln(a_i)+ln(H)+ln(n)-ln(k)=0
     
     arb_add(s,N,param->ln_a_i,prec);
     arb_add(s,s,ln_H,prec);
     
-    //arb_set_str(w,"1.2",prec); //添加系数，将时间适当缩小
-    //arb_mul(s,s,w,prec);
+    arb_set_si(w,100); // ln(n) 为了保证计算的准确性，一般取到 ln(50)
+    arb_log(w,w,prec);
+    arb_add(s,s,w,prec);
     
     arb_sub(res,s,param->ln_k,prec);
     
