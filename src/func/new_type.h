@@ -16,17 +16,6 @@ struct Interpolation_coe_structure {
 typedef struct Interpolation_coe_structure* Interp_coe_t;
 
 
-//用于微分方程多个点求解结果的输出，每个 x 有多个 y 值
-struct ODEs_point_output_structure {
-    slong num; //点个数
-    slong dim; //微分方程组维数
-    arb_ptr p_x;
-    arb_ptr* p_y;
-};
-
-typedef struct ODEs_point_output_structure* ODEs_point_output_t;
-
-
 //用于微分方程的密度输出（dense output）
 struct ODEs_DOPRI54_dense_output_structure {
     //用于四阶的多项式拟合
@@ -43,6 +32,22 @@ struct ODEs_DOPRI54_dense_output_structure {
     arb_ptr* r_5;
 };
 typedef struct ODEs_DOPRI54_dense_output_structure* ODEs_DOPRI54_dense_t;
+
+
+struct ODEs_RFK45_dense_output_structure {
+    //用于四阶的多项式拟合
+    //y(xn+θh)=(1-θ)*y_i+θ*y_{i+1}+θ*(θ-1)*( (1-2*θ)(y_{i+1}-y_i)+(θ-1)*h*yp_i+θ*h*yp_{i+1} )
+    slong num_keep; //可容纳点的个数
+    slong num_real; //真实存入点的个数
+    slong dim; //微分方程组维数
+    arb_ptr x;
+    arb_ptr h;
+    arb_ptr* y_0;
+    arb_ptr* y_1;
+    arb_ptr* h_yp_0; //h*yp_0
+    arb_ptr* h_yp_1; //h*yp_1
+};
+typedef struct ODEs_RFK45_dense_output_structure* ODEs_RFK45_dense_t;
 
 
 

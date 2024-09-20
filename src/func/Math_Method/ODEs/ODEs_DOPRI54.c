@@ -61,7 +61,7 @@ void ODEs_DOPRI54_dense_clear(ODEs_DOPRI54_dense_t dense_out, slong num, slong d
 void ODEs_DOPRI54(arb_ptr y_end, my_odes_func func, const slong dim, void *param, const slong order, //常微分方程组函数
                   const arb_t x_start, const arb_ptr y_start, //给定初始条件
                   const arb_t x_end, //求出点 x_end 对应的函数值
-                  const arb_t error_abs, const arb_t error_rel, //绝对误差和相对误差 //误差为绝对精度
+                  const arb_t error_abs, const arb_t error_rel, //绝对误差和相对误差
                   const ODEs_DOPRI54_dense_t dense_out, //此参数可以为空
                   slong prec)
 {
@@ -88,8 +88,6 @@ void ODEs_DOPRI54(arb_ptr y_end, my_odes_func func, const slong dim, void *param
         arb_clear(gap_size);
         return;
     }
-    
-    
     
     
     arb_t s,t,sum,h,h_abs,x_i,x_tem,err;
@@ -126,13 +124,13 @@ void ODEs_DOPRI54(arb_ptr y_end, my_odes_func func, const slong dim, void *param
     
     //计算初始迭代步长
     ODEs_select_initial_step(h_abs, func, dim, param, order, //常微分方程组函数
-                        x_start, y_start, //给定初始条件
-                        v_s, //func(x_start,y_start)
-    gap_size, //计算区间间隔大小 
-    q, //估算方法的阶
-    direction,
-    error_abs, error_rel, //绝对误差和相对误差
-    prec);
+                             x_start, y_start, //给定初始条件
+                             v_s, //func(x_start,y_start)
+                             gap_size, //计算区间间隔大小 
+                             q, //估算方法的阶
+                             direction,
+                             error_abs, error_rel, //绝对误差和相对误差
+                             prec);
     
     //计算判断
     bool finish=false;
@@ -510,6 +508,7 @@ void ODEs_DOPRI54(arb_ptr y_end, my_odes_func func, const slong dim, void *param
         }
     }
     
+    arb_clear(gap_size);
     arb_clear(s);
     arb_clear(t);
     arb_clear(sum);

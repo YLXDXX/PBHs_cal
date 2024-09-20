@@ -323,106 +323,72 @@ void Interpolation_fit_func(arb_t res, const arb_t x,
 }
 
 
-//为常微分方程的输出形式适配，用于拟合常微分方程结果
-void Interpolation_fit_func_odes(arb_t res, const arb_t x,
-                                 ODEs_point_output_t p_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
-                                 const Interp_coe_t coe, const slong N,
-                                 slong prec)
+//常微分方程求解中，RFK45 方法对应的内部插值法
+void Interpolation_fit_func_odes_RFK45(arb_t res, const arb_t x,
+                                       ODEs_RFK45_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                       slong prec)
 {
+    
     //找到 x 在插值点中所处位置
-    slong i;
-    i=Interpolation_position_i_search(x,p_out->p_x,N,prec);
+    slong i,N;
+    
+    N=dense_out->num_real; //点数个数
+    i=Interpolation_position_i_search(x,dense_out->x,N,prec);
     
     if(i==-1)
     {
         printf("\n所求 x 并不在插值点范围，请检查, N=%li \nx = ", N);
         arb_printn(x, 20,0);printf("\nx[0] = ");
-        arb_printn(p_out->p_x+0, 20,0);printf("\tx[N-1] = ");
-        arb_printn(p_out->p_x+N-1, 20,0);printf("\n\n");
+        arb_printn(dense_out->x+0, 20,0);printf("\tx[N-1] = ");
+        arb_printn(dense_out->x+N-1, 20,0);printf("\n\n");
         exit(0);
     }
     
-    //判断对应系数是否已求解
-    if( !arb_poly_is_zero(coe->coe_poly[i]) )
-    {
-        //已求解，可直接使得前面的结果
-        arb_poly_evaluate(res,coe->coe_poly[i],x,prec);
-        return;
-    }
+    arb_t s,t,theta;
+    arb_init(s);
+    arb_init(t);
+    arb_init(theta);
     
-    //未求解
-    arb_ptr x_coe,y_coe;
-    x_coe=_arb_vec_init(6); //利用 x 前后的六个点来求解
-    y_coe=_arb_vec_init(6);
+    //采用 Hermite interpolation，见 II.6 Dense Output, Discontinuities, Derivatives P190 (6.7)
+    //y(xn+θh)=(1-θ)*y_i+θ*y_{i+1}+θ*(θ-1)*( (1-2*θ)(y_{i+1}-y_i)+(θ-1)*h*yp_i+θ*h*yp_{i+1} )
     
-    if( i < 3 ) //0，1，2 相同
-    {
-        arb_set(x_coe+0,p_out->p_x+0);
-        arb_set(x_coe+1,p_out->p_x+1);
-        arb_set(x_coe+2,p_out->p_x+2);
-        arb_set(x_coe+3,p_out->p_x+3);
-        arb_set(x_coe+4,p_out->p_x+4);
-        arb_set(x_coe+5,p_out->p_x+5);
-        
-        arb_set(y_coe+0,p_out->p_y[0]+i_y);
-        arb_set(y_coe+1,p_out->p_y[1]+i_y);
-        arb_set(y_coe+2,p_out->p_y[2]+i_y);
-        arb_set(y_coe+3,p_out->p_y[3]+i_y);
-        arb_set(y_coe+4,p_out->p_y[4]+i_y);
-        arb_set(y_coe+5,p_out->p_y[5]+i_y);
-        
-    }else if( i > (N-5) ) //  N-4, N-3, N-2, N-1 相同
-    {
-        arb_set(x_coe+0,p_out->p_x+N-6);
-        arb_set(x_coe+1,p_out->p_x+N-5);
-        arb_set(x_coe+2,p_out->p_x+N-4);
-        arb_set(x_coe+3,p_out->p_x+N-3);
-        arb_set(x_coe+4,p_out->p_x+N-2);
-        arb_set(x_coe+5,p_out->p_x+N-1);
-        
-        arb_set(y_coe+0,p_out->p_y[N-6]+i_y);
-        arb_set(y_coe+1,p_out->p_y[N-5]+i_y);
-        arb_set(y_coe+2,p_out->p_y[N-4]+i_y);
-        arb_set(y_coe+3,p_out->p_y[N-3]+i_y);
-        arb_set(y_coe+4,p_out->p_y[N-2]+i_y);
-        arb_set(y_coe+5,p_out->p_y[N-1]+i_y);
-        
-    }else
-    {
-        arb_set(x_coe+0,p_out->p_x+i-2);
-        arb_set(x_coe+1,p_out->p_x+i-1);
-        arb_set(x_coe+2,p_out->p_x+i);
-        arb_set(x_coe+3,p_out->p_x+i+1);
-        arb_set(x_coe+4,p_out->p_x+i+2);
-        arb_set(x_coe+5,p_out->p_x+i+3);
-        
-        arb_set(y_coe+0,p_out->p_y[i-2]+i_y);
-        arb_set(y_coe+1,p_out->p_y[i-1]+i_y);
-        arb_set(y_coe+2,p_out->p_y[i]+i_y);
-        arb_set(y_coe+3,p_out->p_y[i+1]+i_y);
-        arb_set(y_coe+4,p_out->p_y[i+2]+i_y);
-        arb_set(y_coe+5,p_out->p_y[i+3]+i_y);
-    }
+    // θ=(x-x_i)/h
+    arb_sub(theta,x,dense_out->x+i,prec);
+    arb_div(theta,theta,dense_out->h+i,prec);
     
-    //利用牛顿插值得到相应的多项式
+    //y(xn+θh)=(1-θ)*y_0+θ*y_1+θ*(θ-1)*( (1-2*θ)(y_1-y_0)+(θ-1)*h_yp_0+θ*h_yp_1 )
     
-    /***
-     *   //没有复现
-     *   arb_poly_t p_s; //注意，这里用一个临时 arb_poly_t 求解，然后再复制，不要直接使用 coe->coe_poly[i]
-     *                   //因为，在计算中会导致计算的误差范围特别大，使得结果不可用，可能是 arb 的一个 BUG ??
-     *   arb_poly_init(p_s);
-     *   arb_poly_clear(coe->coe_poly[i]);
-     *   arb_poly_init(coe->coe_poly[i]); //还要再重新初始化一下，BUG ??
-     *   
-     *   arb_poly_interpolate_newton(coe->coe_poly[i],x_coe,y_coe,6,prec); //获得插值多项式
-     *   arb_poly_set(coe->coe_poly[i],p_s);
-     *   
-     *   arb_poly_clear(p_s);
-     ***/
+    arb_mul_si(t,theta,-2,prec); //(1-2*θ)(y_1-y_0)+(θ-1)*h_yp_0+θ*h_yp_1
+    arb_add_si(t,t,1,prec);
+    arb_sub(s,dense_out->y_1[i]+i_y,dense_out->y_0[i]+i_y,prec);
+    arb_mul(s,s,t,prec);
     
-    arb_poly_interpolate_newton(coe->coe_poly[i],x_coe,y_coe,6,prec); //获得插值多项式，牛顿插值法
-    arb_poly_evaluate(res,coe->coe_poly[i],x,prec); //利用多项式求解
+    arb_add_si(t,theta,-1,prec); 
+    arb_mul(t,t,dense_out->h_yp_0[i]+i_y,prec);
+    arb_add(s,s,t,prec);
+    
+    arb_mul(t,theta,dense_out->h_yp_1[i]+i_y,prec);
+    arb_add(s,s,t,prec);
+    
+    arb_add_si(t,theta,-1,prec); //θ*(θ-1)
+    arb_mul(t,t,theta,prec);
+    arb_mul(s,s,t,prec);
+    
+    
+    arb_mul(t,theta,dense_out->y_1[i]+i_y,prec);
+    arb_add(s,s,t,prec);
+    
+    arb_neg(t,theta);
+    arb_add_ui(t,t,1,prec);
+    arb_mul(t,t,dense_out->y_0[i]+i_y,prec);
+    
+    arb_add(res,s,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(theta);
 }
+
 
 
 //常微分方程求解中，DOPRI54 方法对应的内部插值法

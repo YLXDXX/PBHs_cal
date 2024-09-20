@@ -18,11 +18,10 @@ void Interpolation_fit_func(arb_t res, const arb_t x,
                             const arb_ptr x_array, const arb_ptr y_array, const Interp_coe_t coe, const slong N,
                             slong prec);
 
-//为常微分方程的输出形式适配，用于拟合常微分方程结果
-void Interpolation_fit_func_odes(arb_t res, const arb_t x,
-                                 ODEs_point_output_t p_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
-                                 const Interp_coe_t coe, const slong N,
-                                 slong prec);
+//常微分方程求解中，RFK45 方法对应的内部插值法
+void Interpolation_fit_func_odes_RFK45(arb_t res, const arb_t x,
+                                       ODEs_RFK45_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                       slong prec);
 
 
 //常微分方程求解中，DOPRI54 方法对应的内部插值法
