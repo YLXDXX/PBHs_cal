@@ -35,7 +35,7 @@ typedef struct ODEs_DOPRI54_dense_output_structure* ODEs_DOPRI54_dense_t;
 
 
 struct ODEs_RFK45_dense_output_structure {
-    //用于四阶的多项式拟合
+    //用于三阶的多项式拟合
     //y(xn+θh)=(1-θ)*y_i+θ*y_{i+1}+θ*(θ-1)*( (1-2*θ)(y_{i+1}-y_i)+(θ-1)*h*yp_i+θ*h*yp_{i+1} )
     slong num_keep; //可容纳点的个数
     slong num_real; //真实存入点的个数
@@ -48,6 +48,27 @@ struct ODEs_RFK45_dense_output_structure {
     arb_ptr* h_yp_1; //h*yp_1
 };
 typedef struct ODEs_RFK45_dense_output_structure* ODEs_RFK45_dense_t;
+
+
+struct ODEs_DOP853_dense_output_structure {
+    //用于七阶的多项式拟合
+    //参见 https://github.com/robclewley/pydstool/blob/master/PyDSTool/integrator/dop853.c
+    slong num_keep; //可容纳点的个数
+    slong num_real; //真实存入点的个数
+    slong dim; //微分方程组维数
+    arb_ptr x;
+    arb_ptr h;
+    arb_ptr* rcont1;
+    arb_ptr* rcont2;
+    arb_ptr* rcont3;
+    arb_ptr* rcont4;
+    arb_ptr* rcont5;
+    arb_ptr* rcont6;
+    arb_ptr* rcont7;
+    arb_ptr* rcont8;
+};
+typedef struct ODEs_DOP853_dense_output_structure* ODEs_DOP853_dense_t;
+
 
 
 

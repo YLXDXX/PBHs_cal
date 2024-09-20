@@ -207,5 +207,5 @@ void Set_global_variable(slong prec)
     ODEs_get_step_cal_coe(prec);
     ODEs_get_RFK45_cal_coe(prec);
     ODEs_get_DOPRI54_cal_coe(prec);
-    
+    ODEs_get_DOP853_cal_coe(prec);
 }

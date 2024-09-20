@@ -444,3 +444,66 @@ void Interpolation_fit_func_odes_DOPRI54(arb_t res, const arb_t x,
     arb_clear(theta);
 }
 
+
+//常微分方程求解中，DOP853 方法对应的内部插值法
+void Interpolation_fit_func_odes_DOP853(arb_t res, const arb_t x,
+                                        ODEs_DOP853_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                        slong prec)
+{
+    
+    //找到 x 在插值点中所处位置
+    slong i,N;
+    
+    N=dense_out->num_real; //点数个数
+    i=Interpolation_position_i_search(x,dense_out->x,N,prec);
+    
+    if(i==-1)
+    {
+        printf("\n所求 x 并不在插值点范围，请检查, N=%li \nx = ", N);
+        arb_printn(x, 20,0);printf("\nx[0] = ");
+        arb_printn(dense_out->x+0, 20,0);printf("\tx[N-1] = ");
+        arb_printn(dense_out->x+N-1, 20,0);printf("\n\n");
+        exit(0);
+    }
+    
+    arb_t s,s1,t;
+    arb_init(s);
+    arb_init(s1);
+    arb_init(t);
+    
+    //参看 https://github.com/robclewley/pydstool/blob/master/PyDSTool/integrator/dop853.c
+    //s = (x - xold) / hout;
+    //s1 = 1.0 - s;
+    // rcont1[i]+s*( rcont2[i]+s1*( rcont3[i]+s*( rcont4[i]+s1*( rcont5[i]+s*(rcont6[i]+s1*(rcont7[i]+s*rcont8[i])) ) ) ) );
+    
+    // s=θ=(x-x_i)/h
+    arb_sub(s,x,dense_out->x+i,prec);
+    arb_div(s,s,dense_out->h+i,prec);
+    
+    arb_neg(s1,s); //t1=1-θ=1-s
+    arb_add_ui(s1,s1,1,prec);
+    
+    //λ=rcont5[i]+s*(rcont6[i]+s1*(rcont7[i]+s*rcont8[i]))
+    arb_mul(t,s,dense_out->rcont8[i]+i_y,prec);
+    arb_add(t,t,dense_out->rcont7[i]+i_y,prec);
+    arb_mul(t,t,s1,prec);
+    arb_add(t,t,dense_out->rcont6[i]+i_y,prec);
+    arb_mul(t,t,s,prec);
+    arb_add(t,t,dense_out->rcont5[i]+i_y,prec);
+    
+    //rcont1[i]+s*( rcont2[i]+s1*( rcont3[i]+s*( rcont4[i]+s1*λ ) ) )
+    arb_mul(t,t,s1,prec);
+    arb_add(t,t,dense_out->rcont4[i]+i_y,prec);
+    arb_mul(t,t,s,prec);
+    arb_add(t,t,dense_out->rcont3[i]+i_y,prec);
+    arb_mul(t,t,s1,prec);
+    arb_add(t,t,dense_out->rcont2[i]+i_y,prec);
+    arb_mul(t,t,s,prec);
+    arb_add(res,t,dense_out->rcont1[i]+i_y,prec);
+    
+    
+    arb_clear(s);
+    arb_clear(s1);
+    arb_clear(t);
+}
+
