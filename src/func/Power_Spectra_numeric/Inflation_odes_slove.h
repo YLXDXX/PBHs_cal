@@ -7,6 +7,8 @@
 #include "../math_method.h"
 #include "../other.h"
 
+//此模块的内容，直接源自于 [mxhphy](https://github.com/mxhphy) 的 Python 程序
+
 // dense output 的类型为 Inflation_dense_t, 初始化 Inflation_dense_init, 清理 Inflation_dense_clear
 // dense output 插值拟合函数 Inflation_interp_fit_func_odes
 // 扰动ODEs参数 Inflation_perturb_ODEs_param_t,
