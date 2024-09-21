@@ -21,7 +21,7 @@ void routine_test(slong prec)
     arb_init(error_abs);
     arb_init(error_rel);
     
-    int dim=4;
+    int dim=2;
     
     arb_ptr v_s,v_t,y_start;
     v_s=_arb_vec_init(dim);
@@ -117,30 +117,36 @@ void routine_test(slong prec)
     //微分方程测试
     
     arb_set_str(x_start,"0",prec); //初始条件
-    arb_set_str(y_start,"0",prec);
-    arb_set_str(y_start+1,"6.5",prec);
-    arb_set_str(y_start+2,"0.0",prec);
-    arb_set_str(y_start+3,"0.0",prec);
+    arb_set_str(y_start,"1",prec);
+    arb_set_str(y_start+1,"1",prec);
+    //arb_set_str(y_start+2,"0.0",prec);
+    //arb_set_str(y_start+3,"0.0",prec);
     
     
-    arb_set_str(error_abs,"1E-15",prec);
-    arb_set_str(error_rel,"1E-13",prec);
+    arb_set_str(error_abs,"1E-40",prec);
+    arb_set_str(error_rel,"1E-40",prec);
     
-    arb_set_str(x_end,"1E7",prec); //需要足够大，方便后面计算
+    arb_set_str(x_end,"-90",prec); //需要足够大，方便后面计算
     
+    //ODEs_DOP853_dense_t d_out;
+    //d_out=ODEs_DOP853_dense_init(5E5,dim);
     
-    /*
-    ODEs_RFK45(v_s, Func_coupled_odes, dim, NULL, 0, //常微分方程组函数
+    // RFK45 DOPRI54  DOP853
+    ODEs_DOP853(v_s, Func_test_ODEs_func_04, dim, NULL, 0, //常微分方程组函数
                x_start, y_start, //给定初始条件
                x_end, //求出点 x_end 对应的函数值
-               50, error, //num为迭代区间为[x_start,x_end]，将其分为几等份，从而给出初始步长
+               error_abs, error_rel,NULL,
                prec);
-    arb_printn(v_s, 50,0);printf("\n");
-    arb_printn(v_s+1, 50,0);printf("\n");
-    arb_printn(v_s+2, 50,0);printf("\n");
-    arb_printn(v_s+3, 50,0);printf("\n");
-    */
+    arb_printn(v_s, 50,0);printf("\n\n");
+    //arb_printn(v_s+1, 50,0);printf("\n");
+    //arb_printn(v_s+2, 50,0);printf("\n");
+    //arb_printn(v_s+3, 50,0);printf("\n");
     
+    
+    //arb_div_ui(x_end,x_end,3,prec);
+    
+    //Interpolation_fit_func_odes_DOP853(t, x_end, d_out, 0, prec);
+    //arb_printn(t, 50,0);printf("\n\n");
     
     //arb_set_str(x_end,"0.022",prec);
     
@@ -174,16 +180,16 @@ void routine_test(slong prec)
     arb_add(s,s,t,prec);
     arb_sub_ui(s,s,2,prec);
     */
-    /*
+    
     // Func_test_ODEs_func_04 精确解为 y=(1+1/6*x^3)*e^{x}
     arb_pow_ui(s,x_end,3,prec);
     arb_div_ui(s,s,6,prec);
     arb_add_ui(s,s,1,prec);
     arb_exp(t,x_end,prec);
     arb_mul(s,s,t,prec);
-    */
     
-    //arb_printn(s, 50,0);printf("\n");
+    
+    arb_printn(s, 50,0);printf("\n");
     
     arb_clear(s);
     arb_clear(t);

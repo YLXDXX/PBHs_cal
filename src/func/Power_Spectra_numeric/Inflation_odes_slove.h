@@ -14,18 +14,18 @@
 // 常微分方程求解 Inflation_ODEs_solver
 
 
-typedef ODEs_DOPRI54_dense_t Inflation_dense_t; //定义一个新 dense output 类型，方便后面切换不同的ODEs求解方法
+typedef ODEs_DOP853_dense_t Inflation_dense_t; //定义一个新 dense output 类型，方便后面切换不同的ODEs求解方法
 
 //下面对三个关于 dense output 的函数定义别名，方便后面切换不同的ODEs求解方法
 //此间的 Inflation_use_dense_init_func 其参数和返回值需与要使用的 dense output 初始化一样
-typedef ODEs_DOPRI54_dense_t (*Inflation_use_dense_init_func)(slong num, slong dim);
+typedef ODEs_DOP853_dense_t (*Inflation_use_dense_init_func)(slong num, slong dim);
 extern const Inflation_use_dense_init_func Inflation_dense_init;
 
-typedef void (*Inflation_use_dense_clear_func)(ODEs_DOPRI54_dense_t dense_out, slong num, slong dim);
+typedef void (*Inflation_use_dense_clear_func)(ODEs_DOP853_dense_t dense_out, slong num, slong dim);
 extern const Inflation_use_dense_clear_func Inflation_dense_clear;
 
 typedef void (*Inflation_use_interp_fit_func_odes_func)(arb_t res, const arb_t x,
-                                                        ODEs_DOPRI54_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
+                                                        ODEs_DOP853_dense_t dense_out, const slong i_y, //i_y 表示微分方程解 y 中的第 i 个
                                                         slong prec);
 extern const Inflation_use_interp_fit_func_odes_func Inflation_interp_fit_func_odes;
 
@@ -34,7 +34,7 @@ typedef void (*Inflation_use_ODEs_solver_func)(arb_ptr y_end, my_odes_func func,
                                                const arb_t x_start, const arb_ptr y_start, //给定初始条件
                                                const arb_t x_end, //求出点 x_end 对应的函数值
                                                const arb_t error_abs, const arb_t error_rel, //绝对误差和相对误差 //误差为绝对精度
-                                               const ODEs_DOPRI54_dense_t dense_out, //此参数可以为空
+                                               const ODEs_DOP853_dense_t dense_out, //此参数可以为空
                                                slong prec);
 extern const Inflation_use_ODEs_solver_func Inflation_ODEs_solver;
 

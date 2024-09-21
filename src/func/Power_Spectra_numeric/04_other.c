@@ -2,12 +2,12 @@
 #include <stdlib.h> 
 
 //为密度输出及插值定义了别名，方便后面换用不同方法
-const Inflation_use_dense_init_func Inflation_dense_init= ODEs_DOPRI54_dense_init;
-const Inflation_use_dense_clear_func Inflation_dense_clear= ODEs_DOPRI54_dense_clear;
-const Inflation_use_interp_fit_func_odes_func Inflation_interp_fit_func_odes= Interpolation_fit_func_odes_DOPRI54;
+const Inflation_use_dense_init_func Inflation_dense_init= ODEs_DOP853_dense_init;
+const Inflation_use_dense_clear_func Inflation_dense_clear= ODEs_DOP853_dense_clear;
+const Inflation_use_interp_fit_func_odes_func Inflation_interp_fit_func_odes= Interpolation_fit_func_odes_DOP853;
 
 //为求解器定义别名
-const Inflation_use_ODEs_solver_func Inflation_ODEs_solver=ODEs_DOPRI54;
+const Inflation_use_ODEs_solver_func Inflation_ODEs_solver=ODEs_DOP853;
 
 
 //这里，定义了程序计算中所需的其它函数

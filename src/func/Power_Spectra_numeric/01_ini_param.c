@@ -47,7 +47,8 @@ void Inflation_set_model_parameters(slong prec)
     arb_pow_ui(Inf_Mpl_6,Inf_Mpl,6,prec); //Mpl^6
     
     // Height of upward step (1.264*10^-15*Mpl^4 in previous version)
-    arb_set_str(Inf_Delta_V,"7.6342e-13",prec); //势能 ΔV = 7.6342e-13 * Mpl**4
+    arb_set_str(Inf_Delta_V,"3.4913e-13",prec);
+    //arb_set_str(Inf_Delta_V,"7.6342e-13",prec); //势能 ΔV = 7.6342e-13 * Mpl**4
     //arb_set_str(Inf_Delta_V,"5.97388e-13",prec); //势能 ΔV = 5.97388e-13 * Mpl**4
     //arb_set_str(Inf_Delta_V,"5.94104e-13",prec); //势能 ΔV = 5.94104e-13 * Mpl**4
     arb_mul(Inf_Delta_V,Inf_Delta_V,Inf_Mpl_4,prec);
@@ -85,14 +86,14 @@ void Inflation_set_model_parameters(slong prec)
     
     
     // Used to adjust the steepness of the Tanh function
-    arb_set_str(Inf_Lambda,"1e2",prec); // λ = 1e2 / Mpl
+    arb_set_str(Inf_Lambda,"3e2",prec); // λ = 1e2 / Mpl
     //arb_set_str(Inf_Lambda,"5e3",prec); // λ = 5e3 / Mpl
     //arb_set_str(Inf_Lambda,"5e4",prec); // λ = 5e4 / Mpl
     arb_div(Inf_Lambda,Inf_Lambda,Inf_Mpl,prec);
     
     
     // Field range of ultra slow roll
-    arb_set_str(Inf_Delta_Phi_usr,"0",prec); // Δϕ = 0.02 * Mpl
+    arb_set_str(Inf_Delta_Phi_usr,"0.008",prec); // Δϕ = 0.02 * Mpl
     arb_mul(Inf_Delta_Phi_usr,Inf_Delta_Phi_usr,Inf_Mpl,prec);
     
     // Field value when ultra slow roll starts
