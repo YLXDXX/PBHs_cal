@@ -330,6 +330,8 @@ int PS_abundance_beta_delta_k_M(arb_t res, const arb_t k_M, slong prec) //传过
     arb_clear(s);
     arb_clear(k_up);
     arb_clear(k_down);
+    
+    arb_clear(Beta_M_parameter->k_M);
     free(Beta_M_parameter); //手动释放自定义结构体内存
     
     return 0;

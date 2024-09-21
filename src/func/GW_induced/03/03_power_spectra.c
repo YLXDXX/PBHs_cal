@@ -110,6 +110,8 @@ int GW_current_energy_density_Omega_G(arb_t res, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;

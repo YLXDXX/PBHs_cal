@@ -494,6 +494,8 @@ int GW_current_energy_density_Omega_dim_8(arb_t O_N, arb_t O_P, const arb_t k, s
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;
@@ -627,6 +629,8 @@ int GW_current_energy_density_Omega_dim_6(arb_t O_R, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;
@@ -763,6 +767,8 @@ int GW_current_energy_density_Omega_dim_5(arb_t O_Z, arb_t O_C, const arb_t k, s
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;
@@ -895,6 +901,8 @@ int GW_current_energy_density_Omega_dim_4(arb_t O_H, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;
@@ -1024,6 +1032,8 @@ int GW_current_energy_density_Omega_dim_2(arb_t O_G, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;

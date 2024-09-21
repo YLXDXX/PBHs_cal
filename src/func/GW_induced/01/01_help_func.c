@@ -251,6 +251,9 @@ int GW_I_c_func(arb_t res, const arb_t x, const arb_t y, const arb_t k, slong pr
     arb_clear(a);
     arb_clear(b);
     arb_clear(e);
+    
+    arb_clear(func_x_y->p_1);
+    arb_clear(func_x_y->p_2);
     free(func_x_y); //手动释放自定义结构体内存
     
     return 0;
@@ -299,6 +302,9 @@ int GW_I_s_func(arb_t res, const arb_t x, const arb_t y, const arb_t k, slong pr
     arb_clear(a);
     arb_clear(b);
     arb_clear(e);
+    
+    arb_clear(func_x_y->p_1);
+    arb_clear(func_x_y->p_2);
     free(func_x_y); //手动释放自定义结构体内存
     
     return 0;

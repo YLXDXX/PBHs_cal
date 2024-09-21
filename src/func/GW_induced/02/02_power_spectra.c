@@ -116,6 +116,9 @@ int GW_power_spectra_02(arb_t res, const arb_t eta, const arb_t k, slong prec)
     
     arb_clear(s);
     arb_clear(t);
+    
+    arb_clear(func_eta_k->p_1);
+    arb_clear(func_eta_k->p_2);
     free(func_eta_k);
     
     return 0;
@@ -262,6 +265,8 @@ int GW_current_energy_density_02(arb_t res, const arb_t k, slong prec)
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
+    
+    arb_clear(func_k->p_1);
     free(func_k);
     
     return 0;

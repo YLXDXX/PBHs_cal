@@ -271,6 +271,8 @@ void PS_variance_with_window_func(arb_t res, const arb_t R,
     
     arb_clear(t);
     arb_clear(s);
+    
+    arb_clear(para->R);
     free(para); //手动释放自定义结构体内存
 }
 

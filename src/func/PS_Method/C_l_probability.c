@@ -387,6 +387,8 @@ int Probability_C_l(arb_t res, const arb_t C_l, slong prec)
                         exit(1);
                 }
                 
+                arb_clear(Root_Y_parameter->C_l);
+                arb_clear(Root_Y_parameter->A);
                 free(Root_Y_parameter); //手动释放自定义结构体内存
                 
                 break;
