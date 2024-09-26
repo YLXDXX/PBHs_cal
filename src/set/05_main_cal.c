@@ -4,7 +4,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
 {
     //曲率扰动 ζ 相关设定
     // ζ 扰动类型 gaussian_type/exponential_tail_type/up_step_type/power_expansion_type
-    Zeta_type=gaussian_type; //需要其它参数之前，如r_m的求解
+    Zeta_type=up_step_type; //需要其它参数之前，如r_m的求解
     
     
     //非高斯相关参数设定，需在求 r_max 和 PT_mu_th 之前设定，其与两都都有关
@@ -31,18 +31,18 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     
     //up_step_type
     //arb_set(Up_step_h,Upward_step_spectra_h);
-    arb_set_str(Up_step_h, "-0.8", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set_str(Up_step_h, "-4", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv[1], prec); //从命令行读取参数
     
     
     //power_expansion_type 最高可展开到 6 阶
     //通过 h 得到 f=5/12 * |h|
-    //arb_abs(Power_expansion_f,Up_step_h);
-    //arb_mul_ui(Power_expansion_f,Power_expansion_f,5,prec);
-    //arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
+    arb_abs(Power_expansion_f,Up_step_h);
+    arb_mul_ui(Power_expansion_f,Power_expansion_f,5,prec);
+    arb_div_ui(Power_expansion_f,Power_expansion_f,12,prec);
     
     //arb_set_str(Power_expansion_f, comd_argv[1], prec); //从命令行读取参数
-    arb_set_str(Power_expansion_f, "-1", prec); //power-series expansion 二次项 f_NL -> A
+    //arb_set_str(Power_expansion_f, "-1", prec); //power-series expansion 二次项 f_NL -> A
     arb_set_str(Power_expansion_g, "0", prec); //power-series expansion 三次项 g_NL -> B
     arb_set_str(Power_expansion_four, "0", prec); //power-series expansion 四次项 four -> C
     arb_set_str(Power_expansion_five, "0", prec); //power-series expansion 五次项 five -> D
@@ -580,9 +580,10 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     Root_r_num=120;
                     arb_set_str(Int_r_precision,"1E-20",prec);
                     
-                    arb_set_str(Int_mu_min,"0.1",prec);
+                    //arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_min,"15",prec);
                     arb_set_str(Int_mu_max,"21",prec);
-                    Root_mu_num=200;
+                    Root_mu_num=10;
                     arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
@@ -764,6 +765,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
             }
             break;
         case upward_step_spectra_type :
+        case numerical_cal_type :
             //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
             // PS 计算方差 XX YY XY 积分， upward_step_spectra_type 谱共用
             arb_set_str(PS_Int_variance_min, "0", prec);

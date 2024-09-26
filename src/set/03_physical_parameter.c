@@ -99,7 +99,7 @@ void Set_physical_parameter(slong prec)
     if( Power_spectrum_type==lognormal_type || Power_spectrum_type==delta_type || Power_spectrum_type==broken_power_law_type )
     {
         Func_k_to_degrees_of_freedom(effective_g_star, effective_g_star_entropy, K_star, prec);
-    }else if ( Power_spectrum_type==upward_step_spectra_type )
+    }else if ( Power_spectrum_type==upward_step_spectra_type || Power_spectrum_type==numerical_cal_type )
     {
         Func_k_to_degrees_of_freedom(effective_g_star, effective_g_star_entropy, Upward_step_spectra_k_c, prec);
     }

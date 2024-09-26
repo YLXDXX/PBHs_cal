@@ -60,7 +60,10 @@ int get_save_path(char* res)
     
     strcpy(Out_date_file, Path_save); //字符串复制
     strcpy(Out_fitted_file, Path_save);
+    strcpy(Out_fitted_x, Path_save);
+    strcpy(Out_fitted_y, Path_save);
     strcpy(Out_picture_file, Path_save);
+    
     
     if(Stdout_verbose==true)
     {
@@ -120,3 +123,69 @@ void Vector_point_output_to_file(const arb_ptr x, const arb_ptr y, const slong n
     
 }
 
+//将一组矢量 x,y 中每点的值输出到文件，输出格式保持arb内部的表达式
+void Vector_point_write_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num, slong prec)
+{
+    arb_t ln_x,ln_y;
+    arb_init(ln_x);
+    arb_init(ln_y);
+    
+    FILE * fp_x;
+    FILE * fp_y;
+    
+    fp_x = fopen(Out_fitted_x, "w"); //打开文件，a追加，w重新写入
+    fp_y = fopen(Out_fitted_y, "w");
+    
+    if( fp_x == NULL || fp_y == NULL ) { //对文件打开操作进行判断
+        printf("\n\nOpen Error: %s\t\n",Out_fitted_y);perror("file");printf("\n");
+        exit(-1);
+    }
+    
+    for(slong i=0; i<num; i++)
+    {
+        arb_log(ln_x,x+i,prec); //对 x 取对数 ln(x)
+        arb_dump_file(fp_x,ln_x);
+        fprintf(fp_x, "\n");
+        
+        //arb_log(ln_y,y+i,prec);
+        arb_dump_file(fp_y,y+i);
+        fprintf(fp_y, "\n");
+    }
+    
+    arb_clear(ln_x);
+    arb_clear(ln_y);
+    
+    fclose(fp_x); //关闭文件
+    fclose(fp_y);
+    
+    printf("\n写入完成，共 %li 个点 \n",num);
+    
+}
+
+
+void Vector_point_read_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num, slong prec)
+{
+    FILE * fp_x;
+    FILE * fp_y;
+    
+    fp_x = fopen(Out_fitted_x, "r"); //打开文件，a追加，w重新写入
+    fp_y = fopen(Out_fitted_y, "r");
+    
+    if( fp_x == NULL || fp_y == NULL ) { //对文件打开操作进行判断
+        printf("\n\nOpen Error: %s\t\n",Out_fitted_y);perror("file");printf("\n");
+        exit(-1);
+    }
+    
+    for(slong i=0; i<num; i++)
+    {
+        arb_load_file(x+i,fp_x);
+        
+        arb_load_file(y+i,fp_y);
+    }
+    
+    fclose(fp_x); //关闭文件
+    fclose(fp_y);
+    
+    printf("\n读取完成，共 %li 个点 \n",num);
+    
+}

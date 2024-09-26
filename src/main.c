@@ -18,12 +18,14 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     slong prec;
     prec=500; //控制计算精度， 500，精度在 140 位左右；300，在80位左右，64，在15位左右
     
-    Stdout_verbose=false; //命令行输出详细模式，true/false
+    Stdout_verbose=true; //命令行输出详细模式，true/false
     
     //输出文件配制
     get_save_path(Path_save);
     strcat(Out_date_file, "date/date.txt"); //字符串添加，数据输出文件
     strcat(Out_fitted_file, "date/fit.txt"); //字符串添加，拟合数据输出文件
+    strcat(Out_fitted_x, "date/fit_x.txt");
+    strcat(Out_fitted_y, "date/fit_y.txt");
     strcat(Out_picture_file, "draw.txt"); //字符串添加，画图数据输出文件
     
     
@@ -41,6 +43,19 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     routine_test(prec); exit(0); //测试程序
     
+    //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
+    FITTED_num=5E3;
+    
+    FITTED_interp_coe=Interpolation_coe_init(FITTED_num); 
+    FITTED_x=_arb_vec_init(FITTED_num);
+    FITTED_y=_arb_vec_init(FITTED_num);
+    
+    Vector_point_read_to_file_arb(FITTED_x, FITTED_y, FITTED_num, prec);
+    
+    //arb_printn(FITTED_x+6, 50,0);printf("\n");
+    //arb_printn(FITTED_y+6, 50,0);printf("\n");
+    //Vector_point_output_to_file(FITTED_x, FITTED_y, FITTED_num, 'w');
+    //exit(0);
     
     /*
     //从命令行中读取相关参数
@@ -57,8 +72,9 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     */
     
     //功率谱相关设定
-    //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type/upward_step_spectra_type
-    Power_spectrum_type=lognormal_type;
+    //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
+    //           upward_step_spectra_type/numerical_cal_type
+    Power_spectrum_type=broken_power_law_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -274,7 +290,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_m(w,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    //PS_abundance_f_all(Pk,prec);
+    PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算
@@ -284,7 +300,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_simpele_zeta_f_all(Pk,prec);
     
     //PS_abundance_simpele_delta_beta_m(w,t,prec); //密度扰动
-    PS_abundance_simpele_delta_beta_all(Pk,prec);
+    //PS_abundance_simpele_delta_beta_all(Pk,prec);
     //PS_abundance_simpele_delta_f_m(w,t,prec);
     //PS_abundance_simpele_delta_f_all(Pk,prec);
     
@@ -311,13 +327,37 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_delta_k_all(Pk, prec); //计算所有k的总β
     //PS_abundance_beta_delta_k_M(Pk,t,prec); //计算某个质量M(k)的β，考虑各个k的临界坍缩，传递值为ln(k)
     
+    /*
     //诱导引力波
-    //arb_set_str(k,"1.56E13",prec);
+    arb_set_str(k,"31",prec);
+    Func_GW_f_to_k(k, k, prec);
     //arb_set_str(eta,"1",prec);
     //arb_inv(eta,k,prec);
     //GW_power_spectra(Pk,eta,k,prec); //这里传入的k值未取对数
     //GW_current_energy_density(Pk,k,prec);
     //GW_current_energy_density_cuba(Pk,k,0,prec);
+    
+    slong nn=50;
+    arb_ptr gw_f,gw_p;
+    gw_f=_arb_vec_init(nn);
+    gw_p=_arb_vec_init(nn);
+    
+    arb_set_str(w,"1",prec);
+    arb_set_str(t,"100",prec);
+    Get_interval_logspace_point(gw_f, w, t, nn, prec);
+    //#pragma omp parallel for num_threads(5), 这里不能使用多线程
+    for(slong i=0; i< nn; i++)
+    {
+        Func_GW_f_to_k(w, gw_f+i, prec);
+        GW_current_energy_density_cuba(gw_p+i,w,0,prec);
+        //arb_printn(w,30,0);printf("\n");
+        //arb_printn(gw_p+i,30,0);printf("\n");
+        printf("%li\n",i);
+    }
+    Vector_point_output_to_file(gw_f, gw_p, nn, 'w');
+    exit(0);
+    */
+    
     
     //自由度数
     //arb_set_str(t,"1E8",prec);

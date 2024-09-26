@@ -143,7 +143,8 @@ enum POWER_ENUM_TYPE
     box_type,
     broken_power_law_type,
     link_cmb_type,
-    upward_step_spectra_type
+    upward_step_spectra_type,
+    numerical_cal_type
 };
 
 //求临界值的两种方法

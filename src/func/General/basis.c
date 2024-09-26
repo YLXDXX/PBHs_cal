@@ -490,7 +490,20 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
             }
             
             break;
+        case numerical_cal_type :
+            //注意，这里是以ln(k)作为自变量的，传进来的值就是ln(k)的值
+            if( arb_gt(k,FITTED_x+FITTED_num-1) )//处理拟合数据外的情况，其外基本为常数
+            {
+                arb_set(res,FITTED_y+FITTED_num-1);
+            }else if ( arb_lt(k,FITTED_x) )
+            {
+                arb_set(res,FITTED_y);
+            }else
+            {
+                Interpolation_fit_func(res, k, FITTED_x, FITTED_y, FITTED_interp_coe, FITTED_num, prec);
+            }
             
+            break;
         case delta_type :
             printf("General -> basis -> power_spectrum 中 delta_type\n请在程序中单独处理 δ 谱情况\n");
             exit(1);

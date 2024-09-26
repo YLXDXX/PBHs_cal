@@ -44,7 +44,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     
     arb_set_str(x_start,"0",prec); //初始条件, t
     arb_set_str(y_start,"0",prec); // dot(ϕ)
-    arb_set_str(y_start+1,"6.5",prec); // ϕ
+    arb_set_str(y_start+1,"6.87",prec); // ϕ
     arb_set_str(y_start+2,"0.0",prec); //τ
     arb_set_str(y_start+3,"0.0",prec); //N
     
@@ -68,7 +68,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_printn(v_w+3, 50,0);printf("\n\n");
     
     
-    /*
+    
     //背景解作图
     slong out_num=1E3;
     arb_ptr out_x,out_y,out_N;
@@ -76,8 +76,8 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     out_y=_arb_vec_init(out_num);
     out_N=_arb_vec_init(out_num);
     
-    arb_set_str(s,"1.2E6",prec);
-    arb_set_str(t,"1.7E6",prec);
+    arb_set_str(s,"5.05",prec);
+    arb_set_str(t,"4.95",prec);
     //Get_interval_logspace_point(out_x, s, t, out_num, prec);
     Get_interval_linspace_point(out_x, s, t, out_num, prec);
     
@@ -89,13 +89,14 @@ void Inflation_power_spectra_numeric_cal(slong prec)
         //Func_V_phi_p(out_y+j, , prec);
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 1, prec); //ϕ
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); //ϕ'
-        Inflation_interp_fit_func_odes(out_N+j, out_x+j, d_out, 3, prec); //N
+        //Inflation_interp_fit_func_odes(out_N+j, out_x+j, d_out, 3, prec); //N
         //Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 2, prec); //τ
         
-        //Inflation_V_phi(out_y+j,out_x+j,prec); //V = V_phi(phi)
-        //Inflation_V_phi_pp(out_y+j,out_x+j,prec); //V = V_phi'(phi)
+        Inflation_V_phi(out_y+j,out_x+j,prec); //V = V_phi(phi)
+        //Inflation_V_phi_p(out_y+j,out_x+j,prec); //V = V_phi'(phi)
+        //Inflation_V_phi_pp(out_y+j,out_x+j,prec); //V = V_phi''(phi)
         
-        
+        /*
         //背景解 phi = phi_interp(t)
         Inflation_interp_fit_func_odes(s, out_x+j, d_out, 1, prec);
         //背景解 phi_dot = phi_dot_interp(t)
@@ -113,13 +114,13 @@ void Inflation_power_spectra_numeric_cal(slong prec)
         
         Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); //ϕ'
         arb_div(out_y+j,out_y+j,s,prec);
-        
+        */
     }
     
-    Vector_point_output_to_file(out_N, out_y, out_num, 'w'); //a追加，w重新写入
+    Vector_point_output_to_file(out_x, out_y, out_num, 'w'); //a追加，w重新写入
     exit(0);
     //背景解作图 完
-    */
+    
     
     
     //扰动方程求解
@@ -147,7 +148,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     //参数传入
     Inflation_perturb_ODEs_param_t param_p;
     param_p=Inflation_perturb_ODEs_param_init(d_out,fk); //背景的dense output 和 当前的 fk
-    
+    /*
     Inflation_ODEs_solver(v_s, Inflation_perturbation_phi_odes, dim, param_p, 0, //常微分方程组函数
                           t_ini, y_start, //给定初始条件
                           x_end, //求出点 x_end 对应的函数值
@@ -160,14 +161,15 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_printn(v_s+3, 50,0);printf("\n\n");
     
     exit(0);
+    */
     
-    slong nn=50;
+    slong nn=100;
     arb_ptr fi_k,fi_P;
     fi_k=_arb_vec_init(nn);
     fi_P=_arb_vec_init(nn);
     
-    arb_set_str(s,"1E3",prec);
-    arb_set_str(t,"5E6",prec);
+    arb_set_str(s,"1E7",prec);
+    arb_set_str(t,"5E9",prec);
     
     Get_interval_logspace_point(fi_k, s, t, nn, prec);
     
@@ -175,8 +177,8 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_zero(t_ini);
     arb_one(a_ini);
     
-    arb_set_str(error_abs,"1E-22",prec);
-    arb_set_str(error_rel,"1E-22",prec);
+    arb_set_str(error_abs,"1E-28",prec);
+    arb_set_str(error_rel,"1E-28",prec);
     
     
     //改造for循环后，可以使用 多线程加速，采用 OpenMP 方法
@@ -258,6 +260,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     
     //将功率谱的结果输出到文件
     Vector_point_output_to_file(fi_k, fi_P, nn, 'w'); //a追加，w重新写入
+    //Vector_point_write_to_file_arb(fi_k, fi_P, nn, prec);
     exit(0);
     
     arb_clear(s);

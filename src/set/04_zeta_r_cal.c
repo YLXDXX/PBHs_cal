@@ -77,6 +77,7 @@ void Set_zeta_r_cal(slong prec)
             
             break;
         case upward_step_spectra_type :
+        case numerical_cal_type :
             //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
             arb_set_str(Int_sigma_n_min, "0", prec);
             arb_set_str(Int_sigma_n_max, "1", prec);

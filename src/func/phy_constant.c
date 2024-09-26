@@ -377,6 +377,13 @@ enum GET_K_CH_TYPE Get_k_ch_type; //求连续谱特征模式方法
 char Path_save[PATH_MAX+1]=""; //获取存储相对路径
 char Out_date_file[PATH_MAX+30]=""; //数据输出文件
 char Out_fitted_file[PATH_MAX+30]=""; //拟合数据输出文件
+char Out_fitted_x[PATH_MAX+30]="";
+char Out_fitted_y[PATH_MAX+30]="";
 char Out_picture_file[PATH_MAX+30]=""; //画图数据输出文件
+
 int time_begin,time_end; //计时用
 
+arb_ptr FITTED_x; //用于拟合数函数
+arb_ptr FITTED_y;
+slong FITTED_num;
+Interp_coe_t FITTED_interp_coe;
