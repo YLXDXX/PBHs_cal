@@ -12,6 +12,8 @@ build/
 
 date/date.txt
 date/fit.txt
+date/fit_x.txt
+date/fit_y.txt
 draw.txt
 
 draw_pic/
