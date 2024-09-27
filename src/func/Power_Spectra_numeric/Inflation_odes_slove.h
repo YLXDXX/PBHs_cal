@@ -67,9 +67,9 @@ extern arb_t Inf_Lambda,Inf_Delta_Phi_usr,Inf_Phi_s;
 void Inflation_set_model_parameters(slong prec); //暴胀模型各种初始参数设定：势能参数、慢滚参数等
 
 //微分方程计算所需函数
-void Inflation_Smoothing_Step_Function(arb_t res, const arb_t x, const arb_t smoothness, slong prec);
-void Inflation_S_prime(arb_t res, const arb_t x, const arb_t smoothness, slong prec);
-void Inflation_S_pp(arb_t res, const arb_t x, const arb_t smoothness, slong prec);
+void Inflation_Smoothing_Step_Function(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
+void Inflation_S_prime(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
+void Inflation_S_pp(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
 void Inflation_V_phi(arb_t res, const arb_t phi, slong prec);
 void Inflation_V_phi_p(arb_t res, const arb_t phi, slong prec);
 void Inflation_V_phi_pp(arb_t res, const arb_t phi, slong prec);

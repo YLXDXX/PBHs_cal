@@ -47,7 +47,7 @@ void Inflation_set_model_parameters(slong prec)
     arb_pow_ui(Inf_Mpl_6,Inf_Mpl,6,prec); //Mpl^6
     
     // Height of upward step (1.264*10^-15*Mpl^4 in previous version)
-    arb_set_str(Inf_Delta_V,"3.6035e-13",prec);
+    arb_set_str(Inf_Delta_V,"3.8405e-13",prec);
     //arb_set_str(Inf_Delta_V,"7.6342e-13",prec); //势能 ΔV = 7.6342e-13 * Mpl**4
     //arb_set_str(Inf_Delta_V,"5.97388e-13",prec); //势能 ΔV = 5.97388e-13 * Mpl**4
     //arb_set_str(Inf_Delta_V,"5.94104e-13",prec); //势能 ΔV = 5.94104e-13 * Mpl**4
@@ -69,7 +69,7 @@ void Inflation_set_model_parameters(slong prec)
     
     
     // First slow-roll parameter in the second slow-roll stage
-    arb_set_str(Inf_Epsilon_2,"9e-27",prec); // ε_2 = 1.8e-25 * Mpl**6
+    arb_set_str(Inf_Epsilon_2,"8e-26",prec); // ε_2 = 1.8e-25 * Mpl**6
     arb_mul(Inf_Epsilon_2,Inf_Epsilon_2,Inf_Mpl_6,prec);
     
     arb_mul_ui(Inf_sqrt_E2,Inf_Epsilon_2,2,prec); // sqrt(2*ε_2) = sqrt(2.*Epsilon_2)
@@ -81,12 +81,12 @@ void Inflation_set_model_parameters(slong prec)
     arb_mul(Inf_Eta_1,Inf_Eta_1,Inf_Mpl_2,prec);
     
     // Second slow-roll parameter in the second slow-roll stage
-    arb_set_str(Inf_Eta_2,"-8E-12",prec); // η_2 = 0 * Mpl**2
+    arb_set_str(Inf_Eta_2,"0",prec); // η_2 = 0 * Mpl**2
     arb_mul(Inf_Eta_2,Inf_Eta_2,Inf_Mpl_2,prec);
     
     
     // Used to adjust the steepness of the Tanh function
-    arb_set_str(Inf_Lambda,"1.3e2",prec); // λ = 1e2 / Mpl
+    arb_set_str(Inf_Lambda,"1.5e2",prec); // λ = 1e2 / Mpl
     //arb_set_str(Inf_Lambda,"5e3",prec); // λ = 5e3 / Mpl
     //arb_set_str(Inf_Lambda,"5e4",prec); // λ = 5e4 / Mpl
     arb_div(Inf_Lambda,Inf_Lambda,Inf_Mpl,prec);
