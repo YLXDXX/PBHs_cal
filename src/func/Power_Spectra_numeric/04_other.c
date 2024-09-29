@@ -325,4 +325,210 @@ void Inflation_power_spectra_cal_at_fk(arb_t res, const arb_t fk, const arb_t x_
 }
 
 
+//利用背景解，得到 H(t)
+void Inflation_background_H_t(arb_t H, const arb_t t, const Inflation_dense_t d_out, slong prec)
+{
+    arb_t s,w,phi,phi_dot,V;
+    arb_init(s);
+    arb_init(w);
+    arb_init(phi);
+    arb_init(phi_dot);
+    arb_init(V);
+    
+    Inflation_interp_fit_func_odes(phi, t, d_out, 1, prec); //ϕ
+    Inflation_interp_fit_func_odes(phi_dot, t, d_out, 0, prec); //ϕ'
+    Inflation_V_phi(V,phi,prec); //V = V_phi(phi)
+    
+    //背景解 H = H_interp(t), 这里不用插值
+    //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)
+    arb_sqr(s,phi_dot,prec);
+    arb_div_ui(s,s,6,prec);
+    arb_div_ui(w,V,3,prec);
+    arb_add(s,s,w,prec);
+    arb_sqrt(H,s,prec); //得到 H
+    
+    arb_clear(s);
+    arb_clear(w);
+    arb_clear(phi);
+    arb_clear(phi_dot);
+    arb_clear(V);
+}
 
+
+static int interior_phi_e_Inflation_get_model_g_h(arb_t res, const arb_t x,
+                                               void * pass, const slong order,  slong prec)
+{
+    arb_t s;
+    arb_init(s);
+    
+    Inflation_dense_t d_out; //密度输出通过参数传入
+    d_out=pass;
+    
+    //求 ϕ_e 对应的时间
+    Inflation_interp_fit_func_odes(s, x, d_out, 1, prec); //ϕ
+    arb_sub(res,s,Inf_Phi_e,prec);
+    
+    arb_clear(s);
+    return 0;
+}
+
+static int interior_phi_step_Inflation_get_model_g_h(arb_t res, const arb_t x,
+                                                  void * pass, const slong order,  slong prec)
+{
+    arb_t s,w;
+    arb_init(s);
+    arb_init(w);
+    
+    Inflation_dense_t d_out; //密度输出通过参数传入
+    d_out=pass;
+    
+    //求刚刚爬上 step  对应的时间
+    Inflation_interp_fit_func_odes(s, x, d_out, 1, prec); //ϕ
+    
+    arb_inv(w,Inf_Lambda,prec); //刚爬上 step 的 ϕ = ϕ_e - 1/λ
+    arb_sub(w,Inf_Phi_e,w,prec);
+    
+    arb_sub(res,s,w,prec);
+    
+    arb_clear(s);
+    arb_clear(w);
+    return 0;
+}
+
+struct interior_N_Inflation_get_model_g_h_s {
+    arb_t N;
+    Inflation_dense_t d_out;
+};
+
+static int interior_N_Inflation_get_model_g_h(arb_t res, const arb_t x,
+                                                     void * pass, const slong order,  slong prec)
+{
+    arb_t s,w;
+    arb_init(s);
+    arb_init(w);
+    
+    struct interior_N_Inflation_get_model_g_h_s* p; //密度输出通过参数传入
+    p=pass;
+    
+    //求刚刚爬上 step 后回归慢滚吸引子解对应的时间
+    Inflation_interp_fit_func_odes(s, x, p->d_out, 3, prec); //N
+    
+    arb_sub(res,s,p->N,prec);
+    
+    arb_clear(s);
+    arb_clear(w);
+    return 0;
+}
+
+//输出当前模型的 g 和 h 
+void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
+{
+    arb_t s,w,t_e,t_step,t_f,error,t_a,t_b,pi_c,pi_d,pi_f,h,g_cal,g_theory;
+    arb_init(s);
+    arb_init(w);
+    arb_init(t_e);
+    arb_init(t_step);
+    arb_init(t_f);
+    arb_init(error);
+    arb_init(t_a);
+    arb_init(t_b);
+    arb_init(pi_c);
+    arb_init(pi_d);
+    arb_init(pi_f);
+    arb_init(h);
+    arb_init(g_cal);
+    arb_init(g_theory);
+    
+    arb_set_str(t_a,"1.6E6",prec);
+    arb_set_str(t_b,"2E6",prec);
+    
+    arb_set_ui(error,1E14); //1E-5
+    arb_inv(error,error,prec);
+    
+    //step 前的时间 t_e
+    Find_interval_root(t_e, interior_phi_e_Inflation_get_model_g_h, d_out, 0,
+                       t_a, t_b, error,
+                       10,Root_Normal,
+                       prec);
+    //step 后的时间 t_step
+    Find_interval_root(t_step, interior_phi_step_Inflation_get_model_g_h, d_out, 0,
+                       t_a, t_b, error,
+                       10,Root_Normal,
+                       prec);
+    
+    //利用 N 估计回归慢滚吸引子时间
+    Inflation_interp_fit_func_odes(w, t_step, d_out, 3, prec); //N
+    arb_add_ui(w,w,2,prec); //step后差不多 1 e-fold 就回归到吸引子轨道，取 2 保险
+    
+    struct interior_N_Inflation_get_model_g_h_s* p;
+    p=(struct interior_N_Inflation_get_model_g_h_s*)calloc(1,sizeof(struct interior_N_Inflation_get_model_g_h_s));
+    
+    arb_init(p->N);
+    
+    arb_set(p->N,w);
+    p->d_out=d_out;
+    
+    //step 后回归慢滚吸引子解对应的时间 t_f (大概估计值)
+    Find_interval_root(t_f, interior_N_Inflation_get_model_g_h, p, 0,
+                       t_a, t_b, error,
+                       10,Root_Normal,
+                       prec);
+    
+    //step前的速度 π_c
+    Inflation_interp_fit_func_odes(s, t_e, d_out, 0, prec); //ϕ'
+    Inflation_background_H_t(w,t_e,d_out,prec); 
+    arb_div(pi_c,s,w,prec); // dϕ/dN= ϕ'/H
+    
+    //step 后的速度 π_d
+    Inflation_interp_fit_func_odes(s, t_step, d_out, 0, prec); //ϕ'
+    Inflation_background_H_t(w,t_step,d_out,prec); 
+    arb_div(pi_d,s,w,prec); // dϕ/dN= ϕ'/H
+    
+    //step 后回到慢滚吸引子解的速度 π_f
+    Inflation_interp_fit_func_odes(s, t_f, d_out, 0, prec); //ϕ'
+    Inflation_background_H_t(w,t_f,d_out,prec); 
+    arb_div(pi_f,s,w,prec); // dϕ/dN= ϕ'/H
+    
+    //数值计算所得 h 和 g
+    arb_div(g_cal,pi_d,pi_c,prec); // g=π_d/π_c
+    
+    arb_div(h,pi_f,pi_d,prec); // h=6 π_f/π_d
+    arb_mul_ui(h,h,6,prec);
+    
+    //理论计算所得 g
+    arb_sqr(s,pi_c,prec); //π_d=sqrt(π_c^2-6*ΔV/V_0)
+    arb_div(w,Inf_Delta_V,Inf_V0,prec);
+    arb_mul_ui(w,w,6,prec);
+    arb_sub(s,s,w,prec);
+    arb_sqrt(s,s,prec);
+    
+    arb_div(g_theory,s,pi_c,prec);
+    arb_abs(g_theory,g_theory);
+    
+    
+    printf("π_c: ");arb_printn(pi_c, 20,0);printf("\n");
+    printf("π_d: ");arb_printn(pi_d, 20,0);printf("\n");
+    printf("π_f: ");arb_printn(pi_f, 20,0);printf("\n\n");
+    
+    printf("h  : ");arb_printn(h, 20,0);printf("\n");
+    printf("g_c: ");arb_printn(g_cal, 20,0);printf("\n\n");
+    //printf("g_t: ");arb_printn(g_theory, 20,0);printf("\n\n");
+    
+    arb_clear(s);
+    arb_clear(w);
+    arb_clear(t_e);
+    arb_clear(t_step);
+    arb_clear(t_f);
+    arb_clear(error);
+    arb_clear(t_a);
+    arb_clear(t_b);
+    arb_clear(pi_c);
+    arb_clear(pi_d);
+    arb_clear(pi_f);
+    arb_clear(h);
+    arb_clear(g_cal);
+    arb_clear(g_theory);
+    
+    arb_clear(p->N);
+    free(p);
+}

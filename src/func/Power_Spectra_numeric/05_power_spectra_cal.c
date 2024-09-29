@@ -67,8 +67,9 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_printn(v_w+2, 50,0);printf("\n");
     arb_printn(v_w+3, 50,0);printf("\n\n");
     
+    Inflation_get_model_g_h(d_out, prec); //输出 h 和 g 相关信息
     
-    /*
+    
     //背景解作图
     slong out_num=1E3;
     arb_ptr out_x,out_y,out_N;
@@ -96,23 +97,8 @@ void Inflation_power_spectra_numeric_cal(slong prec)
         //Inflation_V_phi_p(out_y+j,out_x+j,prec); //V = V_phi'(phi)
         //Inflation_V_phi_pp(out_y+j,out_x+j,prec); //V = V_phi''(phi)
         
-        
-        //背景解 phi = phi_interp(t)
-        Inflation_interp_fit_func_odes(s, out_x+j, d_out, 1, prec);
-        //背景解 phi_dot = phi_dot_interp(t)
-        Inflation_interp_fit_func_odes(t, out_x+j, d_out, 0, prec);
-        Inflation_V_phi(w,s,prec); //V = V_phi(phi)
-        
-        //背景解 H = H_interp(t), 这里不用插值
-        //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)
-        arb_sqr(s,t,prec);
-        arb_div_ui(s,s,6,prec);
-        arb_div_ui(w,w,3,prec);
-        arb_add(s,s,w,prec);
-        arb_sqrt(s,s,prec); //得到 H
-        
-        
-        Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); //ϕ'
+        Inflation_background_H_t(s, out_x+j, d_out, prec); //得到 H 
+        Inflation_interp_fit_func_odes(out_y+j, out_x+j, d_out, 0, prec); // dϕ/dN= ϕ'/H
         arb_div(out_y+j,out_y+j,s,prec);
         
     }
@@ -120,7 +106,6 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     Vector_point_output_to_file(out_N, out_y, out_num, 'w'); //a追加，w重新写入
     exit(0);
     //背景解作图 完
-    */
     
     
     //扰动方程求解
