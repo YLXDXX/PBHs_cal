@@ -424,6 +424,8 @@ static int interior_N_Inflation_get_model_g_h(arb_t res, const arb_t x,
 void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
 {
     arb_t s,w,t_e,t_step,t_f,error,t_a,t_b,pi_c,pi_d,pi_f,h,g_cal,g_theory;
+    arb_t N_e,N_step,epsilon_1,epsilon_2,eta_2;
+    
     arb_init(s);
     arb_init(w);
     arb_init(t_e);
@@ -438,6 +440,11 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_init(h);
     arb_init(g_cal);
     arb_init(g_theory);
+    arb_init(N_e);
+    arb_init(N_step);
+    arb_init(epsilon_1);
+    arb_init(epsilon_2);
+    arb_init(eta_2);
     
     arb_set_str(t_a,"1.6E6",prec);
     arb_set_str(t_b,"2E6",prec);
@@ -457,8 +464,9 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
                        prec);
     
     //利用 N 估计回归慢滚吸引子时间
-    Inflation_interp_fit_func_odes(w, t_step, d_out, 3, prec); //N
-    arb_add_ui(w,w,2,prec); //step后差不多 1 e-fold 就回归到吸引子轨道，取 2 保险
+    Inflation_interp_fit_func_odes(N_e, t_e, d_out, 3, prec); //N
+    Inflation_interp_fit_func_odes(N_step, t_step, d_out, 3, prec); //N
+    arb_add_ui(w,N_step,2,prec); //step后差不多 1 e-fold 就回归到吸引子轨道，取 2 保险
     
     struct interior_N_Inflation_get_model_g_h_s* p;
     p=(struct interior_N_Inflation_get_model_g_h_s*)calloc(1,sizeof(struct interior_N_Inflation_get_model_g_h_s));
@@ -489,11 +497,27 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     Inflation_background_H_t(w,t_f,d_out,prec); 
     arb_div(pi_f,s,w,prec); // dϕ/dN= ϕ'/H
     
+    //计算无量纲的慢滚参数
+    //ϵ'_1=ϵ_1/V_0^2
+    arb_sqr(w,Inf_V0,prec);
+    arb_div(epsilon_1,Inf_Epsilon_1,w,prec);
+    
+    //ϵ'_2=ϵ_2/(V_0+ΔV)^2
+    arb_add(w,Inf_V0,Inf_Delta_V,prec);
+    arb_sqr(w,w,prec);
+    arb_div(epsilon_2,Inf_Epsilon_2,w,prec);
+    
+    //η'_2=η_2/(V_0+ΔV)
+    arb_add(w,Inf_V0,Inf_Delta_V,prec);
+    arb_div(eta_2,Inf_Eta_2,w,prec);
+    
     //数值计算所得 h 和 g
     arb_div(g_cal,pi_d,pi_c,prec); // g=π_d/π_c
     
-    arb_div(h,pi_f,pi_d,prec); // h=6 π_f/π_d
-    arb_mul_ui(h,h,6,prec);
+    arb_mul_ui(w,epsilon_2,2,prec); // h≡-6*sqrt(2*ε_2)/π_d≈6 π_f/π_d, 其中的 ε_2 为无量纲的
+    arb_sqrt(w,w,prec);
+    arb_mul_ui(w,w,6,prec);
+    arb_div(h,w,pi_d,prec);
     
     //理论计算所得 g
     arb_sqr(s,pi_c,prec); //π_d=sqrt(π_c^2-6*ΔV/V_0)
@@ -502,17 +526,25 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_sub(s,s,w,prec);
     arb_sqrt(s,s,prec);
     
-    arb_div(g_theory,s,pi_c,prec);
+    arb_div(g_theory,s,pi_c,prec); // g=π_d/π_c
     arb_abs(g_theory,g_theory);
     
     
+    printf("N_c: ");arb_printn(N_e, 20,0);printf("\n");
+    printf("N_d: ");arb_printn(N_step, 20,0);printf("\n");
     printf("π_c: ");arb_printn(pi_c, 20,0);printf("\n");
     printf("π_d: ");arb_printn(pi_d, 20,0);printf("\n");
     printf("π_f: ");arb_printn(pi_f, 20,0);printf("\n\n");
     
+    
     printf("h  : ");arb_printn(h, 20,0);printf("\n");
     printf("g_c: ");arb_printn(g_cal, 20,0);printf("\n\n");
     //printf("g_t: ");arb_printn(g_theory, 20,0);printf("\n\n");
+    
+    printf("ε_1: ");arb_printn(epsilon_1, 20,0);printf("\n");
+    printf("ε_2: ");arb_printn(epsilon_2, 20,0);printf("\n");
+    printf("η_2: ");arb_printn(eta_2, 20,0);printf("\n\n");
+    
     
     arb_clear(s);
     arb_clear(w);
@@ -528,6 +560,11 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_clear(h);
     arb_clear(g_cal);
     arb_clear(g_theory);
+    arb_clear(N_e);
+    arb_clear(N_step);
+    arb_clear(epsilon_1);
+    arb_clear(epsilon_2);
+    arb_clear(eta_2);
     
     arb_clear(p->N);
     free(p);
