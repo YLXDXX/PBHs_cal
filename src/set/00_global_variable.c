@@ -142,6 +142,14 @@ void Set_global_variable(slong prec)
     //up_step_type
     arb_init(Up_step_h); //up_step_type 其中Up_step_h取值为负
     
+    // 有限宽 upward step 模型用
+    arb_init(Narrow_up_step_beta);
+    arb_init(Narrow_up_step_kappa);
+    arb_init(Narrow_up_step_g);
+    arb_init(Narrow_up_step_gamma);
+    arb_init(Narrow_up_step_omega);
+    arb_init(Narrow_up_step_A);
+    arb_init(Narrow_up_step_cutoff_1);
     
     arb_init(R_K_to_r_m); //求r_m动态区间用
     

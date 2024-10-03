@@ -420,5 +420,624 @@ int Non_Gaussianity_power_expansion_n(arb_t res, const arb_t x, const slong orde
     return 0;
 }
 
+//有限宽step对应的非高斯性，及其导数
+//参照 2305.18140 中的 (4.7)
+//为了保证程序的简洁，将 √ 和 log 函数单独提出了出来
 
+//考虑一阶+二阶扰动
+static void interior_1_2_sqrt(arb_t res, const arb_t dphi, const arb_t gamma, const arb_t g, const slong order, slong prec)
+{
+    arb_t s,t,w,quadratic,quadratic_p;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(quadratic);
+    arb_init(quadratic_p);
+    
+    
+    //二次多项式 (dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1
+    arb_sqr(s,g,prec); //s=gamma/g^2
+    arb_div(s,gamma,s,prec);
+    arb_mul(w,s,gamma,prec); //w=gamma^2/g^2
+    
+    arb_sqr(quadratic,dphi,prec);
+    arb_mul(quadratic,quadratic,w,prec);
+    
+    arb_mul_ui(t,s,2,prec);
+    arb_mul(t,t,dphi,prec);
+    arb_add(quadratic,quadratic,t,prec);
+    
+    arb_add_ui(quadratic,quadratic,1,prec);
+    
+    //二次多项式导数 (2*dphi*gamma^2)/g^2+(2*gamma)/g^2
+    arb_mul_ui(quadratic_p,dphi,2,prec);
+    arb_mul(quadratic_p,quadratic_p,w,prec);
+    
+    arb_mul_ui(t,s,2,prec);
+    arb_add(quadratic_p,quadratic_p,t,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            // sqrt((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)
+            
+            arb_sqrt(res,quadratic,prec);
+            
+            break;
+        case 1: //一阶导
+            //((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)/(2*sqrt((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1))
+            
+            arb_sqrt(s,quadratic,prec);
+            arb_mul_ui(s,s,2,prec);
+            
+            arb_div(res,quadratic_p,s,prec);
+            
+            break;
+            
+        case 2: //二阶导
+            //gamma^2/(g^2*sqrt((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1))-((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)^2/(4*((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^(3/2))
+            
+            //前面部分
+            arb_div(s,gamma,g,prec);
+            arb_sqr(s,s,prec);
+            
+            arb_sqrt(t,quadratic,prec);
+            arb_div(s,s,t,prec);
+            
+            //后面部分
+            arb_set_ui(t,3); //3/2
+            arb_div_ui(t,t,2,prec);
+            
+            arb_pow(w,quadratic,t,prec);
+            arb_mul_ui(w,w,4,prec);
+            
+            arb_sqr(t,quadratic_p,prec);
+            
+            arb_div(t,t,w,prec);
+            
+            arb_sub(res,s,t,prec);
+            
+            break;
+        case 3: //三阶导
+            //(3*((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)^3)/(8*((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^(5/2))-(3*gamma^2*((2*dphi*gamma^2)/g^2+(2*gamma)/g^2))/(2*g^2*((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^(3/2))
+            
+            //前面部分
+            arb_set_ui(t,5); //5/2
+            arb_div_ui(t,t,2,prec);
+            
+            arb_pow(w,quadratic,t,prec);
+            arb_mul_ui(w,w,8,prec);
+            
+            arb_pow_ui(s,quadratic_p,3,prec);
+            arb_mul_ui(s,s,3,prec);
+            arb_div(s,s,w,prec);
+            
+            //后面部分
+            arb_set_ui(t,3); //3/2
+            arb_div_ui(t,t,2,prec);
+            
+            arb_pow(w,quadratic,t,prec);
+            arb_mul_ui(w,w,2,prec);
+            arb_sqr(t,g,prec);
+            arb_mul(w,w,t,prec);
+            
+            arb_sqr(t,gamma,prec);
+            arb_mul(t,t,quadratic_p,prec);
+            arb_mul_ui(t,t,3,prec);
+            arb_div(t,t,w,prec);
+            
+            arb_sub(res,s,t,prec);
+            
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_up_step_n interior func 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(quadratic);
+    arb_clear(quadratic_p);
+}
 
+static void interior_1_2_log(arb_t res, const arb_t dphi, const arb_t gamma, const arb_t g, const slong order, slong prec)
+{
+    arb_t s,t,w,quadratic,quadratic_p;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(quadratic);
+    arb_init(quadratic_p);
+    
+    
+    //二次多项式 (dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1
+    arb_sqr(s,g,prec); //s=gamma/g^2
+    arb_div(s,gamma,s,prec);
+    arb_mul(w,s,gamma,prec); //w=gamma^2/g^2
+    
+    arb_sqr(quadratic,dphi,prec);
+    arb_mul(quadratic,quadratic,w,prec);
+    
+    arb_mul_ui(t,s,2,prec);
+    arb_mul(t,t,dphi,prec);
+    arb_add(quadratic,quadratic,t,prec);
+    
+    arb_add_ui(quadratic,quadratic,1,prec);
+    
+    //二次多项式导数 (2*dphi*gamma^2)/g^2+(2*gamma)/g^2
+    arb_mul_ui(quadratic_p,dphi,2,prec);
+    arb_mul(quadratic_p,quadratic_p,w,prec);
+    
+    arb_mul_ui(t,s,2,prec);
+    arb_add(quadratic_p,quadratic_p,t,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            // log((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)
+            
+            arb_log(res,quadratic,prec);
+            
+            break;
+        case 1: //一阶导
+            
+            //((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)/((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)
+            arb_div(res,quadratic_p,quadratic,prec);
+            
+            break;
+            
+        case 2: //二阶导
+            //(2*gamma^2)/(g^2*((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1))-((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)^2/((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^2
+            
+            //前面部分
+            arb_div(s,gamma,g,prec);
+            arb_sqr(s,s,prec);
+            arb_mul_ui(s,s,2,prec);
+            
+            arb_div(s,s,quadratic,prec);
+            
+            //后面部分
+            arb_sqr(w,quadratic,prec);
+            arb_sqr(t,quadratic_p,prec);
+            arb_div(t,t,w,prec);
+            
+            arb_sub(res,s,t,prec);
+            
+            break;
+        case 3: //三阶导
+            //(2*((2*dphi*gamma^2)/g^2+(2*gamma)/g^2)^3)/((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^3-(6*gamma^2*((2*dphi*gamma^2)/g^2+(2*gamma)/g^2))/(g^2*((dphi^2*gamma^2)/g^2+(2*dphi*gamma)/g^2+1)^2)
+            
+            //前面部分
+            arb_pow_ui(w,quadratic,3,prec);
+            arb_pow_ui(s,quadratic_p,3,prec);
+            arb_mul_ui(s,s,2,prec);
+            arb_div(s,s,w,prec);
+            
+            
+            //后面部分
+            arb_sqr(w,quadratic,prec);
+            arb_sqr(t,g,prec);
+            arb_mul(w,w,t,prec);
+            
+            arb_sqr(t,gamma,prec);
+            arb_mul_ui(t,t,6,prec);
+            arb_mul(t,t,quadratic_p,prec);
+            arb_div(t,t,w,prec);
+            
+            arb_sub(res,s,t,prec);
+            
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_up_step_n interior func 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(quadratic);
+    arb_clear(quadratic_p);
+}
+
+//考虑一阶扰动
+static void interior_1_sqrt(arb_t res, const arb_t dphi, const arb_t gamma, const arb_t g, const slong order, slong prec)
+{
+    arb_t s,t,w,linear;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(linear);
+    
+    //一次函数
+    //(2*dphi*gamma)/g^2+1
+    
+    arb_sqr(s,g,prec);
+    arb_div(w,gamma,s,prec); //w=gamma/g^2
+    arb_mul_ui(s,w,2,prec);
+    arb_mul(s,s,dphi,prec);
+    
+    arb_add_ui(linear,s,1,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            //sqrt((2*dphi*gamma)/g^2+1)
+            
+            arb_sqrt(res,linear,prec);
+            
+            break;
+        case 1: //一阶导
+            //gamma/(g^2*sqrt((2*dphi*gamma)/g^2+1))
+            
+            arb_sqrt(s,linear,prec);
+            
+            arb_div(res,w,s,prec); //w=gamma/g^2
+            
+            break;
+        case 2: //二阶导
+            //-gamma^2/(g^4*((2*dphi*gamma)/g^2+1)^(3/2))
+            
+            arb_set_ui(t,3); //3/2
+            arb_div_ui(t,t,2,prec);
+            
+            arb_pow(s,linear,t,prec);
+            
+            arb_sqr(t,w,prec); //w=gamma/g^2
+            arb_div(s,t,s,prec);
+            
+            arb_neg(res,s);
+            
+            break;
+        case 3: //三阶导
+            //(3*gamma^3)/(g^6*((2*dphi*gamma)/g^2+1)^(5/2))
+            
+            arb_set_ui(t,5); //5/2
+            arb_div_ui(t,t,2,prec);
+            arb_pow(s,linear,t,prec);
+            
+            arb_pow_ui(t,w,3,prec); //w=gamma/g^2
+            arb_mul_ui(t,t,3,prec);
+            
+            arb_div(res,t,s,prec);
+            
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_up_step_n interior func 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(linear);
+}
+
+static void interior_1_log(arb_t res, const arb_t dphi, const arb_t gamma, const arb_t g, const slong order, slong prec)
+{
+    arb_t s,t,w,linear;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(linear);
+    
+    //一次函数
+    //(2*dphi*gamma)/g^2+1
+    
+    arb_sqr(s,g,prec);
+    arb_div(w,gamma,s,prec); //w=gamma/g^2
+    arb_mul_ui(s,w,2,prec);
+    arb_mul(s,s,dphi,prec);
+    
+    arb_add_ui(linear,s,1,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            //log((2*dphi*gamma)/g^2+1)
+            
+            arb_log(res,linear,prec);
+            
+            break;
+        case 1: //一阶导
+            //(2*gamma)/(g^2*((2*dphi*gamma)/g^2+1))
+            
+            arb_div(s,w,linear,prec); //w=gamma/g^2
+            arb_mul_ui(res,s,2,prec);
+            
+            break;
+        case 2: //二阶导
+            //-(4*gamma^2)/(g^4*((2*dphi*gamma)/g^2+1)^2)
+            
+            arb_sqr(s,linear,prec);
+            
+            arb_sqr(t,w,prec); //w=gamma/g^2
+            arb_mul_ui(t,t,4,prec);
+            
+            arb_div(s,t,s,prec);
+            arb_neg(res,s);
+            
+            break;
+        case 3: //三阶导
+            //(16*gamma^3)/(g^6*((2*dphi*gamma)/g^2+1)^3)
+            
+            arb_pow_ui(s,linear,3,prec);
+            
+            arb_pow_ui(t,w,3,prec); //w=gamma/g^2
+            arb_mul_ui(t,t,16,prec);
+            
+            arb_div(res,t,s,prec);
+            
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_up_step_n interior func 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(linear);
+}
+
+//扰动 1+2 阶
+int Non_Gaussianity_narrow_1_2_up_step_n(arb_t res, const arb_t x, const slong order, slong prec)
+{
+    arb_t s,t,w,dphi;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(dphi);
+    
+    // 2305.18140 (4.7) 是关于 dϕ 的，这里使用 R_G=A*dϕ 得到 R(R_G) 的非高斯性关系
+    //dϕ=R_G/A
+    arb_div(dphi,x,Narrow_up_step_A,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            //-in_1_2_log(RG/A)/(2*omegas2)+((1-in_1_2_sqrt(RG/A))*g*kappa)/3+(RG*beta)/A
+            
+            //对数部分
+            interior_1_2_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 0, prec);
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_2_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 0, prec);
+            arb_neg(t,t);
+            arb_add_ui(t,t,1,prec);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(s,s,t,prec);
+            
+            //线性部分
+            arb_mul(t,dphi,Narrow_up_step_beta,prec);
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 1: //一阶导
+            //-'diff(in_1_2_log(RG/A),RG,1)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,1))*g*kappa)/3+beta/A
+            
+            //对数部分
+            interior_1_2_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 1, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_2_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 1, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(s,s,t,prec);
+            
+            //线性部分
+            arb_div(t,Narrow_up_step_beta,Narrow_up_step_A,prec); //求一次导多个 1/A
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 2: //二阶导
+            //-'diff(in_1_2_log(RG/A),RG,2)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,2))*g*kappa)/3
+            //对数部分
+            interior_1_2_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 2, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_2_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 2, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 3: //三阶导
+            //-'diff(in_1_2_log(RG/A),RG,3)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,3))*g*kappa)/3
+            //对数部分
+            interior_1_2_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 3, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_2_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 3, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(res,s,t,prec);
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_1_2_up_step_n 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(dphi);
+    
+    return 0;
+}
+
+//扰动 1 阶
+int Non_Gaussianity_narrow_1_up_step_n(arb_t res, const arb_t x, const slong order, slong prec)
+{
+    arb_t s,t,w,dphi;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    arb_init(dphi);
+    
+    // 2305.18140 (4.7) 是关于 dϕ 的，这里使用 R_G=A*dϕ 得到 R(R_G) 的非高斯性关系
+    //dϕ=R_G/A
+    arb_div(dphi,x,Narrow_up_step_A,prec);
+    
+    switch(order)
+    {
+        case 0: //原函数
+            //-in_1_2_log(RG/A)/(2*omegas2)+((1-in_1_2_sqrt(RG/A))*g*kappa)/3+(RG*beta)/A
+            
+            //对数部分
+            interior_1_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 0, prec);
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 0, prec);
+            arb_neg(t,t);
+            arb_add_ui(t,t,1,prec);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(s,s,t,prec);
+            
+            //线性部分
+            arb_mul(t,dphi,Narrow_up_step_beta,prec);
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 1: //一阶导
+            //-'diff(in_1_2_log(RG/A),RG,1)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,1))*g*kappa)/3+beta/A
+            
+            //对数部分
+            interior_1_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 1, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 1, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(s,s,t,prec);
+            
+            //线性部分
+            arb_div(t,Narrow_up_step_beta,Narrow_up_step_A,prec); //求一次导多个 1/A
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 2: //二阶导
+            //-'diff(in_1_2_log(RG/A),RG,2)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,2))*g*kappa)/3
+            //对数部分
+            interior_1_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 2, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 2, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(res,s,t,prec);
+            
+            break;
+        case 3: //三阶导
+            //-'diff(in_1_2_log(RG/A),RG,3)/(2*omegas2)-(('diff(in_1_2_sqrt(RG/A),RG,3))*g*kappa)/3
+            //对数部分
+            interior_1_log(s,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 3, prec);
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(s,s,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_mul_ui(t,Narrow_up_step_omega,2,prec);
+            arb_div(s,s,t,prec);
+            arb_neg(s,s);
+            
+            //根号部分
+            interior_1_sqrt(t,dphi, Narrow_up_step_gamma, Narrow_up_step_g, 3, prec);
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_div(t,t,Narrow_up_step_A,prec); //求一次导多个 1/A
+            arb_neg(t,t);
+            
+            arb_mul(w,Narrow_up_step_g,Narrow_up_step_kappa,prec);
+            arb_div_ui(w,w,3,prec);
+            arb_mul(t,t,w,prec);
+            
+            arb_add(res,s,t,prec);
+            break;
+        default:
+            printf("General -> non_gaussianity -> Non_Gaussianity_narrow_1_2_up_step_n 阶数n输入有误\n");
+            exit(1);
+    }
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+    arb_clear(dphi);
+    
+    return 0;
+}

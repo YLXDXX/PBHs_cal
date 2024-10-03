@@ -4,10 +4,10 @@
 void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行传递参数，可传递多个
 {
     //log-normal谱
-    //arb_set_str(Power_A, "4E-3", prec); //功率谱振幅
+    arb_set_str(Power_A, "4E-3", prec); //功率谱振幅
     //arb_set_str(Power_A, "0.302", prec); //PTAs对log-normal的拟合
     //arb_set_str(Power_A, "0.211", prec); //PTAs对BPL的拟合
-    arb_set_str(Power_A, "0.142", prec); // upward step 拟合
+    //arb_set_str(Power_A, "0.16", prec); // upward step 拟合
     //arb_set_str(Power_A, comd_argv[1], prec);
     
     //功率谱掌宽，例如 log-normal 的
@@ -20,7 +20,7 @@ void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行�
     //arb_set_str(K_star,"1.56E13",prec); //参考值 K_star=1.56E13
     //arb_set_str(K_star,"151356124.8",prec); //10^8.18 PTAs对log-normal的拟合
     //arb_set_str(K_star,"114815362.1",prec); //10^8.06 PTAs对BPL的拟合
-    arb_set_str(K_star,"9.2E7",prec); // upward step 拟合
+    arb_set_str(K_star,"1.04E8",prec); // upward step 拟合
     //arb_set_str(K_star,argv[1],prec);//命令行中读取
     //arb_exp(K_star,K_star,prec);
     
@@ -51,13 +51,13 @@ void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行�
     //broken power law功率谱使用 β 
     //β 影响的是P(k_star)右边的部分，k>k_star，β越大，下降的越厉害
     //arb_set_str(BPL_beta,"5.17",prec); //PTAs对BPL的拟合
-    arb_set_str(BPL_beta,"9",prec); // upward step 拟合 6
+    arb_set_str(BPL_beta,"7",prec); // upward step 拟合 6
     
     //broken power law功率谱使用 γ
     //γ 影响的是P(k)左右两边的转化，γ越大，转化越圆润，P(k_star)周围下降的越慢
     //arb_one(BPL_gamma); //一般设 γ=1
     //arb_set_str(BPL_gamma,"5.03",prec); //PTAs对BPL的拟合
-    arb_set_str(BPL_gamma,"3.2",prec); // upward step 拟合 2
+    arb_set_str(BPL_gamma,"3",prec); // upward step 拟合 2
     
     //link cmb 功率谱用
     arb_set_str(Link_CMB_K_t,"10",prec);

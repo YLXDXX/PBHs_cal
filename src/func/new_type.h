@@ -166,8 +166,9 @@ enum ZETA_ENUM_TYPE
     gaussian_type,
     power_expansion_type,
     exponential_tail_type,
-    up_step_type
-    
+    up_step_type,
+    narrow_step_1_type,
+    narrow_step_1_2_type
 };
 
 typedef enum ZETA_ENUM_TYPE ZETA; //功率谱

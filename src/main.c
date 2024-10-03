@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    routine_test(prec); exit(0); //测试程序
+    //routine_test(prec); exit(0); //测试程序
     
     //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
     FITTED_num=5E3;
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
     //           upward_step_spectra_type/numerical_cal_type
-    Power_spectrum_type=broken_power_law_type;
+    Power_spectrum_type=lognormal_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"0.1",prec);
+    arb_set_str(t,"0.7",prec);
     arb_set_str(w,"1",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -287,10 +287,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Probability_C(Pk,w,prec);
     //Probability_C_l(Pk,w,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
-    //PS_abundance_beta_m(w,t,prec);
+    PS_abundance_beta_m(Pk,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    PS_abundance_f_all(Pk,prec);
+    //PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算

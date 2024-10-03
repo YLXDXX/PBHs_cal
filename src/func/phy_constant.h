@@ -156,7 +156,13 @@ extern arb_t Power_expansion_five; //power-series expansion 五次项 five -> D
 extern arb_t Power_expansion_six; //power-series expansion 五次项 six -> E
 extern arb_t Up_step_h; //up-step 模型中用
 extern arb_t Exponential_tail_beta; //exponential_tail 模型中用
-
+extern arb_t Narrow_up_step_beta; // 有限宽 upward step 模型用
+extern arb_t Narrow_up_step_kappa;
+extern arb_t Narrow_up_step_g;
+extern arb_t Narrow_up_step_gamma;
+extern arb_t Narrow_up_step_omega;
+extern arb_t Narrow_up_step_A;
+extern arb_t Narrow_up_step_cutoff_1;
 
 //诱导引力波
 extern arb_t Int_GW_I_func_min; // I/I_c/I_s 积分用

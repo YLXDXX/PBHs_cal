@@ -101,6 +101,18 @@ int interior_C_l_J_1(arb_t res, const arb_t Y, slong prec)
             arb_set(res,s);
             break;
             
+        case narrow_step_1_type :
+            //有限宽 step 非高斯性，扰动 1 阶
+            Non_Gaussianity_narrow_1_up_step_n(s,Y,1,prec); //一阶导，调用前面函数
+            arb_set(res,s);
+            break;
+            
+        case narrow_step_1_2_type :
+            //有限宽 step 非高斯性，扰动 1+2 阶
+            Non_Gaussianity_narrow_1_2_up_step_n(s,Y,1,prec); //一阶导，调用前面函数
+            arb_set(res,s);
+            break;
+            
         default :
             printf("PS_Method -> C_l_probability -> 在 interior_C_l_J_1 -> Zeta_type不正确\n" );
             exit(1);
@@ -232,6 +244,15 @@ void interior_probability_C_l_P_each_Y(arb_t res, const arb_t Y, const arb_t A, 
             Non_Gaussianity_power_expansion_n(zeta_2,Y,2,prec); //二阶导，调用前面函数
             break;
             
+        case narrow_step_1_type :
+            Non_Gaussianity_narrow_1_up_step_n(zeta_1,Y,1,prec); //一阶导，调用前面函数
+            Non_Gaussianity_narrow_1_up_step_n(zeta_2,Y,2,prec); //二阶导，调用前面函数
+            break;
+            
+        case narrow_step_1_2_type :
+            Non_Gaussianity_narrow_1_2_up_step_n(zeta_1,Y,1,prec); //一阶导，调用前面函数
+            Non_Gaussianity_narrow_1_2_up_step_n(zeta_2,Y,2,prec); //二阶导，调用前面函数
+            break; 
         default :
             printf("PS_Method -> C_l_probability -> interior_probability_C_l_P_each_Y -> Zeta_type不正确\n" );
             exit(1);
@@ -362,6 +383,8 @@ int Probability_C_l(arb_t res, const arb_t C_l, slong prec)
                     case exponential_tail_type : //此几种情况可合并，在最后加 break 即可
                     case up_step_type :
                     case power_expansion_type :
+                    case narrow_step_1_type :
+                    case narrow_step_1_2_type :
                         
                         //此时 P(C_l)=P(Y)*|A|*|ζ''Y+ζ'|^(-1)  //取绝对值
                         //需要反解出Y，这里用数值解法
@@ -392,10 +415,9 @@ int Probability_C_l(arb_t res, const arb_t C_l, slong prec)
                 free(Root_Y_parameter); //手动释放自定义结构体内存
                 
                 break;
-                
-                    default:
-                        printf("PS_Method -> C_l_probability ->  Probability_C_l -> Power_spectrum_type 有误\n");
-                        exit(1);
+             default:
+                printf("PS_Method -> C_l_probability ->  Probability_C_l -> Power_spectrum_type 有误\n");
+                exit(1);
         }
     }
     

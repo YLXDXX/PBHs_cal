@@ -1081,6 +1081,161 @@ int zeta_profile_n(arb_t res, const arb_t r, const slong order, slong prec)
             }
             
             break;
+        case narrow_step_1_type :
+            // ζ=f(ζ_G) 为一复合函数，当有导数时，需按复合函数求导规则
+            switch(order)
+            {
+                case 0 : //原函数
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    
+                    Non_Gaussianity_narrow_1_up_step_n(res,G_0,0,prec);
+                    break;
+                case 1 : //一阶导
+                    //ζ'=f'(ζ_G)*ζ'_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    
+                    Non_Gaussianity_narrow_1_up_step_n(s,G_0,1,prec);
+                    
+                    arb_mul(res,s,G_1,prec);
+                    break;
+                case 2 : //二阶导
+                    //ζ''=f''(ζ_G)*(ζ'_G)^2 + f'(ζ_G)*ζ''_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    zeta_Gauss_profile_n(G_2,r,2,prec);
+                    
+                    //前半部分
+                    
+                    Non_Gaussianity_narrow_1_up_step_n(s,G_0,2,prec);
+                    arb_sqr(t,G_1,prec);
+                    arb_mul(s,s,t,prec);
+                    
+                    //后半部分
+                    Non_Gaussianity_narrow_1_up_step_n(t,G_0,1,prec);
+                    arb_mul(t,t,G_2,prec);
+                    
+                    arb_add(res,s,t,prec);
+                    break;
+                case 3 : //三阶导
+                    //ζ''=f''(ζ_G)*(ζ'_G)^2 + f'(ζ_G)*ζ''_G
+                    //ζ''' = f'''(ζ_G)*(ζ'_G)^3 + f''(ζ_G)*2*(ζ'_G)*(ζ''_G)
+                    //       + f''(ζ_G)*(ζ'_G)*ζ''_G + f'(ζ_G)*ζ'''_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    zeta_Gauss_profile_n(G_2,r,2,prec);
+                    zeta_Gauss_profile_n(G_3,r,3,prec);
+                    
+                    //前半部分
+                    Non_Gaussianity_narrow_1_up_step_n(s,G_0,3,prec);
+                    arb_pow_ui(t,G_1,3,prec);
+                    arb_mul(s,s,t,prec);
+                    
+                    //中间
+                    Non_Gaussianity_narrow_1_up_step_n(t,G_0,2,prec);
+                    arb_mul(w,G_1,G_2,prec);
+                    arb_mul_si(w,w,3,prec); //中间两项可以合并
+                    arb_mul(t,t,w,prec);
+                    arb_add(s,s,t,prec);
+                    
+                    //后半部分
+                    Non_Gaussianity_narrow_1_up_step_n(t,G_0,1,prec);
+                    arb_mul(t,t,G_3,prec);
+                    
+                    arb_add(res,s,t,prec);
+                    break;
+                case 4 : //四阶导
+                    printf("General -> typical_profile -> zeta_profile_n-->Zeta_type->narrow_step_1_type 阶数n输入有误\n");
+                    exit(1);
+                    break;
+                default :
+                    printf("General -> typical_profile -> zeta_profile_n-->Zeta_type->narrow_step_1_type 阶数n输入有误\n");
+                    exit(1);
+            }
+            
+            break;
+         case narrow_step_1_2_type :
+            // ζ=f(ζ_G) 为一复合函数，当有导数时，需按复合函数求导规则
+            switch(order)
+            {
+                case 0 : //原函数
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    
+                    Non_Gaussianity_narrow_1_2_up_step_n(res,G_0,0,prec);
+                    
+                    break;
+                case 1 : //一阶导
+                    //ζ'=f'(ζ_G)*ζ'_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    
+                    Non_Gaussianity_narrow_1_2_up_step_n(s,G_0,1,prec);
+                    
+                    arb_mul(res,s,G_1,prec);
+                    break;
+                case 2 : //二阶导
+                    //ζ''=f''(ζ_G)*(ζ'_G)^2 + f'(ζ_G)*ζ''_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    zeta_Gauss_profile_n(G_2,r,2,prec);
+                    
+                    //前半部分
+                    
+                    Non_Gaussianity_narrow_1_2_up_step_n(s,G_0,2,prec);
+                    arb_sqr(t,G_1,prec);
+                    arb_mul(s,s,t,prec);
+                    
+                    //后半部分
+                    Non_Gaussianity_narrow_1_2_up_step_n(t,G_0,1,prec);
+                    arb_mul(t,t,G_2,prec);
+                    
+                    arb_add(res,s,t,prec);
+                    break;
+                case 3 : //三阶导
+                    //ζ''=f''(ζ_G)*(ζ'_G)^2 + f'(ζ_G)*ζ''_G
+                    //ζ''' = f'''(ζ_G)*(ζ'_G)^3 + f''(ζ_G)*2*(ζ'_G)*(ζ''_G)
+                    //       + f''(ζ_G)*(ζ'_G)*ζ''_G + f'(ζ_G)*ζ'''_G
+                    
+                    zeta_Gauss_profile_n(G_0,r,0,prec);
+                    zeta_Gauss_profile_n(G_1,r,1,prec);
+                    zeta_Gauss_profile_n(G_2,r,2,prec);
+                    zeta_Gauss_profile_n(G_3,r,3,prec);
+                    
+                    //前半部分
+                    Non_Gaussianity_narrow_1_2_up_step_n(s,G_0,3,prec);
+                    arb_pow_ui(t,G_1,3,prec);
+                    arb_mul(s,s,t,prec);
+                    
+                    //中间
+                    Non_Gaussianity_narrow_1_2_up_step_n(t,G_0,2,prec);
+                    arb_mul(w,G_1,G_2,prec);
+                    arb_mul_si(w,w,3,prec); //中间两项可以合并
+                    arb_mul(t,t,w,prec);
+                    arb_add(s,s,t,prec);
+                    
+                    //后半部分
+                    Non_Gaussianity_narrow_1_2_up_step_n(t,G_0,1,prec);
+                    arb_mul(t,t,G_3,prec);
+                    
+                    arb_add(res,s,t,prec);
+                    break;
+                case 4 : //四阶导
+                    printf("General -> typical_profile -> zeta_profile_n-->Zeta_type->narrow_step_1_2_type 阶数n输入有误\n");
+                    exit(1);
+                    break;
+                default :
+                    printf("General -> typical_profile -> zeta_profile_n-->Zeta_type->narrow_step_1_2_type 阶数n输入有误\n");
+                    exit(1);
+            }
+            
+            break;
         default:
             printf("General -> typical_profile -> zeta_profile_n 中 zeta_type 输入有误\n");
             exit(1);
