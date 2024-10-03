@@ -344,6 +344,11 @@ extern arb_t PS_Root_C_l_to_Y_max;
 extern arb_t PS_Root_C_l_to_Y_precision;
 extern slong PS_Root_C_l_to_Y_num;
 
+extern arb_t PS_Root_zeta_to_zeta_G_min;//计算概率 P(ζ), 需要反解 ζ= F(ζ_G)，有时反函数的解析表达式不能写出，且反函数不是单值
+extern arb_t PS_Root_zeta_to_zeta_G_max;
+extern arb_t PS_Root_zeta_to_zeta_G_precision;
+extern slong PS_Root_zeta_to_zeta_G_num;
+
 extern arb_ptr P_normalization_coefficient; //概率归一化系数
 
 
