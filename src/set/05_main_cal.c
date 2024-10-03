@@ -9,7 +9,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     //曲率扰动 ζ 相关设定
     // ζ 扰动类型 gaussian_type/exponential_tail_type/up_step_type/power_expansion_type
     //            narrow_step_1_type/narrow_step_1_2_type
-    Zeta_type=narrow_step_1_type; //需要其它参数之前，如r_m的求解
+    Zeta_type=up_step_type; //需要其它参数之前，如r_m的求解
     
     
     //非高斯相关参数设定，需在求 r_max 和 PT_mu_th 之前设定，其与两都都有关
@@ -36,7 +36,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     
     //up_step_type
     //arb_set(Up_step_h,Upward_step_spectra_h);
-    arb_set_str(Up_step_h, "-5.939", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set_str(Up_step_h, "-7.11", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv[1], prec); //从命令行读取参数
     
     
@@ -279,6 +279,11 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
+                    arb_set_str(PS_Root_zeta_to_zeta_G_min, "-5", prec);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G) 用
+                    arb_abs(PS_Root_zeta_to_zeta_G_max, Up_step_h); //ζ_G ≤ 1/|h|
+                    arb_inv(PS_Root_zeta_to_zeta_G_max,PS_Root_zeta_to_zeta_G_max,prec);
+                    PS_Root_zeta_to_zeta_G_num=1E5; //注意到，在临近截断处，需要非常多的点才能找出相应的根
+                    arb_set_str(PS_Root_zeta_to_zeta_G_precision, "1E-13", prec);
                     
                     arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);
@@ -322,6 +327,10 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
+                    arb_set_str(PS_Root_zeta_to_zeta_G_min, "-5", prec);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G) 用
+                    arb_set_str(PS_Root_zeta_to_zeta_G_max, "0.5", prec);
+                    PS_Root_zeta_to_zeta_G_num=1E4; //注意到，在临近截断处，需要非常多的点才能找出相应的根
+                    arb_set_str(PS_Root_zeta_to_zeta_G_precision, "1E-13", prec);
                     
                     arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
                     arb_set_str(Int_n_pk_k_max,"1.6",prec);

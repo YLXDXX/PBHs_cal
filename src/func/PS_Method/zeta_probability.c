@@ -34,37 +34,33 @@ int interior_probability_gauss(arb_t res, const arb_t zeta, slong prec)
 
 
 
-//exponential_tail 概率密度 ζ=-1/3 * ln(1-3*ζ_G)
+//exponential_tail 概率密度 ζ=-1/β*ln(1-β*ζ_G)
 int interior_probability_exponential_tail(arb_t res, const arb_t zeta, slong prec)
-{  
+{
     arb_t s,t,w;
     arb_init(s);
     arb_init(t);
     arb_init(w);
     
-    //指数部分
-    arb_mul_ui(w,zeta,3,prec);
-    arb_neg(w,w);
-    arb_set(t,w); //t后面指数上减法用
-    arb_exp(w,w,prec);
-    arb_sub_si(w,w,1,prec); //因后面要平方，相减顺序不重要
-    arb_sqr(w,w,prec);
+    //ζ_G=1/β*(1-Exp(-β*ζ))
     
-    arb_mul_si(s,PS_Sigma_YY,18,prec);
-    arb_div(w,w,s,prec);
-    arb_neg(w,w);
-    arb_add(w,w,t,prec);
+    //求ζ_G
+    arb_mul(s,Exponential_tail_beta,zeta,prec);
+    arb_neg(s,s);
+    arb_exp(s,s,prec);
+    arb_neg(s,s);
+    arb_add_ui(s,s,1,prec);
+    arb_div(s,s,Exponential_tail_beta,prec); //ζ_G
     
-    arb_exp(w,w,prec);
+    //P(ζ)=P(ζ_G)*(1-β*ζ_G)
+    arb_mul(t,Exponential_tail_beta,s,prec); //(1-β*ζ_G)
+    arb_neg(t,t);
+    arb_add_ui(t,t,1,prec);
     
-    //系数部分
-    arb_mul(t,PS_Sigma_YY,Pi_2,prec);
-    arb_sqrt(t,t,prec);
-    arb_inv(t,t,prec); //Sets z to 1/𝑥
+    interior_probability_gauss(w, s, prec);
     
-    arb_mul(res,t,w,prec);
+    arb_mul(res,w,t,prec);
     
-    //完成计算，释放
     arb_clear(s);
     arb_clear(t);
     arb_clear(w);
@@ -132,7 +128,7 @@ int interior_probability_upward_step(arb_t res, const arb_t zeta, void* p, const
 
 
 
-static int interior_probability_up_step(arb_t res, const arb_t zeta_G, void* zeta, const slong order, slong prec)
+static int interior_probability_up_step_numerical(arb_t res, const arb_t zeta_G, void* zeta, const slong order, slong prec)
 {
     arb_t s;
     arb_init(s);
@@ -242,7 +238,7 @@ int Probability_zeta(arb_t res, const arb_t zeta, void* p, const slong order, sl
                 }else
                 {
                     arb_set(w,zeta);
-                    root_num=Find_interval_multi_root(m_r, interior_probability_up_step, w, 0,
+                    root_num=Find_interval_multi_root(m_r, interior_probability_up_step_numerical, w, 0,
                                                       PS_Root_zeta_to_zeta_G_min, PS_Root_zeta_to_zeta_G_max,
                                                       PS_Root_zeta_to_zeta_G_precision,
                                                       PS_Root_zeta_to_zeta_G_num,prec);
