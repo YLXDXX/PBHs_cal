@@ -123,6 +123,10 @@ void Set_global_variable(slong prec)
     arb_init(PS_Root_C_l_to_Y_max);
     arb_init(PS_Root_C_l_to_Y_precision);
     
+    arb_init(PS_Root_zeta_to_zeta_G_min);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G)，有时反函数的解析表达式不能写出，且反函数不是单值
+    arb_init(PS_Root_zeta_to_zeta_G_max);
+    arb_init(PS_Root_zeta_to_zeta_G_precision);
+    
     arb_init(PS_abundance_int_precision); //计算丰度β和f的积分精度
     arb_init(PS_abundance_simple_int_precision);
     arb_init(PS_abundance_simple_int_min);

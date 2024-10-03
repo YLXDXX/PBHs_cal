@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    //routine_test(prec); exit(0); //测试程序
+    routine_test(prec); exit(0); //测试程序
     
     //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
     FITTED_num=5E3;
@@ -223,6 +223,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Continuum_spectrum_cal_simplify=false; //是否采用简化，true/false，这里简化现阶段仅针对log-normal谱
     
     
+    arb_set_str(PS_Sigma_YY,"0.00040613304234237484945",prec);
+    
     //
     //全部设置完，后面调用各函数进行各种设算
     //
@@ -237,7 +239,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
     arb_set_str(t,"0.7",prec);
-    arb_set_str(w,"1",prec);
+    arb_set_str(w,"0.2",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
     //arb_sub(w,Ln_K_star,w,prec);
@@ -250,6 +252,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //zeta_Gauss_profile_n(Pk,R_MAX,0,prec);
     
     //zeta_profile_n(w,R_MAX,0,prec);
+    //Probability_zeta(Pk,w,NULL,0,prec);
     //arb_mul(Pk,w,t,prec);
     //Find_r_max(t, prec);
     //C_m_average(Pk,t,prec);
@@ -287,10 +290,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Probability_C(Pk,w,prec);
     //Probability_C_l(Pk,w,prec);
     //beta_m_to_f_m_coefficient(Pk,prec);
-    PS_abundance_beta_m(Pk,t,prec);
+    //PS_abundance_beta_m(Pk,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    //PS_abundance_f_all(Pk,prec);
+    PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算
