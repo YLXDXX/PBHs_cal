@@ -420,11 +420,12 @@ static int interior_N_Inflation_get_model_g_h(arb_t res, const arb_t x,
     return 0;
 }
 
-//输出当前模型的 g 和 h 
-void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
+//输出相关信息，包括 h 和 g 等
+void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong prec)
 {
     arb_t s,w,t_e,t_step,t_f,error,t_a,t_b,pi_c,pi_d,pi_f,h,g_cal,g_theory;
-    arb_t N_e,N_step,epsilon_1,epsilon_2,eta_2;
+    arb_t N_e,N_step,epsilon_1,epsilon_2,eta_1,eta_2;
+    arb_t nar_eta_1,nar_eta_2,nar_g,nar_kappa,nar_omega,nar_gamma,nar_beta,nar_A,nar_pi,nar_eq_h;
     
     arb_init(s);
     arb_init(w);
@@ -444,7 +445,19 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_init(N_step);
     arb_init(epsilon_1);
     arb_init(epsilon_2);
+    arb_init(eta_1);
     arb_init(eta_2);
+    
+    arb_init(nar_eta_1);
+    arb_init(nar_eta_2);
+    arb_init(nar_g);
+    arb_init(nar_kappa);
+    arb_init(nar_omega);
+    arb_init(nar_gamma);
+    arb_init(nar_beta);
+    arb_init(nar_A);
+    arb_init(nar_pi);
+    arb_init(nar_eq_h);
     
     arb_set_str(t_a,"1.6E6",prec);
     arb_set_str(t_b,"2E6",prec);
@@ -502,12 +515,16 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_sqr(w,Inf_V0,prec);
     arb_div(epsilon_1,Inf_Epsilon_1,w,prec);
     
+    //η'_1=η_1/V_0^2, 注意这里与其它文章中的可能有个因子 2 的差异，根据定义表达式确定
+    arb_sqr(w,Inf_V0,prec);
+    arb_div(eta_1,Inf_Eta_1,w,prec);
+    
     //ϵ'_2=ϵ_2/(V_0+ΔV)^2
     arb_add(w,Inf_V0,Inf_Delta_V,prec);
     arb_sqr(w,w,prec);
     arb_div(epsilon_2,Inf_Epsilon_2,w,prec);
     
-    //η'_2=η_2/(V_0+ΔV)
+    //η'_2=η_2/(V_0+ΔV), 注意这里与其它文章中的可能有个因子 2 的差异，根据定义表达式确定
     arb_add(w,Inf_V0,Inf_Delta_V,prec);
     arb_div(eta_2,Inf_Eta_2,w,prec);
     
@@ -529,6 +546,70 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_div(g_theory,s,pi_c,prec); // g=π_d/π_c
     arb_abs(g_theory,g_theory);
     
+    //
+    //有限宽step对应非高斯性的相关参数
+    //
+    
+    //η_i=2(2*ε_V_i-η_V_i)
+    //其中的 ε_V 和 η_V 对应于上面的无量纲的 ε 和 η
+    arb_mul_ui(s,epsilon_1,2,prec);
+    arb_sub(s,s,eta_1,prec);
+    arb_mul_ui(nar_eta_1,s,2,prec);
+    
+    arb_mul_ui(s,epsilon_2,2,prec);
+    arb_sub(s,s,eta_2,prec);
+    arb_mul_ui(nar_eta_2,s,2,prec);
+    
+    //g=π_2/π_2 与我们的定义一样
+    arb_set(nar_g,g_cal);
+    
+    //κ=sqrt(ε_V_1/ε_V_2)
+    arb_div(s,epsilon_1,epsilon_2,prec);
+    arb_sqrt(nar_kappa,s,prec);
+    
+    //ω=ω_s2a≈sqrt(2)*|π_1|/Δϕ
+    //Δϕ=1/λ
+    arb_set_ui(s,2);
+    arb_sqrt(s,s,prec);
+    arb_abs(w,pi_c);
+    arb_mul(s,s,w,prec);
+    arb_mul(nar_omega,s,Inf_Lambda,prec);
+    
+    //利用 δN 形式计算非高斯性，算SR1的贡献时，需要个初始条件
+    //由于 SR 的解为吸引子，我们设初始速度：π=π_c
+    //这里，我们研究的模式主要是在step附近的，上面的做法问题不大
+    //另外，其吸引子的速度约为 sqrt(2ε), 其为无量纲的慢滚参数，实际的值以数值计算结果为准
+    arb_set(nar_pi,pi_c);
+    
+    //β=-1/pi
+    arb_abs(s,nar_pi);
+    arb_inv(nar_beta,s,prec);
+    
+    //γ= η_1*β/2 * (π/π_1)^(6/η_1) ≈ η_1*β/2 * (k/k_1)^3 , 其中 k 为 step 附近的模式
+    arb_inv(s,nar_eta_1,prec);
+    arb_mul_ui(s,s,6,prec);
+    arb_div(w,nar_pi,pi_c,prec);
+    arb_pow(s,w,s,prec);
+    arb_mul(s,s,nar_beta,prec);
+    arb_mul(s,s,nar_eta_1,prec);
+    arb_div_ui(nar_gamma,s,2,prec);
+    
+    //A=β-κ*γ/(3*g)-γ/(ω*g^2)
+    arb_mul_ui(w,nar_g,3,prec);
+    arb_mul(s,nar_kappa,nar_gamma,prec);
+    arb_div(s,s,w,prec);
+    arb_sub(s,nar_beta,s,prec);
+    arb_sqr(w,nar_g,prec);
+    arb_mul(w,w,nar_omega,prec);
+    arb_div(w,nar_gamma,w,prec);
+    arb_sub(nar_A,s,w,prec);
+    
+    //对应的等效 h, h=2*γ/(A*g^2) 
+    arb_sqr(s,nar_g,prec);
+    arb_mul(s,s,nar_A,prec);
+    arb_div(s,nar_gamma,s,prec);
+    arb_mul_ui(nar_eq_h,s,2,prec);
+    
     
     printf("N_c: ");arb_printn(N_e, 20,0);printf("\n");
     printf("N_d: ");arb_printn(N_step, 20,0);printf("\n");
@@ -543,8 +624,16 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     
     printf("ε_1: ");arb_printn(epsilon_1, 20,0);printf("\n");
     printf("ε_2: ");arb_printn(epsilon_2, 20,0);printf("\n");
+    printf("η_1: ");arb_printn(eta_1, 20,0);printf("\n");
     printf("η_2: ");arb_printn(eta_2, 20,0);printf("\n\n");
     
+    printf("narrow step β: ");arb_printn(nar_beta, 20,0);printf("\n");
+    printf("narrow step κ: ");arb_printn(nar_kappa, 20,0);printf("\n");
+    printf("narrow step g: ");arb_printn(nar_g, 20,0);printf("\n");
+    printf("narrow step γ: ");arb_printn(nar_gamma, 20,0);printf("\n");
+    printf("narrow step ω: ");arb_printn(nar_omega, 20,0);printf("\n");
+    printf("narrow step A: ");arb_printn(nar_A, 20,0);printf("\n");
+    printf("narrow step eq_h: ");arb_printn(nar_eq_h, 20,0);printf("\n\n");
     
     arb_clear(s);
     arb_clear(w);
@@ -564,7 +653,19 @@ void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec)
     arb_clear(N_step);
     arb_clear(epsilon_1);
     arb_clear(epsilon_2);
+    arb_clear(eta_1);
     arb_clear(eta_2);
+    
+    arb_clear(nar_eta_1);
+    arb_clear(nar_eta_2);
+    arb_clear(nar_g);
+    arb_clear(nar_kappa);
+    arb_clear(nar_omega);
+    arb_clear(nar_gamma);
+    arb_clear(nar_beta);
+    arb_clear(nar_A);
+    arb_clear(nar_pi);
+    arb_clear(nar_eq_h);
     
     arb_clear(p->N);
     free(p);

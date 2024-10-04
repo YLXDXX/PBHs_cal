@@ -63,7 +63,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     arb_set_str(Narrow_up_step_gamma, "0.07154953738547463", prec);
     arb_set_str(Narrow_up_step_omega, "15.12667079737446", prec);
     
-    //A=β-κ*γ/(3*g)-γ/(ω*g^2)
+    //narrow_step_1_type A=β-κ*γ/(3*g)-γ/(ω*g^2)
     arb_mul_ui(tem_t,Narrow_up_step_g,3,prec);
     arb_mul(tem_s,Narrow_up_step_kappa,Narrow_up_step_gamma,prec);
     arb_div(tem_s,tem_s,tem_t,prec);
@@ -74,7 +74,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     arb_sub(Narrow_up_step_A,tem_s,tem_t,prec);
     //arb_set_str(Narrow_up_step_A, "-421.78847846731816", prec);
     
-    //cut=2*γ/(A*g^2), 依赖前面的 A 值
+    //narrow_step_1_type cut=2*γ/(A*g^2), 依赖前面的 A 值
     arb_mul_ui(tem_s,Narrow_up_step_gamma,2,prec);
     arb_sqr(tem_t,Narrow_up_step_g,prec);
     arb_mul(tem_t,tem_t,Narrow_up_step_A,prec);
@@ -858,8 +858,109 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     exit(1);
             }
             break;
-        case upward_step_spectra_type :
         case numerical_cal_type :
+            // PS 计算方差 XX YY XY 积分，numerical_cal 谱共用
+            //这里，积分的上下限由拟合的上下限来决定
+            arb_set(PS_Int_variance_min,FITTED_x); //下限
+            arb_set(PS_Int_variance_max,FITTED_x+FITTED_num-1); //上限
+            arb_set_str(PS_Int_variance_precision,"1E-20",prec); //精度
+            
+            switch(Zeta_type) 
+            {
+                case gaussian_type :
+                    
+                    //根据δ谱下r*k为定值，采用动态r_m区间
+                    arb_set_str(R_K_to_r_m,"3",prec);
+                    arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
+                    arb_div_ui(Int_r_min,Int_r_min,15,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,80,prec);
+                    Root_r_num=120;
+                    arb_set_str(Int_r_precision,"1E-20",prec);
+                    
+                    arb_set_str(Int_mu_min,"0.3",prec);
+                    arb_set_str(Int_mu_max,"2",prec);
+                    Root_mu_num=25;
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
+                    
+                    C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
+                    C_m_average_iterate_max=10;
+                    arb_set_str(C_m_average_precision,"1E-6",prec);
+                    
+                    // M -> μ 求根用
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
+                    arb_set_str(Root_M_to_mu_max,"2.5",prec);
+                    Root_M_to_mu_num=20;
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
+                    
+                    
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
+                    
+                    // PS 计算相关
+                    arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                    arb_set_str(PS_Int_P_C_l_max,"1.5",prec);
+                    arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
+                    
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
+                    
+                    break;
+                case up_step_type :
+                    
+                    //根据δ谱下r*k为定值，采用动态r_m区间
+                    arb_set_str(R_K_to_r_m,"5",prec);
+                    arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
+                    arb_div_ui(Int_r_min,Int_r_min,20,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,90,prec);
+                    Root_r_num=120;
+                    arb_set_str(Int_r_precision,"1E-20",prec);
+                    
+                    //arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_min,"20",prec);
+                    arb_set_str(Int_mu_max,"39",prec);
+                    Root_mu_num=20;
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
+                    
+                    C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
+                    C_m_average_iterate_max=5;
+                    arb_set_str(C_m_average_precision,"1E-6",prec);
+                    
+                    // M -> μ 求根用
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
+                    arb_set_str(Root_M_to_mu_max,"0.7",prec);
+                    Root_M_to_mu_num=12;
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
+                    
+                    
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
+                    
+                    // PS 计算相关
+                    //注意，ζ<2/h，ζ_G<1/h 两者的取值范围不一样
+                    arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                    arb_abs(PS_Int_P_C_l_max,Up_step_h);
+                    arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); // ζ_G<1/h
+                    arb_set_str(PS_Int_P_C_l_precision,"1E-35",prec);
+                    
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
+                    
+                    break;
+                default :
+                    printf("main.c Power_spectrum_type->numerical_cal_type-->zeta_type 有误\n");
+                    exit(1);
+            }
+            
+            break;
+        case upward_step_spectra_type :
             //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
             // PS 计算方差 XX YY XY 积分， upward_step_spectra_type 谱共用
             arb_set_str(PS_Int_variance_min, "0", prec);

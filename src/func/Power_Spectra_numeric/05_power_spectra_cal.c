@@ -67,7 +67,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     arb_printn(v_w+2, 50,0);printf("\n");
     arb_printn(v_w+3, 50,0);printf("\n\n");
     
-    Inflation_get_model_g_h(d_out, prec); //输出 h 和 g 相关信息
+    Inflation_get_model_correlated_info(d_out, prec); //输出相关信息，包括 h 和 g 等
     
     
     //背景解作图

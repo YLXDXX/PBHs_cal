@@ -77,7 +77,7 @@ void Inflation_set_model_parameters(slong prec)
     
     
     // Second slow-roll parameter in the first slow-roll stage
-    arb_set_str(Inf_Eta_1,"-1e-11",prec); // η_1 = -1e-11 * Mpl**2
+    arb_set_str(Inf_Eta_1,"0",prec); // η_1 = -1e-11 * Mpl**2
     arb_mul(Inf_Eta_1,Inf_Eta_1,Inf_Mpl_2,prec);
     
     // Second slow-roll parameter in the second slow-roll stage

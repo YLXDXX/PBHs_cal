@@ -102,6 +102,6 @@ void Inflation_power_spectra_cal_at_fk(arb_t res, const arb_t fk, const arb_t x_
 
 void Inflation_power_spectra_numeric_cal(slong prec); //功率谱求解
 void Inflation_background_H_t(arb_t H, const arb_t t, const Inflation_dense_t d_out, slong prec); //利用背景解，得到 H(t)
-void Inflation_get_model_g_h(const Inflation_dense_t d_out, slong prec); //输出当前模型的 g 和 h 
+void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong prec); //输出相关信息，包括 h 和 g 等 
 
 #endif // __PBHS_POWER_SPECTRA_NUMERIC_INFLATION_ODES_SLOVE__ 
