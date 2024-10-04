@@ -76,15 +76,21 @@ void Set_zeta_r_cal(slong prec)
             arb_set_str(Int_sigma_n_precision,"1E-15",prec);
             
             break;
-        case upward_step_spectra_type :
         case numerical_cal_type :
+            //以ln(k)作为积分变量，若出现负值，正常
+            //这里，积分的上下限由拟合的上下限来决定
+            arb_set(Int_sigma_n_min,FITTED_x); //下限
+            arb_set(Int_sigma_n_max,FITTED_x+FITTED_num-1); //上限
+            arb_set_str(Int_sigma_n_precision,"1E-5",prec); //精度
+            
+            break;
+        case upward_step_spectra_type :
             //并不做PBHs相关的具体计算，仅计算SIGWs，随意设
             arb_set_str(Int_sigma_n_min, "0", prec);
             arb_set_str(Int_sigma_n_max, "1", prec);
             arb_set_str(Int_sigma_n_precision,"1E-12",prec);
             
             break;
-            
         case delta_type :
             //不需要
             break;

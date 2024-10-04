@@ -627,6 +627,7 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
         case broken_power_law_type :
         case box_type :
         case link_cmb_type :
+        case numerical_cal_type :
             
             //对应高斯型 ζ_G 的计算
             
@@ -774,7 +775,7 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                         
                         break;
                     default:
-                        printf("General -> typical_profile -> zeta_profile_n->delta_type->gaussian_type 输入有误\n");
+                        printf("General->typical_profile->zeta_Gauss_profile_n_div_mu->delta_type->order 输入有误\n");
                         exit(1);
                 }
                 
@@ -782,7 +783,7 @@ int zeta_Gauss_profile_n_div_mu(arb_t zeta_G_r, const arb_t r, const slong order
                 break;
                 
                     default :
-                        printf("General -> typical_profile -> zeta_Gauss_profile_n 中的 Power_spectrum_type 有误\n");
+                        printf("General-> typical_profile->zeta_Gauss_profile_n_div_mu 中的 Power_spectrum_type 有误\n");
                         exit(1);
     }
     

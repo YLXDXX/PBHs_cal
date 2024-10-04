@@ -43,7 +43,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
     arb_ptr v_x_i;
     v_x_i=_arb_vec_init(number);
     Get_interval_logspace_point(v_x_i,aa,bb,number,prec); //获取对数图上的间隔点
-    
+    //Get_interval_linspace_point(v_x_i,aa,bb,number,prec); //获取线性的间隔点
     
     arb_sub(gap_x,bb,aa,prec); //x轴间隔
     arb_div_si(gap_x,gap_x,number,prec);

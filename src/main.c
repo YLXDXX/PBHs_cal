@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
     //           upward_step_spectra_type/numerical_cal_type
-    Power_spectrum_type=lognormal_type;
+    Power_spectrum_type=broken_power_law_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Continuum_spectrum_cal_simplify=false; //是否采用简化，true/false，这里简化现阶段仅针对log-normal谱
     
     
-    arb_set_str(PS_Sigma_YY,"0.00040613304234237484945",prec);
+    //arb_set_str(PS_Sigma_YY,"0.00040613304234237484945",prec);
     
     //
     //全部设置完，后面调用各函数进行各种设算
