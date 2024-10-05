@@ -66,6 +66,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
         //zeta_Gauss_profile_n(out_point, x, 0, prec);
         //zeta_profile_n(out_point,x,0, prec); //ζ(r)
         //C_r_profile_n(out_point, x, 0, prec); //C(r)
+        //Area_R(out_point, x, prec); //面积半径R(r)
         
         //C_r_prime_I(out_point,x,prec);
         //C_r_prime_II(out_point,x,prec);

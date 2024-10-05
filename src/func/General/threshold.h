@@ -17,6 +17,8 @@ int Delta_c_q_parameter_simple(arb_t res, const arb_t q, slong prec); //利用 q
 
 int Delta_c_q_parameter_new(arb_t res, const arb_t q, slong prec); //利用 q 参数，计算临界值 δ_c（q）
 
+int Area_R(arb_t res, const arb_t r, slong prec); //面积半径R(r)
+
 int C_m_average(arb_t res, const arb_t r_m, slong prec); //求C_m的平均值
 
 int Find_PT_Mu_th(arb_t res, const arb_t zeta_k, slong prec); //找PT_mu的临界值
