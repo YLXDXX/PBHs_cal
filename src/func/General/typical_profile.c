@@ -1338,9 +1338,10 @@ int interior_help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t k, void* 
 //这里的函数，并不能与前面共用，后面还会有调用前面的函数，这里单独写
 int Help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong order, slong prec)
 {
-    arb_t s,x,r_pra;
+    arb_t s,w,x,r_pra;
     
     arb_init(s);
+    arb_init(w);
     arb_init(x);
     arb_init(r_pra);
     
@@ -1395,10 +1396,42 @@ int Help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong ord
     {
         arb_set(r_pra,r); //为积分传递 r 的值
         
+        //这里的积分精度，需根据阶数动态调整，每求一次会掉个 k_star
+        //而这里的精度是绝对精度
+        
+        if(order==0)
+        {
+            arb_set_str(w,"1E-10",prec);
+        }else if(order==1)
+        {
+           arb_set_str(w,"1E-7",prec);
+        }else if (order==2)
+        {
+            arb_set_str(w,"1E-2",prec);
+        }else if (order==3)
+        {
+            arb_set_str(w,"1",prec);
+        }else if (order==4)
+        {
+            arb_set_str(w,"1E3",prec);
+        }
+        
+        Integral_method_temp=Integral_method; //保存旧数据
+        slong div_num=Multithreaded_divide_integration_interval_number;
+        slong num=Multithreaded_number;
+        
+        Integral_method=gauss_kronrod_iterate;
+        Multithreaded_divide_integration_interval_number=10; //多线程计算区间分隔数目
+        Multithreaded_number=10; //多线程计算线程总数
+        
         //计算 ψ_0 or ψ_1
         ret_judge=Integration_arb(s, interior_help_psi_n_Non_Gaussian_correction, r_pra, order,
-                                  Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
-                                  Integration_iterate_min,Integration_iterate_max, prec);
+                                  Int_sigma_n_min, Int_sigma_n_max,w,
+                                  4,8, prec);
+        
+        Integral_method=Integral_method_temp; //恢复旧数据
+        Multithreaded_divide_integration_interval_number=div_num; //多线程计算区间分隔数目
+        Multithreaded_number=num; //多线程计算线程总数
         
         //我们这里实际计算的是，n=0
         //ψ_0(r)=(积分值)/(σ_0)^2
@@ -1407,10 +1440,11 @@ int Help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong ord
     
     if(ret_judge==1)
     {
-        printf("Help_psi_n \t %li \t 达到最大迭代次数\n", order);
+        //printf("Help_psi_n_Non_Gaussian_correction \t %li \t 达到最大迭代次数\n", order);
     }
     
     arb_clear(s);
+    arb_clear(w);
     arb_clear(x);
     arb_clear(r_pra);
     
