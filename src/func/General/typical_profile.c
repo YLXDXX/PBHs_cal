@@ -1416,22 +1416,10 @@ int Help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong ord
             arb_set_str(w,"1E3",prec);
         }
         
-        Integral_method_temp=Integral_method; //保存旧数据
-        slong div_num=Multithreaded_divide_integration_interval_number;
-        slong num=Multithreaded_number;
-        
-        Integral_method=gauss_kronrod_iterate;
-        Multithreaded_divide_integration_interval_number=10; //多线程计算区间分隔数目
-        Multithreaded_number=10; //多线程计算线程总数
-        
         //计算 ψ_0 or ψ_1
         ret_judge=Integration_arb(s, interior_help_psi_n_Non_Gaussian_correction, r_pra, order,
                                   Int_sigma_n_min, Int_sigma_n_max,w,
                                   4,8, prec);
-        
-        Integral_method=Integral_method_temp; //恢复旧数据
-        Multithreaded_divide_integration_interval_number=div_num; //多线程计算区间分隔数目
-        Multithreaded_number=num; //多线程计算线程总数
         
         //我们这里实际计算的是，n=0
         //ψ_0(r)=(积分值)/(σ_0)^2
