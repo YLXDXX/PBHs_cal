@@ -60,8 +60,13 @@ int get_save_path(char* res)
     
     strcpy(Out_date_file, Path_save); //字符串复制
     strcpy(Out_fitted_file, Path_save);
-    strcpy(Out_fitted_x, Path_save);
+    
+    strcpy(Out_fitted_x, Path_save); //用于拟合数函数
     strcpy(Out_fitted_y, Path_save);
+    
+    strcpy(Out_fitted_NG_f_nl_k, Path_save); //用于拟合函数，非高斯性功率谱 f_NL 修正
+    strcpy(Out_fitted_NG_f_nl_P, Path_save);
+    
     strcpy(Out_picture_file, Path_save);
     
     
@@ -124,7 +129,7 @@ void Vector_point_output_to_file(const arb_ptr x, const arb_ptr y, const slong n
 }
 
 //将一组矢量 x,y 中每点的值输出到文件，输出格式保持arb内部的表达式
-void Vector_point_write_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num, slong prec)
+void Vector_point_write_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num,  const int i, slong prec)
 {
     arb_t ln_x,ln_y;
     arb_init(ln_x);
@@ -133,23 +138,64 @@ void Vector_point_write_to_file_arb(const arb_ptr x, const arb_ptr y, const slon
     FILE * fp_x;
     FILE * fp_y;
     
-    fp_x = fopen(Out_fitted_x, "w"); //打开文件，a追加，w重新写入
-    fp_y = fopen(Out_fitted_y, "w");
+    char file_x[PATH_MAX+30];
+    char file_y[PATH_MAX+30];
+    
+    switch ( i )
+    {
+        case 1 :
+            strcpy(file_x, Out_fitted_x);
+            strcpy(file_y, Out_fitted_y);
+            break;
+        case 2 :
+            strcpy(file_x, Out_fitted_NG_f_nl_k);
+            strcpy(file_y, Out_fitted_NG_f_nl_P);
+            break;
+        default :
+            printf( "Vector_point_read_to_file_arb 输入有误" );
+            exit(1);
+    }
+    
+    fp_x = fopen(file_x, "w"); //打开文件，a追加，w重新写入
+    fp_y = fopen(file_y, "w");
     
     if( fp_x == NULL || fp_y == NULL ) { //对文件打开操作进行判断
-        printf("\n\nOpen Error: %s\t\n",Out_fitted_y);perror("file");printf("\n");
+        
+        printf("\n\nOpen Error: %s\t\n",file_x);perror("file");printf("\n");
+        
         exit(-1);
     }
     
-    for(slong i=0; i<num; i++)
+    
+    switch ( i ) //不同的文件可能采取不同的处理
     {
-        arb_log(ln_x,x+i,prec); //对 x 取对数 ln(x)
-        arb_dump_file(fp_x,ln_x);
-        fprintf(fp_x, "\n");
-        
-        //arb_log(ln_y,y+i,prec);
-        arb_dump_file(fp_y,y+i);
-        fprintf(fp_y, "\n");
+        case 1 :
+            for(slong i=0; i<num; i++)
+            {
+                arb_log(ln_x,x+i,prec); //对 x 取对数 ln(x)
+                arb_dump_file(fp_x,ln_x);
+                fprintf(fp_x, "\n");
+                
+                //arb_log(ln_y,y+i,prec);
+                arb_dump_file(fp_y,y+i);
+                fprintf(fp_y, "\n");
+                
+            }
+            break;
+        case 2 :
+            for(slong i=0; i<num; i++)
+            {
+                arb_dump_file(fp_x,x+i);
+                fprintf(fp_x, "\n");
+                
+                arb_dump_file(fp_y,y+i);
+                fprintf(fp_y, "\n");
+                
+            }
+            break;
+        default :
+            printf( "Vector_point_read_to_file_arb 输入有误" );
+            exit(1);
     }
     
     arb_clear(ln_x);
@@ -163,16 +209,35 @@ void Vector_point_write_to_file_arb(const arb_ptr x, const arb_ptr y, const slon
 }
 
 
-void Vector_point_read_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num, slong prec)
+void Vector_point_read_to_file_arb(const arb_ptr x, const arb_ptr y, const slong num, const int i, slong prec)
 {
     FILE * fp_x;
     FILE * fp_y;
     
-    fp_x = fopen(Out_fitted_x, "r"); //打开文件，a追加，w重新写入
-    fp_y = fopen(Out_fitted_y, "r");
+    char file_x[PATH_MAX+30];
+    char file_y[PATH_MAX+30];
+    
+    switch ( i )
+    {
+        case 1 :
+            strcpy(file_x, Out_fitted_x);
+            strcpy(file_y, Out_fitted_y);
+            break;
+        case 2 :
+            strcpy(file_x, Out_fitted_NG_f_nl_k);
+            strcpy(file_y, Out_fitted_NG_f_nl_P);
+            break;
+        default :
+            printf( "Vector_point_read_to_file_arb 输入有误" );
+            exit(1);
+    }
+    
+    fp_x = fopen(file_x, "r"); //打开文件，a追加，w重新写入
+    fp_y = fopen(file_y, "r");
+    
     
     if( fp_x == NULL || fp_y == NULL ) { //对文件打开操作进行判断
-        printf("\n\nOpen Error: %s\t\n",Out_fitted_y);perror("file");printf("\n");
+        printf("\n\nOpen Error: %s\t\n",file_x);perror("file");printf("\n");
         exit(-1);
     }
     

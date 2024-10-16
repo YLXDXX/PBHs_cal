@@ -523,7 +523,7 @@ int power_spectrum(arb_t res, const arb_t k, slong prec) //高斯功率谱 P_ζ_
 //当给定高斯情况下的功率谱 P_ζ_G(k) 后，我们可以利用幂级数展开的方法
 //得到非高斯性况下的功率谱修正 P_ζ(k)
 
-//这里的修正项是一个三重积分，采用单独计算后，用插值的手段参与后需处理
+//这里的修正项是一个二重积分，采用单独计算后，用插值的手段参与后需处理
 
 
 
@@ -534,9 +534,25 @@ int power_spectrum_non_Gaussian(arb_t res, const arb_t k, slong prec) //非高�
     arb_init(s);
     arb_init(t);
     
+    
     power_spectrum(s, k, prec); //高斯功率谱
     
-    power_spectrum_non_Gaussian_f_Nl(t, k, prec); //非高斯修正项 f^2_{NL}
+    
+    //power_spectrum_non_Gaussian_f_Nl(t, k, prec); //非高斯修正项 f^2_{NL}
+    //这里的修正项是一个二重积分，一般单独计算，再用插值的手段加入
+    
+    //注意，这里是以ln(k)作为自变量的，传进来的值就是ln(k)的值
+    if( arb_gt(k,FITTED_NG_f_nl_k+FITTED_NG_f_nl_num-1) )//处理拟合数据外的情况，其外基本为常数
+    {
+        arb_set(t,FITTED_NG_f_nl_k+FITTED_NG_f_nl_num-1);
+    }else if ( arb_lt(k,FITTED_NG_f_nl_k) )
+    {
+        arb_set(t,FITTED_NG_f_nl_k);
+    }else
+    {
+        Interpolation_fit_func(t, k, 
+                               FITTED_NG_f_nl_k, FITTED_NG_f_nl_P, FITTED_NG_f_nl_interp_coe, FITTED_NG_f_nl_num, prec);
+    }
     
     arb_add(res,s,t,prec);
     

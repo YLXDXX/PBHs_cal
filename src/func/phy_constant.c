@@ -392,8 +392,10 @@ bool Non_Gaussian_typical_profile_correction;
 char Path_save[PATH_MAX+1]=""; //获取存储相对路径
 char Out_date_file[PATH_MAX+30]=""; //数据输出文件
 char Out_fitted_file[PATH_MAX+30]=""; //拟合数据输出文件
-char Out_fitted_x[PATH_MAX+30]="";
+char Out_fitted_x[PATH_MAX+30]=""; //用于拟合数函数
 char Out_fitted_y[PATH_MAX+30]="";
+char Out_fitted_NG_f_nl_k[PATH_MAX+30]=""; //用于拟合函数，非高斯性功率谱 f_NL 修正
+char Out_fitted_NG_f_nl_P[PATH_MAX+30]="";
 char Out_picture_file[PATH_MAX+30]=""; //画图数据输出文件
 
 int time_begin,time_end; //计时用
@@ -403,4 +405,8 @@ arb_ptr FITTED_y;
 slong FITTED_num;
 Interp_coe_t FITTED_interp_coe;
 
+arb_ptr FITTED_NG_f_nl_k;  //用于拟合函数，非高斯性功率谱 f_NL 修正
+arb_ptr FITTED_NG_f_nl_P;
+slong FITTED_NG_f_nl_num;
+Interp_coe_t FITTED_NG_f_nl_interp_coe;
 

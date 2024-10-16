@@ -24,8 +24,13 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     get_save_path(Path_save);
     strcat(Out_date_file, "date/date.txt"); //字符串添加，数据输出文件
     strcat(Out_fitted_file, "date/fit.txt"); //字符串添加，拟合数据输出文件
-    strcat(Out_fitted_x, "date/fit_x.txt");
+    
+    strcat(Out_fitted_x, "date/fit_x.txt"); //用于拟合数函数
     strcat(Out_fitted_y, "date/fit_y.txt");
+    
+    strcat(Out_fitted_NG_f_nl_k, "date/fit_NG_k.txt"); //用于拟合函数，非高斯性功率谱 f_NL 修正
+    strcat(Out_fitted_NG_f_nl_P, "date/fit_NG_P.txt");
+    
     strcat(Out_picture_file, "draw.txt"); //字符串添加，画图数据输出文件
     
     
@@ -41,7 +46,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    routine_test(prec); exit(0); //测试程序
+    //routine_test(prec); exit(0); //测试程序
     
     //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
     FITTED_num=5E3;
@@ -50,11 +55,20 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     FITTED_x=_arb_vec_init(FITTED_num);
     FITTED_y=_arb_vec_init(FITTED_num);
     
-    Vector_point_read_to_file_arb(FITTED_x, FITTED_y, FITTED_num, prec);
+    Vector_point_read_to_file_arb(FITTED_x, FITTED_y, FITTED_num, 1, prec);
     
-    //arb_printn(FITTED_x+6, 50,0);printf("\n");
-    //arb_printn(FITTED_y+6, 50,0);printf("\n");
-    //Vector_point_output_to_file(FITTED_x, FITTED_y, FITTED_num, 'w');
+    
+    //读取拟合数据，用于通过扰动方法对于非高斯性功率谱 f_NL 修正
+    FITTED_NG_f_nl_num=1E2;
+    FITTED_NG_f_nl_interp_coe=Interpolation_coe_init(FITTED_NG_f_nl_num); 
+    FITTED_NG_f_nl_k=_arb_vec_init(FITTED_NG_f_nl_num);
+    FITTED_NG_f_nl_P=_arb_vec_init(FITTED_NG_f_nl_num);
+    
+    Vector_point_read_to_file_arb(FITTED_NG_f_nl_k, FITTED_NG_f_nl_P, FITTED_NG_f_nl_num, 2, prec);
+    
+    //arb_printn(FITTED_NG_f_nl_k+0, 50,0);printf("\n");
+    //arb_printn(FITTED_NG_f_nl_P+0, 50,0);printf("\n");
+    //Vector_point_output_to_file(FITTED_NG_f_nl_k, FITTED_NG_f_nl_P, FITTED_NG_f_nl_num, 'w');
     //exit(0);
     
     /*
@@ -105,7 +119,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //routine_test(prec); exit(0);
     
-    
+    /*
     //寻找阈值
     //注意到，当profile没有采取简化时，threshold 还与 PT_k 有关
     Find_PT_Mu_th(PT_mu_th, PT_k, prec);//一般情况下不用管此参数
@@ -221,7 +235,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Continuum_spectrum_type=lognormal_type; //计算连续谱类型
     
     Continuum_spectrum_cal_simplify=false; //是否采用简化，true/false，这里简化现阶段仅针对log-normal谱
-    
+    */
     
     //arb_set_str(PS_Sigma_YY,"0.00040613304234237484945",prec);
     
@@ -238,7 +252,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //Ln_K_star=30.37829203018403957048
     //K_star=1.56E13
-    arb_set_str(t,"0.7",prec);
+    arb_set_str(t,"18.79",prec);
     arb_set_str(w,"0.2",prec);
     //arb_log(w,w,prec);
     //arb_set_str(PT_mu,"0.4",prec); //后面要输出ζ(r)、ζ_G(r)和C(r),这里不能赋值，用前面 PT_mu_th
@@ -246,6 +260,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_add(t,t,Ln_K_star,prec);
     
     //power_spectrum(Pk,t,prec);
+    //power_spectrum_non_Gaussian_f_Nl(Pk,t,prec);
     //Help_sigma_n_square(Pk,4,prec);
     //Help_psi_n(Pk,t,3,prec);
     //Help_psi_n(Pk,t,0,prec);
@@ -293,7 +308,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_m(Pk,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    PS_abundance_f_all(Pk,prec);
+    //PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算
@@ -366,6 +381,30 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //arb_set_str(t,"1E8",prec);
     //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
     //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
+    
+    
+    //非高斯功率谱修正的拟合数据输出，
+    slong nn=FITTED_NG_f_nl_num;
+    nn=20;
+    arb_ptr NG_k,NG_P;
+    NG_k=_arb_vec_init(nn);
+    NG_P=_arb_vec_init(nn);
+    
+    arb_set(w,PS_Int_variance_min);
+    arb_set(t,PS_Int_variance_max);
+    Get_interval_linspace_point(NG_k, w, t, nn, prec);
+    //#pragma omp parallel for num_threads(5), 这里不能使用多线程
+    for(slong i=0; i< nn; i++)
+    {
+        power_spectrum_non_Gaussian_f_Nl(NG_P+i,NG_k+i,prec);
+        //arb_printn(NG_k+i,30,0);printf("\n");
+        //arb_printn(NG_P+i,30,0);printf("\n");
+        printf("%li\n",i);
+    }
+    Vector_point_write_to_file_arb(NG_k, NG_P, nn, 2, prec);
+    //Vector_point_output_to_file(NG_k, NG_P, nn, 'w');
+    exit(0);
+    
     
     
     arb_printn(Pk,30,0);printf("\n");

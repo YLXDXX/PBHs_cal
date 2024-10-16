@@ -246,7 +246,7 @@ void Inflation_power_spectra_numeric_cal(slong prec)
     
     //将功率谱的结果输出到文件
     Vector_point_output_to_file(fi_k, fi_P, nn, 'w'); //a追加，w重新写入
-    //Vector_point_write_to_file_arb(fi_k, fi_P, nn, prec);
+    //Vector_point_write_to_file_arb(fi_k, fi_P, nn, 1, prec);
     exit(0);
     
     arb_clear(s);
