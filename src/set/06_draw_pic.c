@@ -63,6 +63,7 @@ void draw_pic(char* comd_argv[], slong prec) // comd_argv 为命令行传递参�
         //arb_log(t,x,prec);
         
         //power_spectrum(out_point,t,prec);
+        //power_spectrum_non_Gaussian_f_Nl(out_point,x,prec);
         //zeta_Gauss_profile_n(out_point, x, 0, prec);
         //zeta_profile_n(out_point,x,0, prec); //ζ(r)
         //C_r_profile_n(out_point, x, 0, prec); //C(r)

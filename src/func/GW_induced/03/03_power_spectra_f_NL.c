@@ -89,7 +89,7 @@
 //gridno 内部网格表量
 
 
-int Integrand_cuba(const int *ndim, const cubareal xx[],
+static int Integrand_cuba(const int *ndim, const cubareal xx[],
                      const int *ncomp, cubareal ff[], void *userdata)
 {
     //注意，Integration is always performed on the n-dimensional unit hypercube [O, 1]^n

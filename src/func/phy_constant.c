@@ -383,6 +383,11 @@ arb_t Continuum_spectrum_k_ch_times_r_m; //k_ch*r_m
 enum GET_K_CH_TYPE Get_k_ch_type; //求连续谱特征模式方法
 
 
+
+//非高斯情况下，利用非高斯功率谱对 typical profile 修正用
+bool Non_Gaussian_typical_profile_correction;
+
+
 //other
 char Path_save[PATH_MAX+1]=""; //获取存储相对路径
 char Out_date_file[PATH_MAX+30]=""; //数据输出文件
@@ -397,3 +402,5 @@ arb_ptr FITTED_x; //用于拟合数函数
 arb_ptr FITTED_y;
 slong FITTED_num;
 Interp_coe_t FITTED_interp_coe;
+
+

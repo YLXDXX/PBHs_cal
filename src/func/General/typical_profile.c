@@ -238,8 +238,7 @@ int interior_help_psi_n(arb_t res, const arb_t k, void* r, const slong order, sl
         ;
     }
     
-    
-    power_spectrum(t,k,prec);
+    power_spectrum(t,k,prec); //高斯情况下，ζ_G 的功率谱
     arb_mul(res,s,t,prec);
     
     arb_clear(s);
@@ -813,8 +812,9 @@ int zeta_Gauss_profile_n(arb_t res, const arb_t r, const slong order, slong prec
 }
 
 
-// ζ(r) 及其各阶导数
-int zeta_profile_n(arb_t res, const arb_t r, const slong order, slong prec)
+
+//利用 ζ=F(ζ_G) 得到的 profile ζ(r) 及其各阶导数
+static void zeta_profile_n_Func_direct(arb_t res, const arb_t r, const slong order, slong prec)
 {
     //函数中所用变量
     arb_t s,t,w;
@@ -1252,7 +1252,321 @@ int zeta_profile_n(arb_t res, const arb_t r, const slong order, slong prec)
     arb_clear(G_2);
     arb_clear(G_3);
     
+}
+
+
+//
+//注意到，对于非高斯性，常见的 typical profile ζ(r)=F[ζ_G(r)] 存在问题
+//可以利用幂级数展开，通过高斯的功率谱 P_ζ_G(k)，计算得到非高斯的功率谱 P_ζ(k)
+//再利用 P_ζ(k)，参照高斯 profile ζ_G(r) 的求法，得到非高斯的 profile ζ(r)
+//
+
+
+//计算非高斯修正 ψ_n(r) 及其各阶导数
+//这里的函数，并不能与前面共用，后面还会有调用前面的函数，这里单独写
+int interior_help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t k, void* r, const slong order, slong prec)
+{
+    arb_t s,t,x,exp_k;
+    arb_init(s);
+    arb_init(t);
+    arb_init(x);
+    arb_init(exp_k);
+    
+    //此处，半径 r 以参数作指针的形式传入
+    //以 ln(k) 作为自变量
+    //exp(k)^2n * sinc[exp(k)*r] * P(k)
+    //如 n=1 时，exp(k)^2 * sin(x)/x * P(k) 其中 x=exp(k)*r 
+    
+    arb_exp(exp_k,k,prec); //以 lnk 作变量
+    arb_mul(x,exp_k,r,prec);
+    
+    switch(order) 
+    {
+        case 0 : //没有求导
+            
+            Help_sinc_n(s,x,0,prec); //sinc(x)
+            
+            break;
+        case 1 : //一阶导
+            
+            Help_sinc_n(s,x,1,prec); //[sinc(x)]'  对r求导 x=kr
+            arb_mul(s,s,exp_k,prec);
+            
+            break;
+        case 2 : //二阶导
+            Help_sinc_n(s,x,2,prec); //[sinc(x)]''  对r求导 x=kr
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            
+            break;
+        case 3 : //三阶导
+            Help_sinc_n(s,x,3,prec); //[sinc(x)]'''  对r求导 x=kr
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            
+            break;
+        case 4 : //四阶导
+            Help_sinc_n(s,x,4,prec); //[sinc(x)]''''  对r求导 x=kr
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            arb_mul(s,s,exp_k,prec);
+            
+            break;
+        default:
+            printf("General -> typical_profile -> interior_help_psi_n_Non_Gaussian_correction 输入有误\n");
+            exit(1);
+    }
+    
+    //我们这里实际计算的是，n=0
+    //ψ_0 前面系数 exp(k)^0=1，故这里可以什么也不干
+    
+    power_spectrum_non_Gaussian(t,k,prec); //非高斯情况下，ζ 的功率谱
+    arb_mul(res,s,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(x);
+    arb_clear(exp_k);
+    
     return 0;
 }
 
 
+//计算非高斯修正 ψ_1(r) 及其各阶导数
+//这里的函数，并不能与前面共用，后面还会有调用前面的函数，这里单独写
+int Help_psi_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong order, slong prec)
+{
+    arb_t s,x,r_pra;
+    
+    arb_init(s);
+    arb_init(x);
+    arb_init(r_pra);
+    
+    int ret_judge=0;
+    
+    if(Power_spectrum_type==delta_type) //δ谱下，ψ_0 = ψ_1 = sinc(x)=sinc(r*k_star)
+    {
+        arb_mul(x,r,K_star,prec);
+        
+        switch(order) 
+        {
+            case 0 : //没有求导
+                
+                Help_sinc_n(s,x,0,prec); //sinc(x)
+                
+                break;
+            case 1 : //一阶导
+                
+                Help_sinc_n(s,x,1,prec); //[sinc(x)]'  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 2 : //二阶导
+                Help_sinc_n(s,x,2,prec); //[sinc(x)]''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 3 : //三阶导
+                Help_sinc_n(s,x,3,prec); //[sinc(x)]'''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            case 4 : //四阶导
+                Help_sinc_n(s,x,4,prec); //[sinc(x)]''''  对r求导 x=kr
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                arb_mul(s,s,K_star,prec);
+                
+                break;
+            default:
+                printf("General -> typical_profile -> Help_psi_n_Non_Gaussian_correction 输入有误\n");
+                exit(1);
+        } 
+        
+        arb_set(res,s);
+        
+    }else //非δ谱需要积分
+    {
+        arb_set(r_pra,r); //为积分传递 r 的值
+        
+        //计算 ψ_0 or ψ_1
+        ret_judge=Integration_arb(s, interior_help_psi_n_Non_Gaussian_correction, r_pra, order,
+                                  Int_sigma_n_min, Int_sigma_n_max,Int_sigma_n_precision,
+                                  Integration_iterate_min,Integration_iterate_max, prec);
+        
+        //我们这里实际计算的是，n=0
+        //ψ_0(r)=(积分值)/(σ_0)^2
+        arb_div(res,s,Sigma_0_square,prec);
+    }
+    
+    if(ret_judge==1)
+    {
+        printf("Help_psi_n \t %li \t 达到最大迭代次数\n", order);
+    }
+    
+    arb_clear(s);
+    arb_clear(x);
+    arb_clear(r_pra);
+    
+    return 0;
+}
+
+
+//利用 Non_Gaussian 功率谱 P_ζ(k) 得到的 profile ζ(r) 及其各阶导数
+void zeta_profile_n_Non_Gaussian_correction(arb_t res, const arb_t r, const slong order, slong prec)
+{
+    //函数中所用变量
+    arb_t s,t,x;
+    
+    arb_init(s);
+    arb_init(t);
+    arb_init(x);
+    
+    arb_t phi,zeta_G_r;
+    
+    arb_init(phi);
+    arb_init(zeta_G_r);
+    
+    
+    switch(Power_spectrum_type) 
+    {
+        case lognormal_type :
+        case power_law_type :
+        case broken_power_law_type :
+        case box_type :
+        case link_cmb_type :
+        case numerical_cal_type :
+            
+            //对应高斯型 ζ_G 的计算
+            Help_psi_n_Non_Gaussian_correction(phi,r,order,prec);
+            arb_set(zeta_G_r,phi);
+            
+            break;
+        case delta_type :
+            
+            //对应高斯型 ζ_G 的计算
+            //注意到，对于δ的情况，无论是否采用梯度，得到的结果一样
+            
+            //首先计算 x
+            arb_mul(x,K_star,r,prec); //x=k_star*r
+            
+            switch(order)
+            {
+                case 0: //原函数
+                    //功率谱为delta函数时，ζ(r) 易解析求出
+                    // ζ(r)=μ*sinc(k_star*r)
+                    
+                    Help_sinc_n(s,x,0,prec);
+                    arb_set(zeta_G_r,s);
+                    break;
+                    
+                case 1: //一阶导
+                    //功率谱为delta函数时易解析求出 x=k_star*r
+                    //ζ(r)=μ*sinc(x)
+                    //ζ(r)^prime=μ * sinc'(x) * k_star
+                    
+                    Help_sinc_n(s,x,1,prec);
+                    arb_mul(zeta_G_r,s,K_star,prec); //一阶导掉个 k_star
+                    
+                    break;
+                    
+                case 2: //二阶导
+                    //功率谱为delta函数时易解析求出 x=k_star*r
+                    //ζ(r)=μ*sinc(x)
+                    //ζ(r)^prime=μ * 1/x *[cos(x)-sinc(x)] * k_star
+                    //ζ(r)^prime^prime=μ * (-1/x^2) * [x*sin(x)+2(cos(x)-sinc(x))] * (k_star)^2
+                    
+                    Help_sinc_n(s,x,2,prec);
+                    arb_mul(s,s,K_star,prec); //二阶导掉个 (k_star)^2
+                    arb_mul(zeta_G_r,s,K_star,prec);
+                    
+                    break;
+                    
+                case 3: //三阶导
+                    //ζ(r)=μ*sinc(x)  x=k_star*r
+                    //求 ζ'''(r)
+                    
+                    Help_sinc_n(s,x,3,prec);
+                    arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^3
+                    arb_mul(s,s,K_star,prec);
+                    arb_mul(zeta_G_r,s,K_star,prec);
+                    
+                    break;
+                case 4: //四阶导
+                    //ζ(r)=μ*sinc(x)   x=k_star*r
+                    //求 ζ''''(r)
+                    
+                    Help_sinc_n(s,x,4,prec);
+                    arb_mul(s,s,K_star,prec); //三阶导掉个 (k_star)^4
+                    arb_mul(s,s,K_star,prec);
+                    arb_mul(s,s,K_star,prec);
+                    arb_mul(zeta_G_r,s,K_star,prec);
+                    
+                    break;
+                default:
+                    printf("General->typical_profile->zeta_profile_n_Non_Gaussian_correction->delta_type->order 输入有误\n");
+                    exit(1);
+            }
+            
+            break;
+        default :
+                printf("General-> typical_profile->zeta_profile_n_Non_Gaussian_correction 中的  Power_spectrum_type 有误\n");
+                exit(1);
+    }
+    
+    
+    arb_mul(res,zeta_G_r,PT_mu,prec); //ζ(r) 完
+    
+    switch(Zeta_type) 
+    {
+        case up_step_type :
+            //这里还需要对 ζ(r) 的大小作判断，ζ < 2/|h|
+            
+            arb_abs(s,Up_step_h); // 2/|h|
+            arb_inv(s,s,prec);
+            arb_mul_ui(s,s,2,prec);
+            
+            Help_psi_n_Non_Gaussian_correction(t,r,0,prec); //ζ(r)
+            arb_mul(t,t,PT_mu,prec);
+            
+            if( arb_gt(t,s) )
+            {
+                arb_zero(res);
+            }
+            
+            break;
+        default:
+            printf("General -> typical_profile -> zeta_profile_n_Non_Gaussian_correction 中 zeta_type 输入有误\n");
+            exit(1);
+    }
+    
+    
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(x);
+    
+    arb_clear(phi);
+    arb_clear(zeta_G_r);
+}
+
+
+int zeta_profile_n(arb_t res, const arb_t r, const slong order, slong prec) // ζ(r) 及其各阶导数
+{
+    
+    if( Non_Gaussian_typical_profile_correction==true )
+    {
+        zeta_profile_n_Non_Gaussian_correction(res, r, order, prec); //利用NG功率谱P_ζ(k)得到的profile ζ(r)及其各阶导数
+    }else
+    {
+        zeta_profile_n_Func_direct(res, r, order, prec); //利用 ζ=F(ζ_G) 得到的 profile ζ(r) 及其各阶导数
+    }
+    
+    return 0;
+}

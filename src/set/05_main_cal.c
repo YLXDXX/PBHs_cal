@@ -1133,6 +1133,13 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     GW_dim_2_EPSABS=1e-15;
     GW_dim_2_t_upper="6E3";
     
+    
+    //注意到，对于非高斯性，常见的 typical profile ζ(r)=F[ζ_G(r)] 存在问题
+    //可以利用幂级数展开，通过高斯的功率谱 P_ζ_G(k)，计算得到非高斯的功率谱 P_ζ(k)
+    //再利用 P_ζ(k)，参照高斯 profile ζ_G(r) 的求法，得到非高斯的 profile ζ(r)
+    
+    Non_Gaussian_typical_profile_correction=true;
+    
     arb_clear(tem_t);
     arb_clear(tem_s);
 }

@@ -17,4 +17,7 @@ int Power_spectra_linear_transfer_function(arb_t res, const arb_t k, const arb_t
 
 int power_spectrum(arb_t res, const arb_t k, slong prec); //功率谱
 
+int power_spectrum_non_Gaussian_f_Nl(arb_t res, const arb_t k, slong prec); //非高斯功率谱修正 f^2_{NL}
+int power_spectrum_non_Gaussian(arb_t res, const arb_t k, slong prec); //非高斯功率谱
+
 #endif // __PBHS_GENERAL_BASIS__ 

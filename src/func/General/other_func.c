@@ -231,3 +231,68 @@ void Get_all_k_over_k_ch(arb_t k_ch_times_r_m, arb_t k_ch, const arb_t x_m, slon
     arb_clear(s);
 }
 
+static int interior_Power_spectra_convolution(arb_t res, const arb_t l, void* k, const slong order, slong prec)
+{
+    arb_t t,s;
+    arb_init(t);
+    arb_init(s);
+    
+    //考虑一维的情况
+    //这里传入的是取对数后的值
+    
+    arb_exp(s,l,prec);
+    arb_exp(t,k,prec);
+    arb_sub(s,s,t,prec); //l-k
+    arb_abs(s,s);
+    arb_log(s,s,prec);
+    
+    power_spectrum(t, s, prec);
+    
+    //arb_printn(k, 50,0);printf("\n"); //打印变量
+    //arb_printn(l, 50,0);printf("\n"); //打印变量
+    //arb_printn(s, 50,0);printf("\n\n"); //打印变量
+    
+    power_spectrum(s, l, prec);
+    
+    arb_mul(t,t,s,prec);
+    //arb_exp(s,l,prec);
+    arb_one(s);
+    arb_mul(res,t,s,prec);
+    
+    arb_clear(t);
+    arb_clear(s);
+    
+    return 0;
+}
+
+//功率谱的卷积
+void Power_spectra_convolution(arb_t res, const arb_t k, slong prec)
+{
+    arb_t t,s,w;
+    arb_init(t);
+    arb_init(s);
+    arb_init(w);
+    
+    arb_set(t,k);
+    
+    //arb_printn(t, 50,0);printf("\n"); //打印变量
+    
+    arb_set_str(w,"1E-9",prec);
+    
+    int ret_judge=0;
+    Integration_arb(s, interior_Power_spectra_convolution, t, 0,
+                    PS_Int_variance_min, PS_Int_variance_max, w,
+                    Integration_iterate_min, Integration_iterate_max, prec );
+    if(ret_judge==1)
+    {
+        printf("C_m_average  \t 达到最大迭代次数\n");
+    }
+    
+    arb_printn(s, 50,0);printf("\n"); //打印变量
+    exit(0);
+    arb_set(res,s);
+    
+    arb_clear(t);
+    arb_clear(s);
+    arb_clear(w);
+}

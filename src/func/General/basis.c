@@ -281,7 +281,7 @@ void Upward_step_power_spectrum_k_c_to_k_s(arb_t k_s, const arb_t k_c, slong pre
 
 
 //功率谱 
-int power_spectrum(arb_t res, const arb_t k, slong prec)
+int power_spectrum(arb_t res, const arb_t k, slong prec) //高斯功率谱 P_ζ_G(k)
 {
     //函数中所用变量
     arb_t s,t,w;
@@ -520,6 +520,28 @@ int power_spectrum(arb_t res, const arb_t k, slong prec)
     return 0;
 }
 
+//当给定高斯情况下的功率谱 P_ζ_G(k) 后，我们可以利用幂级数展开的方法
+//得到非高斯性况下的功率谱修正 P_ζ(k)
+
+//这里的修正项是一个三重积分，采用单独计算后，用插值的手段参与后需处理
 
 
 
+int power_spectrum_non_Gaussian(arb_t res, const arb_t k, slong prec) //非高斯功率谱 P_ζ(k)
+{
+    arb_t s,t;
+    
+    arb_init(s);
+    arb_init(t);
+    
+    power_spectrum(s, k, prec); //高斯功率谱
+    
+    power_spectrum_non_Gaussian_f_Nl(t, k, prec); //非高斯修正项 f^2_{NL}
+    
+    arb_add(res,s,t,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    
+    return 0;
+}
