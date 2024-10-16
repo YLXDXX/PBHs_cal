@@ -531,11 +531,9 @@ int power_spectrum_non_Gaussian_f_Nl(arb_t res, const arb_t k, slong prec)
     
     
     
-    //积分前面的系数 72/25*π^3*(f_nl)^2
-    arb_set_ui(s,72);
+    //积分前面的系数 9/25*(f_nl)^2
+    arb_set_ui(s,9);
     arb_div_ui(s,s,25,prec);
-    arb_pow_ui(t,Pi,3,prec);
-    arb_mul(s,s,t,prec);
     arb_sqr(t,Power_expansion_f,prec); 
     arb_mul(s,s,t,prec);
     
