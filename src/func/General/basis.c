@@ -534,10 +534,6 @@ int power_spectrum_non_Gaussian(arb_t res, const arb_t k, slong prec) //非高�
     arb_init(s);
     arb_init(t);
     
-    
-    power_spectrum(s, k, prec); //高斯功率谱
-    
-    
     //power_spectrum_non_Gaussian_f_Nl(t, k, prec); //非高斯修正项 f^2_{NL}
     //这里的修正项是一个二重积分，一般单独计算，再用插值的手段加入
     
@@ -554,8 +550,16 @@ int power_spectrum_non_Gaussian(arb_t res, const arb_t k, slong prec) //非高�
                                FITTED_NG_f_nl_k, FITTED_NG_f_nl_P, FITTED_NG_f_nl_interp_coe, FITTED_NG_f_nl_num, prec);
     }
     
-    arb_add(res,s,t,prec);
+    //积分前面的系数 9/25*(f_nl)^2, 积分时乘了 9/25
+    //这里还需乘上系数 (f_nl)^2
+    arb_sqr(s,Power_expansion_f,prec); 
+    arb_mul(t,t,s,prec);
     
+    power_spectrum(s, k, prec); //高斯功率谱
+    
+    arb_add(res,t,s,prec);
+    
+    //arb_set(res,s);
     arb_clear(s);
     arb_clear(t);
     

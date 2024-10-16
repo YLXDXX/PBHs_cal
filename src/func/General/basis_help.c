@@ -532,10 +532,10 @@ int power_spectrum_non_Gaussian_f_Nl(arb_t res, const arb_t k, slong prec)
     
     
     //积分前面的系数 9/25*(f_nl)^2
-    arb_set_ui(s,9);
+    arb_set_ui(s,9); //只取 9/25, 保留 f_nl 的变化
     arb_div_ui(s,s,25,prec);
-    arb_sqr(t,Power_expansion_f,prec); 
-    arb_mul(s,s,t,prec);
+    //arb_sqr(t,Power_expansion_f,prec); 
+    //arb_mul(s,s,t,prec);
     
     
     int nregions, fail;
