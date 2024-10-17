@@ -425,7 +425,7 @@ void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong pr
 {
     arb_t s,w,t_e,t_step,t_f,error,t_a,t_b,pi_c,pi_d,pi_f,h,g_cal,g_theory;
     arb_t N_e,N_step,epsilon_1,epsilon_2,eta_1,eta_2;
-    arb_t nar_eta_1,nar_eta_2,nar_g,nar_kappa,nar_omega,nar_gamma,nar_beta,nar_A,nar_pi,nar_eq_h;
+    arb_t nar_eta_1,nar_eta_2,nar_g,nar_kappa,nar_omega,nar_gamma,nar_beta,nar_A,nar_pi,nar_eq_h,amp_scale;
     
     arb_init(s);
     arb_init(w);
@@ -458,6 +458,7 @@ void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong pr
     arb_init(nar_A);
     arb_init(nar_pi);
     arb_init(nar_eq_h);
+    arb_init(amp_scale);
     
     arb_set_str(t_a,"1.6E6",prec);
     arb_set_str(t_b,"2E6",prec);
@@ -611,6 +612,12 @@ void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong pr
     arb_mul_ui(nar_eq_h,s,2,prec);
     
     
+    //估算放大的倍数 ε_1/ε_2/g^2
+    arb_sqr(amp_scale,g_cal,prec);
+    arb_mul(amp_scale,amp_scale,epsilon_2,prec);
+    arb_div(amp_scale,epsilon_1,amp_scale,prec);
+    
+    
     printf("N_c: ");arb_printn(N_e, 20,0);printf("\n");
     printf("N_d: ");arb_printn(N_step, 20,0);printf("\n");
     printf("π_c: ");arb_printn(pi_c, 20,0);printf("\n");
@@ -634,6 +641,8 @@ void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong pr
     printf("narrow step ω: ");arb_printn(nar_omega, 20,0);printf("\n");
     printf("narrow step A: ");arb_printn(nar_A, 20,0);printf("\n");
     printf("narrow step eq_h: ");arb_printn(nar_eq_h, 20,0);printf("\n\n");
+    
+    printf("amplify scale: ");arb_printn(amp_scale, 20,0);printf("\n\n");
     
     arb_clear(s);
     arb_clear(w);
@@ -666,6 +675,7 @@ void Inflation_get_model_correlated_info(const Inflation_dense_t d_out, slong pr
     arb_clear(nar_A);
     arb_clear(nar_pi);
     arb_clear(nar_eq_h);
+    arb_clear(amp_scale);
     
     arb_clear(p->N);
     free(p);
