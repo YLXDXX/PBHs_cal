@@ -31,8 +31,8 @@ int Inflation_background_coupled_odes(arb_ptr yp, const arb_t t, const arb_ptr y
     arb_set(N,y+3);
     
     // Calculate the potential and its derivative
-    Inflation_V_phi(V,phi,prec); // V = V_phi(phi)
-    Inflation_V_phi_p(dV_dphi,phi,prec); // dV_dphi = V_phi_p(phi)
+    Inflation_V_phi(V,phi,0,prec); //原函数 V = V_phi(phi)
+    Inflation_V_phi(dV_dphi,phi,1,prec); //一阶导 dV_dphi = V_phi_p(phi)
     
     // Calculate H based on the current values of phi and phi_dot
     
@@ -138,9 +138,9 @@ int Inflation_perturbation_phi_odes(arb_ptr yp, const arb_t t, const arb_ptr y, 
     //背景解 phi_dot = phi_dot_interp(t)
     Inflation_interp_fit_func_odes(phi_dot, t, d_out, 0, prec);
     
-    Inflation_V_phi(V,phi,prec); //V = V_phi(phi)
-    Inflation_V_phi_p(dV_dphi,phi,prec); //dV_dphi = V_phi_p(phi)
-    Inflation_V_phi_pp(d2V_dphi2,phi,prec); //d2V_dphi2 = V_phi_pp(phi) //The second derivative of V(\phi)
+    Inflation_V_phi(V,phi,0,prec); //原函数 V = V_phi(phi)
+    Inflation_V_phi(dV_dphi,phi,1,prec); //一阶导 dV_dphi = V_phi_p(phi)
+    Inflation_V_phi(d2V_dphi2,phi,2,prec); //二阶导 d2V_dphi2 = V_phi_pp(phi) //The second derivative of V(\phi)
     
     //背景解 H = H_interp(t), 这里不用插值
     //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)

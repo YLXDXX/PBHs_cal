@@ -36,7 +36,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     
     //up_step_type
     //arb_set(Up_step_h,Upward_step_spectra_h);
-    arb_set_str(Up_step_h, "-7.11", prec); //up_step_type 其中Up_step_h取值为负
+    arb_set_str(Up_step_h, "-10.24669", prec); //up_step_type 其中Up_step_h取值为负
     //arb_set_str(Up_step_h, comd_argv[1], prec); //从命令行读取参数
     
     
@@ -57,11 +57,11 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     
     
     //narrow_step_1_type 有限宽的 up_step 类型
-    arb_set_str(Narrow_up_step_beta, "14.02370932755303", prec);
-    arb_set_str(Narrow_up_step_kappa, "111.8647981072688", prec);
-    arb_set_str(Narrow_up_step_g, "0.007557845687883634", prec);
-    arb_set_str(Narrow_up_step_gamma, "0.07154953738547463", prec);
-    arb_set_str(Narrow_up_step_omega, "15.12667079737446", prec);
+    arb_set_str(Narrow_up_step_beta, "14.023709327549473284", prec);
+    arb_set_str(Narrow_up_step_kappa, "79.100513737519528357", prec);
+    arb_set_str(Narrow_up_step_g, "0.0074152053567769535130", prec);
+    arb_set_str(Narrow_up_step_gamma, "0.071549537385456496347", prec);
+    arb_set_str(Narrow_up_step_omega, "15.126670797378297360", prec);
     
     //narrow_step_1_type A=β-κ*γ/(3*g)-γ/(ω*g^2)
     arb_mul_ui(tem_t,Narrow_up_step_g,3,prec);
@@ -81,7 +81,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     arb_div(Narrow_up_step_cutoff_1,tem_s,tem_t,prec);
     //arb_set_str(Narrow_up_step_cutoff_1, "-5.9394478", prec);
     
-    
+    arb_printn(Narrow_up_step_cutoff_1, 50,0);printf("\n"); //打印变量
     
     //考虑所有k模式，用δ谱求连续谱，计算∫β(k_◦)dk_◦用
     arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 5, prec);
@@ -327,9 +327,9 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     Root_M_to_mu_num=12;
                     arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
                     
-                    arb_set_str(PS_Root_zeta_to_zeta_G_min, "-5", prec);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G) 用
+                    arb_set_str(PS_Root_zeta_to_zeta_G_min, "-0.5", prec);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G) 用
                     arb_set_str(PS_Root_zeta_to_zeta_G_max, "0.5", prec);
-                    PS_Root_zeta_to_zeta_G_num=1E4; //注意到，在临近截断处，需要非常多的点才能找出相应的根
+                    PS_Root_zeta_to_zeta_G_num=1E5; //注意到，在临近截断处，需要非常多的点才能找出相应的根
                     arb_set_str(PS_Root_zeta_to_zeta_G_precision, "1E-13", prec);
                     
                     arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
@@ -675,9 +675,9 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     arb_set_str(Int_r_precision,"1E-20",prec);
                     
                     //arb_set_str(Int_mu_min,"0.1",prec);
-                    arb_set_str(Int_mu_min,"20",prec);
-                    arb_set_str(Int_mu_max,"39",prec);
-                    Root_mu_num=20;
+                    arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_max,"1",prec);
+                    Root_mu_num=30;
                     arb_set_str(Int_mu_precision,"1E-15",prec);
                     
                     C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
@@ -752,6 +752,65 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec);
                     
                     break;
+                case narrow_step_1_type :
+                    //根据δ谱下r*k为定值，采用动态r_m区间
+                    arb_set_str(R_K_to_r_m,"5",prec);
+                    arb_div(Int_r_min,R_K_to_r_m,K_star,prec);
+                    arb_div_ui(Int_r_min,Int_r_min,20,prec);
+                    arb_mul_ui(Int_r_max,Int_r_min,90,prec);
+                    Root_r_num=120;
+                    arb_set_str(Int_r_precision,"1E-20",prec);
+                    
+                    arb_set_str(Int_mu_min,"0.1",prec);
+                    arb_set_str(Int_mu_max,"1.5",prec);
+                    Root_mu_num=60;
+                    arb_set_str(Int_mu_precision,"1E-15",prec);
+                    
+                    C_m_average_iterate_min=3; //求 C_m_average 不好求，迭代次数需单独设置
+                    C_m_average_iterate_max=5;
+                    arb_set_str(C_m_average_precision,"1E-6",prec);
+                    
+                    // M -> μ 求根用
+                    arb_set_str(Root_M_to_mu_min,"0.1",prec); //Root_M_to_mu_min 最小应该是 PT_mu_th
+                    arb_set_str(Root_M_to_mu_max,"0.7",prec);
+                    Root_M_to_mu_num=12;
+                    arb_set_str(Root_M_to_mu_precision,"1E-15",prec);
+                    
+                    arb_set_str(PS_Root_zeta_to_zeta_G_min, "-1", prec);//计算概率 P(ζ), 需要反解 ζ= F(ζ_G) 用
+                    arb_set_str(PS_Root_zeta_to_zeta_G_max, "1", prec);
+                    PS_Root_zeta_to_zeta_G_num=1E4; //注意到，在临近截断处，需要非常多的点才能找出相应的根
+                    arb_set_str(PS_Root_zeta_to_zeta_G_precision, "1E-13", prec);
+                    
+                    arb_set_str(Int_n_pk_k_min,"0.05",prec); // n_pk(mu,k) 中 k 的积分区间，在1左右
+                    arb_set_str(Int_n_pk_k_max,"1.6",prec);
+                    arb_set_str(Int_n_pk_k_precision,"1E-7",prec);
+                    
+                    // PS 计算相关
+                    if( arb_is_positive(Narrow_up_step_cutoff_1) ) //截断位置 1+cut*ζ_G >0，定义域 ζ_G > -1/cut
+                    {
+                        arb_set(PS_Int_P_C_l_min,Narrow_up_step_cutoff_1); //ζ_G > -1/cut
+                        arb_inv(PS_Int_P_C_l_min,PS_Int_P_C_l_min,prec);
+                        arb_neg(PS_Int_P_C_l_min,PS_Int_P_C_l_min);
+                        arb_set_str(PS_Int_P_C_l_max,"1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                        arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
+                        
+                    }else //截断位置 1+cut*ζ_G >0，定义域 ζ_G < -1/cut
+                    {
+                        arb_set_str(PS_Int_P_C_l_min,"-1.5",prec); // PS 计算 C_ℓ 的概率密度分布 P(C_l)
+                        arb_set(PS_Int_P_C_l_max,Narrow_up_step_cutoff_1); //ζ_G < -1/cut
+                        arb_inv(PS_Int_P_C_l_max,PS_Int_P_C_l_max,prec); 
+                        arb_neg(PS_Int_P_C_l_max,PS_Int_P_C_l_max);
+                        arb_set_str(PS_Int_P_C_l_precision,"1E-40",prec);
+                    }
+                    
+                    arb_set_str(PS_abundance_int_precision,"1E-10",prec); //PS 最终占比f积分的精度
+                    
+                    arb_set_str(PS_abundance_simple_int_min,"1E-20",prec); //PS 简单计算丰度的精度和上下界
+                    arb_set_str(PS_abundance_simple_int_max,"1.5",prec);
+                    arb_set_str(PS_abundance_simple_int_precision,"1E-10",prec); 
+                    
+                    break;    
+                
                 default :
                     printf("main.c Power_spectrum_type->broken_power_law_type-->zeta_type 有误\n");
                     exit(1);

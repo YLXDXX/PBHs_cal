@@ -10,7 +10,45 @@ const Inflation_use_interp_fit_func_odes_func Inflation_interp_fit_func_odes= In
 const Inflation_use_ODEs_solver_func Inflation_ODEs_solver=ODEs_DOP853;
 
 
-//这里，定义了程序计算中所需的其它函数
+//这里，定义了程序计算中所需的其它各种函数
+
+//有效质量，求解 Sasaki-Mukhanov 方程时用
+void Inflation_m_eff(arb_t res, const arb_t phi_dot, const arb_t phi_ddot,
+                     const arb_t H, const arb_t H_dot, const arb_t V_phi_pp, slong prec)
+{
+    arb_t s,t,w;    
+    arb_init(s);
+    arb_init(t);
+    arb_init(w);
+    
+    //V_phi_pp - (1/Mpl)**2 * (3.*phi_dot**2. + (2*phi_dot*phi_ddot)/H - (H_dot*(phi_dot**2.))/(H**2))
+    
+    //(3.*phi_dot**2. + (2*phi_dot*phi_ddot)/H - (H_dot*(phi_dot**2.))/(H**2))
+    arb_sqr(s,phi_dot,prec);
+    arb_mul_ui(s,s,3,prec);
+    
+    arb_mul(t,phi_dot,phi_ddot,prec);
+    arb_mul_si(t,t,2,prec);
+    arb_div(t,t,H,prec);
+    arb_add(s,s,t,prec);
+    
+    arb_sqr(t,phi_dot,prec);
+    arb_mul(t,t,H_dot,prec);
+    arb_sqr(w,H,prec);
+    arb_div(t,t,w,prec);
+    arb_sub(s,s,t,prec);
+    
+    arb_inv(t,Inf_Mpl,prec);
+    arb_sqr(t,t,prec);
+    arb_mul(s,s,t,prec);
+    
+    arb_sub(res,V_phi_pp,s,prec);
+    
+    arb_clear(s);
+    arb_clear(t);
+    arb_clear(w);
+}
+
 
 //暴胀中扰动微分方程参数传递的结构体，其初始化和清理函数
 Inflation_perturb_ODEs_param_t Inflation_perturb_ODEs_param_init(Inflation_dense_t d_out, arb_t fourier_k)
@@ -72,7 +110,7 @@ static int interior_Inflation_get_time_k_enter(arb_t res, const arb_t ln_t,
     //背景解 phi_dot = phi_dot_interp(t)
     Inflation_interp_fit_func_odes(phi_dot, t, param->d_out, 0, prec);
     
-    Inflation_V_phi(V,phi,prec); //V = V_phi(phi)
+    Inflation_V_phi(V,phi,0,prec); //原函数 V = V_phi(phi)
     
     //背景解 H = H_interp(t), 这里不用插值
     //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)
@@ -280,7 +318,7 @@ void Inflation_power_spectra_cal_at_fk(arb_t res, const arb_t fk, const arb_t x_
     //背景解 phi_dot = phi_dot_interp(t)
     Inflation_interp_fit_func_odes(phi_dot_end, x_end, d_out, 0, prec);
     
-    Inflation_V_phi(V_end,phi_end,prec); //V = V_phi(phi)
+    Inflation_V_phi(V_end,phi_end,0,prec); //原函数 V = V_phi(phi)
     
     //背景解 H = H_interp(t), 这里不用插值
     //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)
@@ -337,7 +375,7 @@ void Inflation_background_H_t(arb_t H, const arb_t t, const Inflation_dense_t d_
     
     Inflation_interp_fit_func_odes(phi, t, d_out, 1, prec); //ϕ
     Inflation_interp_fit_func_odes(phi_dot, t, d_out, 0, prec); //ϕ'
-    Inflation_V_phi(V,phi,prec); //V = V_phi(phi)
+    Inflation_V_phi(V,phi,0,prec); //原函数 V = V_phi(phi)
     
     //背景解 H = H_interp(t), 这里不用插值
     //H = np.sqrt((1./6.) * phi_dot**2 + V / 3.)

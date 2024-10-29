@@ -31,7 +31,7 @@ typedef void (*Inflation_use_interp_fit_func_odes_func)(arb_t res, const arb_t x
                                                         slong prec);
 extern const Inflation_use_interp_fit_func_odes_func Inflation_interp_fit_func_odes;
 
-//再对常微分方程求解器使用名
+//再对常微分方程求解器使用别名
 typedef void (*Inflation_use_ODEs_solver_func)(arb_ptr y_end, my_odes_func func, const slong dim, void *param, const slong order, //常微分方程组函数
                                                const arb_t x_start, const arb_ptr y_start, //给定初始条件
                                                const arb_t x_end, //求出点 x_end 对应的函数值
@@ -67,12 +67,7 @@ extern arb_t Inf_Lambda,Inf_Delta_Phi_usr,Inf_Phi_s;
 void Inflation_set_model_parameters(slong prec); //暴胀模型各种初始参数设定：势能参数、慢滚参数等
 
 //微分方程计算所需函数
-void Inflation_Smoothing_Step_Function(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
-void Inflation_S_prime(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
-void Inflation_S_pp(arb_t res, const arb_t x, const arb_t smoothness, const int flag, slong prec);
-void Inflation_V_phi(arb_t res, const arb_t phi, slong prec);
-void Inflation_V_phi_p(arb_t res, const arb_t phi, slong prec);
-void Inflation_V_phi_pp(arb_t res, const arb_t phi, slong prec);
+void Inflation_V_phi(arb_t res, const arb_t phi, const slong order, slong prec);
 void Inflation_m_eff(arb_t res, const arb_t phi_dot, const arb_t phi_ddot,
                      const arb_t H, const arb_t H_dot, const arb_t V_phi_pp, slong prec);
 

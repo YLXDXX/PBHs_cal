@@ -7,7 +7,7 @@ void Set_power_spectra(char* comd_argv[], slong prec) // comd_argv 为命令行�
     //arb_set_str(Power_A, "4E-3", prec); //功率谱振幅
     //arb_set_str(Power_A, "0.302", prec); //PTAs对log-normal的拟合
     //arb_set_str(Power_A, "0.211", prec); //PTAs对BPL的拟合
-    arb_set_str(Power_A, "0.16", prec); // upward step 拟合
+    arb_set_str(Power_A, "0.104", prec); // upward step 拟合
     //arb_set_str(Power_A, comd_argv[1], prec);
     
     //功率谱掌宽，例如 log-normal 的

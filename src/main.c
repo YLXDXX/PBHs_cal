@@ -46,10 +46,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    //routine_test(prec); exit(0); //测试程序
+    routine_test(prec); exit(0); //测试程序
     
     //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
-    FITTED_num=5E3;
+    FITTED_num=3E3;
     
     FITTED_interp_coe=Interpolation_coe_init(FITTED_num); 
     FITTED_x=_arb_vec_init(FITTED_num);
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //读取拟合数据，用于通过扰动方法对于非高斯性功率谱 f_NL 修正
-    FITTED_NG_f_nl_num=1E2;
+    FITTED_NG_f_nl_num=1E3;
     FITTED_NG_f_nl_interp_coe=Interpolation_coe_init(FITTED_NG_f_nl_num); 
     FITTED_NG_f_nl_k=_arb_vec_init(FITTED_NG_f_nl_num);
     FITTED_NG_f_nl_P=_arb_vec_init(FITTED_NG_f_nl_num);
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     //routine_test(prec); exit(0);
     
-    /*
+    
     //寻找阈值
     //注意到，当profile没有采取简化时，threshold 还与 PT_k 有关
     Find_PT_Mu_th(PT_mu_th, PT_k, prec);//一般情况下不用管此参数
@@ -235,14 +235,24 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Continuum_spectrum_type=lognormal_type; //计算连续谱类型
     
     Continuum_spectrum_cal_simplify=false; //是否采用简化，true/false，这里简化现阶段仅针对log-normal谱
-    */
     
-    //arb_set_str(PS_Sigma_YY,"0.00040613304234237484945",prec);
+    
+    //arb_set_str(PS_Sigma_YY,"9.9116456426779163681e-5",prec);
+    //arb_set_str(PS_Sigma_XY,"-0.00010384400918414416042",prec);
+    //arb_set_str(PS_Sigma_YX,"-0.00010384400918414416042",prec);
+    //arb_set_str(PS_Sigma_XX,"0.0012208141770026803467",prec);
+    
+    //高斯情况
+    //Sigma_XX: [0.038216355358713172787144756332496964758408307277892 +/- 2.65e-52]
+    //Sigma_XY: [-0.023018618012145232100805697011076535606523742877079 +/- 4.14e-52]
+    //Sigma_YY: [0.026419468053667734388501811123403714670807513836293 +/- 1.36e-52]
+    
     
     //
     //全部设置完，后面调用各函数进行各种设算
     //
-    
+    draw_pic(argv,prec); //输出点用于画图，可从命令行传递参数
+    exit(0);
     arb_t Pk,t,w,k,eta; //自由使用变量
     arb_init(Pk);
     arb_init(t);
@@ -382,10 +392,10 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //Effective_degrees_of_freedom_fit(Pk,w,T_scale_eq,"Gev",prec);
     //Func_k_to_degrees_of_freedom(Pk,w,t,prec);
     
-    
+    /*
     //非高斯功率谱修正的拟合数据输出，
     slong nn=FITTED_NG_f_nl_num;
-    nn=20;
+    //nn=100;
     arb_ptr NG_k,NG_P;
     NG_k=_arb_vec_init(nn);
     NG_P=_arb_vec_init(nn);
@@ -396,7 +406,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //#pragma omp parallel for num_threads(5), 这里不能使用多线程
     for(slong i=0; i< nn; i++)
     {
-        power_spectrum_non_Gaussian_f_Nl(NG_P+i,NG_k+i,prec);
+        power_spectrum_non_Gaussian_f_Nl(NG_P+i,NG_k+i,prec); //非高斯修正项 f^2_NL
+        //power_spectrum(NG_P+i, NG_k+i, prec); //高斯功率谱
         //arb_printn(NG_k+i,30,0);printf("\n");
         //arb_printn(NG_P+i,30,0);printf("\n");
         printf("%li\n",i);
@@ -404,7 +415,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     Vector_point_write_to_file_arb(NG_k, NG_P, nn, 2, prec);
     //Vector_point_output_to_file(NG_k, NG_P, nn, 'w');
     exit(0);
-    
+    */
     
     
     arb_printn(Pk,30,0);printf("\n");
