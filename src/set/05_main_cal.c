@@ -675,8 +675,8 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
                     arb_set_str(Int_r_precision,"1E-20",prec);
                     
                     //arb_set_str(Int_mu_min,"0.1",prec);
-                    arb_set_str(Int_mu_min,"0.1",prec);
-                    arb_set_str(Int_mu_max,"1",prec);
+                    arb_set_str(Int_mu_min,"220",prec);
+                    arb_set_str(Int_mu_max,"270",prec);
                     Root_mu_num=30;
                     arb_set_str(Int_mu_precision,"1E-15",prec);
                     
@@ -1087,7 +1087,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     PS_simple_window_func=Gaussian_hat; //简单PS方法中窗口函数类型 Real_space_top_hat, Fourier_space_top_hat, Gaussian_hat
     
     
-    //β 到 f 的转换系数，可以采用不同方法 beta_f_general_I, beta_f_general_II, beta_f_myself
+    //β 到 f 的转换系数，可以采用不同方法 beta_f_general_I, beta_f_general_II, beta_f_general_III
     beta_to_f_type=beta_f_general_I;
     
     

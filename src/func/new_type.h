@@ -119,7 +119,7 @@ enum BETA_TO_F_ENUM_TYPE
 {
     beta_f_general_I,
     beta_f_general_II,
-    beta_f_myself
+    beta_f_general_III
 };
 
 //用来进行计算的函数，如积分、找根等

@@ -97,7 +97,7 @@ void beta_m_to_f_m_coefficient(arb_t res, slong prec)
     switch (beta_to_f_type)
     {
         case beta_f_general_I :
-            //参与 2109.00791 (A.15) 第一行
+            //参见 2109.00791 (A.15) 第一行
             //f(m) = Ω_m/Ω_DM * T_{r_m}/T_eq * β(M)
             
             //r_m对应尺度 k_m,需要求出 k_m 对应的温度即可
@@ -129,7 +129,7 @@ void beta_m_to_f_m_coefficient(arb_t res, slong prec)
             
             break;
         case beta_f_general_II :
-            //参与 2109.00791 (A.15) 第二行
+            //参见 2109.00791 (A.15) 第二行
             arb_sqr(t,Hubble_constant_h,prec);
             arb_mul(t,t,Omega_DM,prec);
             arb_set_str(w,"0.12",prec);
@@ -155,26 +155,27 @@ void beta_m_to_f_m_coefficient(arb_t res, slong prec)
             arb_div(res,t,w,prec);
             
             break;
-        case beta_f_myself :
-            //自己推导的相关转换系数公式
+        case beta_f_general_III :
+            //自己文章中采用的转换公式
+            //即将 2109.00791 (A.15) 第一行：f(m) = Ω_m/Ω_DM * T_{r_m}/T_eq * β(M) 中的
+            //T_{r_m}/T_eq 利用波数和温度的关系替换「见 1812.00674 的 (A5)」
+            //f(M)=Ω_m/Ω_DM * (g_{*,eq}/g_*)^(1/6) * (k_*/k_eq) * 1/[2*(√2-1)] * β(M)
             
-            //f(M)=Ω_m/Ω_DM * (g_*/g_{*,eq})^(1/3) * (k_*/k_eq) * 1/[2*(√2-1)]^4 * β(M)
             arb_div(t,Omega_M,Omega_DM,prec);
-            arb_div(s,effective_g_star,effective_g_star_eq,prec);
+            arb_div(s,effective_g_star_eq,effective_g_star,prec);
             arb_one(w);
-            arb_div_ui(w,w,3,prec);
+            arb_div_ui(w,w,6,prec);
             arb_pow(s,s,w,prec);
             arb_mul(t,t,s,prec);
             
             arb_div(s,K_star,K_scale_eq,prec); //k_*/k_eq
             arb_mul(t,t,s,prec);
             
-            arb_one(s); // 1/[2*(√2-1)]^4
+            arb_one(s); // 1/[2*(√2-1)]
             arb_mul_ui(s,s,2,prec);
             arb_sqrt(s,s,prec);
             arb_sub_ui(s,s,1,prec);
             arb_mul_ui(s,s,2,prec);
-            arb_pow_ui(s,s,4,prec);
             
             arb_div(res,t,s,prec);
             
