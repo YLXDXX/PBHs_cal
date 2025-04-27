@@ -9,7 +9,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     //曲率扰动 ζ 相关设定
     // ζ 扰动类型 gaussian_type/exponential_tail_type/up_step_type/power_expansion_type
     //            narrow_step_1_type/narrow_step_1_2_type
-    Zeta_type=up_step_type; //需要其它参数之前，如r_m的求解
+    Zeta_type=gaussian_type; //需要其它参数之前，如r_m的求解
     
     
     //非高斯相关参数设定，需在求 r_max 和 PT_mu_th 之前设定，其与两都都有关
@@ -80,8 +80,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     arb_mul(tem_t,tem_t,Narrow_up_step_A,prec);
     arb_div(Narrow_up_step_cutoff_1,tem_s,tem_t,prec);
     //arb_set_str(Narrow_up_step_cutoff_1, "-5.9394478", prec);
-    
-    arb_printn(Narrow_up_step_cutoff_1, 50,0);printf("\n"); //打印变量
+    //arb_printn(Narrow_up_step_cutoff_1, 50,0);printf("\n"); //打印变量
     
     //考虑所有k模式，用δ谱求连续谱，计算∫β(k_◦)dk_◦用
     arb_mul_ui(Log_normal_mul_sigma,Power_sigma, 5, prec);
@@ -1197,7 +1196,7 @@ void Set_main_cal(char* comd_argv[], slong prec) // comd_argv 为命令行传递
     //可以利用幂级数展开，通过高斯的功率谱 P_ζ_G(k)，计算得到非高斯的功率谱 P_ζ(k)
     //再利用 P_ζ(k)，参照高斯 profile ζ_G(r) 的求法，得到非高斯的 profile ζ(r)
     
-    Non_Gaussian_typical_profile_correction=true;
+    Non_Gaussian_typical_profile_correction=false; //利用扰动的非高斯功率谱修正来计算 profile
     
     arb_clear(tem_t);
     arb_clear(tem_s);

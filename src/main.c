@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     slong prec;
     prec=500; //控制计算精度， 500，精度在 140 位左右；300，在80位左右，64，在15位左右
     
-    Stdout_verbose=true; //命令行输出详细模式，true/false
+    Stdout_verbose=false; //命令行输出详细模式，true/false
     
     //输出文件配制
     get_save_path(Path_save);
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //测试各功能、各函数是否正常
     //
-    routine_test(prec); exit(0); //测试程序
+    //routine_test(prec); exit(0); //测试程序
     
     //读取拟合数据，用于通过数值功率谱计算其产生的引导引力波
     FITTED_num=3E3;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //功率谱相关设定
     //功率谱类型 delta_type/lognormal_type/power_law_type/box_type/broken_power_law_type/link_cmb_type
     //           upward_step_spectra_type/numerical_cal_type
-    Power_spectrum_type=broken_power_law_type;
+    Power_spectrum_type=lognormal_type;
     
     
     Set_power_spectra(argv,prec); //功率谱相关具体参数设定，可由命令行传递参数
@@ -198,7 +198,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //求出参数 μ 的上限，可能与参数 k 有关
-    Get_PK_mu_max(PT_mu_max, PT_k, prec);
+    Get_PK_mu_max(PT_mu_max, PT_k, prec); //此行，如果不是用峰理论计算，建议注释掉，某些参数情况下该值较难求得
     printf("Find PT_mu_max：");arb_printn(PT_mu_max,60,0);printf("\n\n\n");
     
     
@@ -251,8 +251,8 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //
     //全部设置完，后面调用各函数进行各种设算
     //
-    draw_pic(argv,prec); //输出点用于画图，可从命令行传递参数
-    exit(0);
+    
+    
     arb_t Pk,t,w,k,eta; //自由使用变量
     arb_init(Pk);
     arb_init(t);
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     //PS_abundance_beta_m(Pk,t,prec);
     //PS_abundance_beta_all(Pk,prec);
     //PS_abundance_f_m(w, w, prec);
-    //PS_abundance_f_all(Pk,prec);
+    PS_abundance_f_all(Pk,prec);
     
     
     //PS的简单估算
@@ -457,6 +457,7 @@ int main(int argc, char* argv[]) //参数数目argc，参数 argv[i]
     
     
     //draw_pic(argv,prec); //输出点用于画图，可从命令行传递参数
+    //exit(0);
     
     return 0;
     

@@ -13,9 +13,9 @@ void Set_cal_math(slong prec)
     //积分行为设定
     Integral_method=double_exponential; // gauss_kronrod_iterate/double_exponential
     
-    //注意，这里并不是线性数和分割越多越好
-    Multithreaded_divide_integration_interval_number=11; //多线程计算区间分隔数目
-    Multithreaded_number=11; //多线程计算线程总数
+    //注意，这里并不是线程数和分割越多越好
+    Multithreaded_divide_integration_interval_number=1; //多线程计算区间分隔数目
+    Multithreaded_number=1; //多线程计算线程总数
     
     
     arb_init(INT_MIN_INTERVAL); //积分最小子区间间隔，一般十进制设为 10^(-prec/4) ，主要为防止有些积分区间无限细分下去
